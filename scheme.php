@@ -7,9 +7,7 @@ class Scheme {
     
     function __construct() {
         $tokens = [
-            '(', ')',
-            'sin', 'cos', 'tan', 'ln',
-            'pi', 'e',
+            '(', ')','-',
             'd'=>'[1-9][0-9]*',
             'f'=>'[0-9]+\.[0-9]+',
             'sp'=>'\s+',
@@ -22,12 +20,12 @@ class Scheme {
             ],
             'Form' =>[
                 [['Form','Form'], false],
-                [['Form','sp'], false],
-                [['sp','Form'], false],
                 [['Atom'],false]
             ],
             'Atom' => [
-                [['atom','Number','string'],false],
+                [[['|','atom']],false],
+                [[['|','Number']],false],
+                [[['|','string']],false],
             ],
             'Number' => [
                 //[[['|','Scala','Const']], false],
@@ -50,7 +48,6 @@ class Scheme {
     }
     
     function _calc($rule, $items) {
-    var_dump($rule);
         if ($rule == 'Scala') {
             switch ($items[0][0]) {
             case 'd':
@@ -63,12 +60,19 @@ class Scheme {
         } else {
             $need_push = true;
             switch ($rule) {
+            case 'Reverse':
+                $d1 = array_pop($this->stack);
+                $r = -$d1;
+                break;
             case 'Eval':
+                $need_push = false;
                 var_dump($this->stack);
                 break;
             default:
-                var_dump($this->stack);
-                $need_push = false;
+                $need_push = true;
+                $d1 = array_pop($this->stack);
+                var_dump($d1);
+                $r = $d1;
                 break;
             }
             if ($need_push) {
