@@ -1,0 +1,2 @@
+<?php
+return array ( 0 => 'id', 1 => 'pid', 2 => 'title', 3 => 'sort', 4 => 'status', 5 => 'keywords', 6 => 'description', 7 => 'module', 8 => 'rewrite', 9 => 'template', 10 => 'newstemplate', '_autoinc' => true, '_pk' => 'id', ); ?>

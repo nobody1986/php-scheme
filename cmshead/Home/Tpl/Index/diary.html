@@ -1,0 +1,11 @@
+<include file="Public:header" />
+    <div class="wrap_left">
+        <volist name="list" id="vo">
+			<div class="diary_block">
+            	<div class="title"><span style="float:right">{$vo.add_time|date='Y-m-d H:i:s',###}</span>{$vo.weather}</div>
+                <div class="content" title="{$vo.content}">{$vo.content}</div>
+            </div>         
+        </volist><!--日记列表-->
+        <div class="page">{$page}</div>
+    </div>        
+<include file="Public:footer" />

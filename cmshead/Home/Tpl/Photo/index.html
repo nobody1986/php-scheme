@@ -1,0 +1,62 @@
+<include file="Public:header" />
+    <div class="wrap_left">    
+    <script type="text/javascript" src="__PUBLIC__/Plugin/Highslide/highslide-with-gallery.js"></script>
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/Plugin/Highslide/highslide.css" />
+    <!--[if lt IE 7]>
+    <link rel="stylesheet" type="text/css" href="__PUBLIC__/Plugin/Highslide/highslide-ie6.css" />
+    <![endif]-->
+    
+    <script type="text/javascript">
+    hs.graphicsDir = '__PUBLIC__/Plugin/Highslide/graphics/';
+    hs.align = 'center';
+    hs.transitions = ['expand', 'crossfade'];
+    hs.fadeInOut = true;
+    hs.dimmingOpacity = 0.8;
+    hs.outlineType = 'rounded-white';
+    hs.captionEval = 'this.thumb.alt';
+    hs.marginBottom = 105; // make room for the thumbstrip and the controls
+    hs.numberPosition = 'caption';
+    
+    // Add the slideshow providing the controlbar and the thumbstrip
+    hs.addSlideshow({
+        //slideshowGroup: 'group1',
+        interval: 5000,
+        repeat: false,
+        useControls: true,
+        overlayOptions: {
+            className: 'text-controls',
+            position: 'bottom center',
+            relativeTo: 'viewport',
+            offsetY: -60
+        },
+        thumbstrip: {
+            position: 'bottom center',
+            mode: 'horizontal',
+            relativeTo: 'viewport'
+        }
+    });
+    </script>
+        <div class="rbox5">
+            <div class="rbox5_top"></div>
+            <div class="rbox5_center">
+                <h2>
+                	<volist name="types" id="vo">
+                    	<a href="{$vo.url}" style="margin-right:20px">{$vo.title}</a>
+                    </volist>
+                </h2>
+                <volist name="list" id="vo">
+                    <div class="pho_block">
+                    <table class="img_table"><tr><td>
+                        <a href='__PUBLIC__/Upload/photo/{$vo.img}' onclick="return hs.expand(this)">
+                            <img src='__PUBLIC__/Upload/photo/thumb_{$vo.img}' alt='{$vo.title}'/></a>
+                    </td></tr></table>
+                     <span class="title">{$vo.title}</span>
+                    </div>
+                </volist>
+                <div class="clear"></div>
+                <div class="page">{$page}</div>
+            </div>
+            <div class="rbox5_bottom"></div>            
+        </div>
+    </div>        
+<include file="Public:footer" />

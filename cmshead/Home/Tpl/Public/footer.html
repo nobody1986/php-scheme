@@ -1,0 +1,32 @@
+    <include file="Public:right" />	
+
+	<div class="flink"><b>酷站链接：</b>
+	<volist name="link" id="vo">
+    	<a href="{$vo.url}" title="{$vo.intro}" target="_blank">{$vo.title}</a>
+    </volist>        
+    </div>
+        
+    <div class="footer">
+	<a href="__APP__" onclick="this.style.behavior='url(#default#homepage)';this.setHomePage('{$Think.config.xpcms_url}');">设为首页</a> | 
+    <a href="javascript:window.external.addfavorite('{$Think.config.xpcms_url}','12PIR2');">加入收藏</a> | 
+    <a href="__ROOT__/rss.xml">RSS订阅</a> | 
+    <a href="mailto:{$Think.config.email}">联系站长</a> | 
+    <a href="__APP__/link">友情链接</a> | 
+    <a href="__APP__/message">留言反馈</a> | 
+    <a href="http://www.cmshead.com" target="_blank">Powered By CMSHead {$Think.config.xpcms_version}</a> | 
+    <script src="http://s21.cnzz.com/stat.php?id=3912645&web_id=3912645" language="JavaScript"></script>
+    <script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-5632077-6']);
+  _gaq.push(['_setDomainName', '12pir2.com']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+	</div>
+</div><!--main end-->
+</body>
+</html>

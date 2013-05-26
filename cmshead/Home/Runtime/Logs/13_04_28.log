@@ -1,0 +1,437 @@
+------178.216.50.22 REQUEST_URI:http://37.28.156.211/sprawdza.php------
+[ 2013-04-28T06:57:34+08:00 ] INFO: Tag[ route_check ] --START--
+[ 2013-04-28T06:57:35+08:00 ] INFO: Run CheckRoute Behavior [ RunTime:0.192374s ]
+[ 2013-04-28T06:57:35+08:00 ] INFO: Tag[ route_check ] --END-- [ RunTime:0.241661s ]
+[ 2013-04-28T06:57:35+08:00 ] NOTIC: [8] Undefined index: HTTP_X_REQUESTED_WITH App.class.php 第 50 行.
+[ 2013-04-28T06:57:35+08:00 ] INFO: Tag[ app_begin ] --START--
+[ 2013-04-28T06:57:35+08:00 ] INFO: Run ReadHtmlCache Behavior [ RunTime:0.031498s ]
+[ 2013-04-28T06:57:35+08:00 ] INFO: Tag[ app_begin ] --END-- [ RunTime:0.031618s ]
+[ 2013-04-28T06:57:37+08:00 ] SQL: SHOW COLUMNS FROM `ch_router` [ RunTime:1.011589s ]
+[ 2013-04-28T06:57:37+08:00 ] SQL: SELECT `url` FROM `ch_router` WHERE rewrite='http://37.28.156.211/sprawdza.php' LIMIT 1   [ RunTime:0.046282s ]
+
+------60.173.26.104 REQUEST_URI:http://114.80.155.202:8808/9262/------
+[ 2013-04-28T11:26:34+08:00 ] INFO: Tag[ route_check ] --START--
+[ 2013-04-28T11:26:35+08:00 ] INFO: Run CheckRoute Behavior [ RunTime:0.430931s ]
+[ 2013-04-28T11:26:35+08:00 ] INFO: Tag[ route_check ] --END-- [ RunTime:0.726960s ]
+[ 2013-04-28T11:26:36+08:00 ] NOTIC: [8] Undefined index: HTTP_X_REQUESTED_WITH App.class.php 第 50 行.
+[ 2013-04-28T11:26:36+08:00 ] INFO: Tag[ app_begin ] --START--
+[ 2013-04-28T11:26:36+08:00 ] INFO: Run ReadHtmlCache Behavior [ RunTime:0.037721s ]
+[ 2013-04-28T11:26:36+08:00 ] INFO: Tag[ app_begin ] --END-- [ RunTime:0.037820s ]
+[ 2013-04-28T11:26:50+08:00 ] SQL: SHOW COLUMNS FROM `ch_router` [ RunTime:0.728959s ]
+[ 2013-04-28T11:26:51+08:00 ] SQL: SELECT `url` FROM `ch_router` WHERE rewrite='http://114.80.155.202:8808/9262' LIMIT 1   [ RunTime:0.440389s ]
+
+------64.246.165.200 REQUEST_URI:/------
+[ 2013-04-28T13:07:16+08:00 ] NOTIC: [8] Undefined index: HTTP_X_REQUESTED_WITH App.class.php 第 50 行.
+[ 2013-04-28T13:07:16+08:00 ] INFO: Tag[ app_begin ] --START--
+[ 2013-04-28T13:07:16+08:00 ] INFO: Run ReadHtmlCache Behavior [ RunTime:0.028953s ]
+[ 2013-04-28T13:07:16+08:00 ] INFO: Tag[ app_begin ] --END-- [ RunTime:0.029047s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.021981s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=0 AND status=1 ORDER BY sort DESC  [ RunTime:0.000119s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000910s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=1 AND status=1  [ RunTime:0.000114s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000740s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=4 AND status=1  [ RunTime:0.000086s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000715s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=7 AND status=1  [ RunTime:0.000120s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000718s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=10 AND status=1  [ RunTime:0.000107s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.001015s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=14 AND status=1  [ RunTime:0.000123s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.001188s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=51 AND status=1  [ RunTime:0.000171s ]
+[ 2013-04-28T13:07:17+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.001056s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=52 AND status=1  [ RunTime:0.000091s ]
+[ 2013-04-28T13:07:17+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000758s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=53 AND status=1  [ RunTime:0.000128s ]
+[ 2013-04-28T13:07:17+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000786s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=54 AND status=1  [ RunTime:0.000093s ]
+[ 2013-04-28T13:07:17+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.001583s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=55 AND status=1  [ RunTime:0.000225s ]
+[ 2013-04-28T13:07:17+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000812s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=56 AND status=1  [ RunTime:0.002520s ]
+[ 2013-04-28T13:07:17+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000890s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=57 AND status=1  [ RunTime:0.000162s ]
+[ 2013-04-28T13:07:17+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.001333s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=58 AND status=1  [ RunTime:0.000260s ]
+[ 2013-04-28T13:07:17+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000814s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=59 AND status=1  [ RunTime:0.000180s ]
+[ 2013-04-28T13:07:17+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000942s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=60 AND status=1  [ RunTime:0.000654s ]
+[ 2013-04-28T13:07:17+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000933s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=61 AND status=1  [ RunTime:0.000528s ]
+[ 2013-04-28T13:07:17+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_article` [ RunTime:0.000990s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_article` WHERE status=1 ORDER BY apv DESC LIMIT 8   [ RunTime:0.000216s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_article` [ RunTime:0.001592s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_article` WHERE status=1 ORDER BY add_time DESC LIMIT 8   [ RunTime:0.000245s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_message` [ RunTime:0.000941s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_message` WHERE status=1 AND pid=0 AND aid=0 ORDER BY add_time DESC LIMIT 5   [ RunTime:0.000175s ]
+[ 2013-04-28T13:07:17+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 40 行.
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_message` [ RunTime:0.004436s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_message` WHERE status=1 AND pid=0 AND aid!=0 ORDER BY add_time DESC LIMIT 5   [ RunTime:0.000186s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_link` [ RunTime:0.000859s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_link` WHERE status=1 ORDER BY sort DESC LIMIT 8   [ RunTime:0.001430s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_diary` [ RunTime:0.001607s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_diary` WHERE status=1 ORDER BY add_time DESC LIMIT 5   [ RunTime:0.000162s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_article` [ RunTime:0.001830s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_article` WHERE status=1 ORDER BY sort DESC LIMIT 8   [ RunTime:0.000342s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SHOW COLUMNS FROM `ch_photo` [ RunTime:0.000978s ]
+[ 2013-04-28T13:07:17+08:00 ] SQL: SELECT * FROM `ch_photo` WHERE status=1  [ RunTime:0.000143s ]
+[ 2013-04-28T13:07:18+08:00 ] SQL: SHOW COLUMNS FROM `ch_photo` [ RunTime:0.001474s ]
+[ 2013-04-28T13:07:18+08:00 ] SQL: SELECT `id`,`img`,`title` FROM `ch_photo` WHERE status=1 and img!='' ORDER BY id desc LIMIT 10   [ RunTime:0.000120s ]
+[ 2013-04-28T13:07:19+08:00 ] SQL: SHOW COLUMNS FROM `ch_video` [ RunTime:0.000946s ]
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T13:07:19+08:00 ] SQL: SELECT * FROM `ch_video` WHERE ( `id` = 1 ) LIMIT 1   [ RunTime:0.000138s ]
+[ 2013-04-28T13:07:19+08:00 ] INFO: Tag[ view_template ] --START--
+[ 2013-04-28T13:07:19+08:00 ] INFO: Run LocationTemplate Behavior [ RunTime:0.110885s ]
+[ 2013-04-28T13:07:19+08:00 ] INFO: Tag[ view_template ] --END-- [ RunTime:0.110989s ]
+[ 2013-04-28T13:07:19+08:00 ] INFO: Tag[ view_parse ] --START--
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: link a1bd7ed7f2b77394a93d421be485691c.php 第 57 行.
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: intro a1bd7ed7f2b77394a93d421be485691c.php 第 58 行.
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T13:07:19+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.001097s ]
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T13:07:19+08:00 ] SQL: SELECT `title` FROM `ch_category` WHERE ( `id` = '2' ) LIMIT 1   [ RunTime:0.000127s ]
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T13:07:19+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000692s ]
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T13:07:19+08:00 ] SQL: SELECT `title` FROM `ch_category` WHERE ( `id` = '3' ) LIMIT 1   [ RunTime:0.000130s ]
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T13:07:19+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000671s ]
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T13:07:19+08:00 ] SQL: SELECT `title` FROM `ch_category` WHERE ( `id` = '2' ) LIMIT 1   [ RunTime:0.000109s ]
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T13:07:19+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.001200s ]
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T13:07:19+08:00 ] SQL: SELECT `title` FROM `ch_category` WHERE ( `id` = '5' ) LIMIT 1   [ RunTime:0.000143s ]
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T13:07:19+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000668s ]
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T13:07:19+08:00 ] SQL: SELECT `title` FROM `ch_category` WHERE ( `id` = '2' ) LIMIT 1   [ RunTime:0.000114s ]
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T13:07:19+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000725s ]
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T13:07:19+08:00 ] SQL: SELECT `title` FROM `ch_category` WHERE ( `id` = '2' ) LIMIT 1   [ RunTime:0.000125s ]
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T13:07:19+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000644s ]
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T13:07:19+08:00 ] SQL: SELECT `title` FROM `ch_category` WHERE ( `id` = '2' ) LIMIT 1   [ RunTime:0.000098s ]
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T13:07:19+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000603s ]
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T13:07:19+08:00 ] SQL: SELECT `title` FROM `ch_category` WHERE ( `id` = '2' ) LIMIT 1   [ RunTime:0.000113s ]
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined variable: keyword a1bd7ed7f2b77394a93d421be485691c.php 第 171 行.
+[ 2013-04-28T13:07:19+08:00 ] SQL: SHOW COLUMNS FROM `ch_article` [ RunTime:0.001285s ]
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T13:07:19+08:00 ] SQL: SELECT `title` FROM `ch_article` WHERE ( `id` = '1' ) LIMIT 1   [ RunTime:0.000173s ]
+[ 2013-04-28T13:07:19+08:00 ] SQL: SHOW COLUMNS FROM `ch_article` [ RunTime:0.000899s ]
+[ 2013-04-28T13:07:19+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T13:07:19+08:00 ] SQL: SELECT `title` FROM `ch_article` WHERE ( `id` = '1' ) LIMIT 1   [ RunTime:0.000110s ]
+[ 2013-04-28T13:07:19+08:00 ] INFO: Run ParseTemplate Behavior [ RunTime:0.290877s ]
+[ 2013-04-28T13:07:19+08:00 ] INFO: Tag[ view_parse ] --END-- [ RunTime:0.290937s ]
+[ 2013-04-28T13:07:19+08:00 ] INFO: Tag[ view_filter ] --START--
+[ 2013-04-28T13:07:19+08:00 ] INFO: Run ContentReplace Behavior [ RunTime:0.000425s ]
+[ 2013-04-28T13:07:19+08:00 ] INFO: Run TokenBuild Behavior [ RunTime:0.000283s ]
+[ 2013-04-28T13:07:19+08:00 ] INFO: Run WriteHtmlCache Behavior [ RunTime:0.000069s ]
+[ 2013-04-28T13:07:19+08:00 ] INFO: Run ShowRuntime Behavior [ RunTime:0.000200s ]
+[ 2013-04-28T13:07:19+08:00 ] INFO: Tag[ view_filter ] --END-- [ RunTime:0.001153s ]
+[ 2013-04-28T13:07:19+08:00 ] INFO: Tag[ view_end ] --START--
+[ 2013-04-28T13:07:19+08:00 ] INFO: Run ShowPageTrace Behavior [ RunTime:0.000085s ]
+[ 2013-04-28T13:07:19+08:00 ] INFO: Tag[ view_end ] --END-- [ RunTime:0.000159s ]
+
+------64.246.165.200 REQUEST_URI:/------
+
+------123.125.71.113 REQUEST_URI:/------
+[ 2013-04-28T16:19:47+08:00 ] NOTIC: [8] Undefined index: HTTP_X_REQUESTED_WITH App.class.php 第 50 行.
+[ 2013-04-28T16:19:47+08:00 ] INFO: Tag[ app_begin ] --START--
+[ 2013-04-28T16:19:48+08:00 ] INFO: Run ReadHtmlCache Behavior [ RunTime:0.680598s ]
+[ 2013-04-28T16:19:48+08:00 ] INFO: Tag[ app_begin ] --END-- [ RunTime:0.680736s ]
+[ 2013-04-28T16:19:52+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.381617s ]
+[ 2013-04-28T16:19:52+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=0 AND status=1 ORDER BY sort DESC  [ RunTime:0.000183s ]
+[ 2013-04-28T16:19:52+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.019216s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=1 AND status=1  [ RunTime:0.055880s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000880s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=4 AND status=1  [ RunTime:0.000130s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000806s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=7 AND status=1  [ RunTime:0.000115s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.009034s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=10 AND status=1  [ RunTime:0.000211s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.001736s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=14 AND status=1  [ RunTime:0.000132s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000891s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=51 AND status=1  [ RunTime:0.000145s ]
+[ 2013-04-28T16:19:53+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T16:19:53+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000872s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=52 AND status=1  [ RunTime:0.000142s ]
+[ 2013-04-28T16:19:53+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T16:19:53+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000708s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=53 AND status=1  [ RunTime:0.000149s ]
+[ 2013-04-28T16:19:53+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T16:19:53+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000645s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=54 AND status=1  [ RunTime:0.000139s ]
+[ 2013-04-28T16:19:53+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T16:19:53+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000713s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=55 AND status=1  [ RunTime:0.000104s ]
+[ 2013-04-28T16:19:53+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T16:19:53+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000725s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=56 AND status=1  [ RunTime:0.003941s ]
+[ 2013-04-28T16:19:53+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T16:19:53+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.001038s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=57 AND status=1  [ RunTime:0.000109s ]
+[ 2013-04-28T16:19:53+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T16:19:53+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000908s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=58 AND status=1  [ RunTime:0.000105s ]
+[ 2013-04-28T16:19:53+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T16:19:53+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000961s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=59 AND status=1  [ RunTime:0.000093s ]
+[ 2013-04-28T16:19:53+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T16:19:53+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000813s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=60 AND status=1  [ RunTime:0.000096s ]
+[ 2013-04-28T16:19:53+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T16:19:53+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.001589s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=61 AND status=1  [ RunTime:0.000183s ]
+[ 2013-04-28T16:19:53+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T16:19:53+08:00 ] SQL: SHOW COLUMNS FROM `ch_article` [ RunTime:0.001409s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT * FROM `ch_article` WHERE status=1 ORDER BY apv DESC LIMIT 8   [ RunTime:0.000575s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SHOW COLUMNS FROM `ch_article` [ RunTime:0.001124s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT * FROM `ch_article` WHERE status=1 ORDER BY add_time DESC LIMIT 8   [ RunTime:0.170067s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SHOW COLUMNS FROM `ch_message` [ RunTime:0.001876s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT * FROM `ch_message` WHERE status=1 AND pid=0 AND aid=0 ORDER BY add_time DESC LIMIT 5   [ RunTime:0.000204s ]
+[ 2013-04-28T16:19:53+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 40 行.
+[ 2013-04-28T16:19:53+08:00 ] SQL: SHOW COLUMNS FROM `ch_message` [ RunTime:0.000982s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT * FROM `ch_message` WHERE status=1 AND pid=0 AND aid!=0 ORDER BY add_time DESC LIMIT 5   [ RunTime:0.002962s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SHOW COLUMNS FROM `ch_link` [ RunTime:0.001042s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT * FROM `ch_link` WHERE status=1 ORDER BY sort DESC LIMIT 8   [ RunTime:0.000226s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SHOW COLUMNS FROM `ch_diary` [ RunTime:0.000939s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT * FROM `ch_diary` WHERE status=1 ORDER BY add_time DESC LIMIT 5   [ RunTime:0.000731s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SHOW COLUMNS FROM `ch_article` [ RunTime:0.001186s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT * FROM `ch_article` WHERE status=1 ORDER BY sort DESC LIMIT 8   [ RunTime:0.000158s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SHOW COLUMNS FROM `ch_photo` [ RunTime:0.003591s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT * FROM `ch_photo` WHERE status=1  [ RunTime:0.001507s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SHOW COLUMNS FROM `ch_photo` [ RunTime:0.001055s ]
+[ 2013-04-28T16:19:53+08:00 ] SQL: SELECT `id`,`img`,`title` FROM `ch_photo` WHERE status=1 and img!='' ORDER BY id desc LIMIT 10   [ RunTime:0.042276s ]
+[ 2013-04-28T16:19:54+08:00 ] SQL: SHOW COLUMNS FROM `ch_video` [ RunTime:0.028554s ]
+[ 2013-04-28T16:19:54+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T16:19:54+08:00 ] SQL: SELECT * FROM `ch_video` WHERE ( `id` = 1 ) LIMIT 1   [ RunTime:0.000125s ]
+[ 2013-04-28T16:19:54+08:00 ] INFO: Tag[ view_template ] --START--
+[ 2013-04-28T16:19:54+08:00 ] INFO: Run LocationTemplate Behavior [ RunTime:0.124354s ]
+[ 2013-04-28T16:19:54+08:00 ] INFO: Tag[ view_template ] --END-- [ RunTime:0.124496s ]
+[ 2013-04-28T16:19:54+08:00 ] INFO: Tag[ view_parse ] --START--
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: link a1bd7ed7f2b77394a93d421be485691c.php 第 57 行.
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: intro a1bd7ed7f2b77394a93d421be485691c.php 第 58 行.
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:57+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.049459s ]
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T16:19:57+08:00 ] SQL: SELECT `title` FROM `ch_category` WHERE ( `id` = '2' ) LIMIT 1   [ RunTime:0.000591s ]
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:57+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.001071s ]
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T16:19:57+08:00 ] SQL: SELECT `title` FROM `ch_category` WHERE ( `id` = '3' ) LIMIT 1   [ RunTime:0.006935s ]
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:57+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.001912s ]
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T16:19:57+08:00 ] SQL: SELECT `title` FROM `ch_category` WHERE ( `id` = '2' ) LIMIT 1   [ RunTime:0.000484s ]
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:57+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000963s ]
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T16:19:57+08:00 ] SQL: SELECT `title` FROM `ch_category` WHERE ( `id` = '5' ) LIMIT 1   [ RunTime:0.000155s ]
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:57+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.001463s ]
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T16:19:57+08:00 ] SQL: SELECT `title` FROM `ch_category` WHERE ( `id` = '2' ) LIMIT 1   [ RunTime:0.000566s ]
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:57+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.001393s ]
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T16:19:57+08:00 ] SQL: SELECT `title` FROM `ch_category` WHERE ( `id` = '2' ) LIMIT 1   [ RunTime:0.000356s ]
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:57+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.002324s ]
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T16:19:57+08:00 ] SQL: SELECT `title` FROM `ch_category` WHERE ( `id` = '2' ) LIMIT 1   [ RunTime:0.000233s ]
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:57+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.072236s ]
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T16:19:57+08:00 ] SQL: SELECT `title` FROM `ch_category` WHERE ( `id` = '2' ) LIMIT 1   [ RunTime:0.000163s ]
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined variable: keyword a1bd7ed7f2b77394a93d421be485691c.php 第 171 行.
+[ 2013-04-28T16:19:57+08:00 ] SQL: SHOW COLUMNS FROM `ch_article` [ RunTime:0.002269s ]
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T16:19:57+08:00 ] SQL: SELECT `title` FROM `ch_article` WHERE ( `id` = '1' ) LIMIT 1   [ RunTime:0.000403s ]
+[ 2013-04-28T16:19:57+08:00 ] SQL: SHOW COLUMNS FROM `ch_article` [ RunTime:0.083591s ]
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T16:19:57+08:00 ] SQL: SELECT `title` FROM `ch_article` WHERE ( `id` = '1' ) LIMIT 1   [ RunTime:0.000169s ]
+[ 2013-04-28T16:19:57+08:00 ] INFO: Run ParseTemplate Behavior [ RunTime:3.178529s ]
+[ 2013-04-28T16:19:57+08:00 ] INFO: Tag[ view_parse ] --END-- [ RunTime:3.178630s ]
+[ 2013-04-28T16:19:57+08:00 ] INFO: Tag[ view_filter ] --START--
+[ 2013-04-28T16:19:57+08:00 ] INFO: Run ContentReplace Behavior [ RunTime:0.000473s ]
+[ 2013-04-28T16:19:57+08:00 ] INFO: Run TokenBuild Behavior [ RunTime:0.000341s ]
+[ 2013-04-28T16:19:57+08:00 ] INFO: Run WriteHtmlCache Behavior [ RunTime:0.000080s ]
+[ 2013-04-28T16:19:57+08:00 ] INFO: Run ShowRuntime Behavior [ RunTime:0.000255s ]
+[ 2013-04-28T16:19:57+08:00 ] INFO: Tag[ view_filter ] --END-- [ RunTime:0.001323s ]
+[ 2013-04-28T16:19:57+08:00 ] INFO: Tag[ view_end ] --START--
+[ 2013-04-28T16:19:57+08:00 ] INFO: Run ShowPageTrace Behavior [ RunTime:0.000108s ]
+[ 2013-04-28T16:19:57+08:00 ] INFO: Tag[ view_end ] --END-- [ RunTime:0.000164s ]
+
+------123.125.71.113 REQUEST_URI:/------
+
+------220.181.108.157 REQUEST_URI:/------
+[ 2013-04-28T16:19:57+08:00 ] NOTIC: [8] Undefined index: HTTP_X_REQUESTED_WITH App.class.php 第 50 行.
+[ 2013-04-28T16:19:57+08:00 ] INFO: Tag[ app_begin ] --START--
+[ 2013-04-28T16:19:57+08:00 ] INFO: Run ReadHtmlCache Behavior [ RunTime:0.000160s ]
+[ 2013-04-28T16:19:57+08:00 ] INFO: Tag[ app_begin ] --END-- [ RunTime:0.000225s ]
+[ 2013-04-28T16:19:57+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.132990s ]
+[ 2013-04-28T16:19:57+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=0 AND status=1 ORDER BY sort DESC  [ RunTime:0.000219s ]
+[ 2013-04-28T16:19:57+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.002397s ]
+[ 2013-04-28T16:19:57+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=1 AND status=1  [ RunTime:0.001948s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.230594s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=4 AND status=1  [ RunTime:0.000234s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.003593s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=7 AND status=1  [ RunTime:0.000161s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.001016s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=10 AND status=1  [ RunTime:0.000267s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.001033s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=14 AND status=1  [ RunTime:0.000160s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000996s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=51 AND status=1  [ RunTime:0.001797s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.001082s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=52 AND status=1  [ RunTime:0.000190s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000985s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=53 AND status=1  [ RunTime:0.000251s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.001439s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=54 AND status=1  [ RunTime:0.000271s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.001060s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=55 AND status=1  [ RunTime:0.000137s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.001139s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=56 AND status=1  [ RunTime:0.003135s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.001089s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=57 AND status=1  [ RunTime:0.000187s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000857s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=58 AND status=1  [ RunTime:0.000173s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000766s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=59 AND status=1  [ RunTime:0.001645s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000808s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=60 AND status=1  [ RunTime:0.000159s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000741s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT * FROM `ch_category` WHERE pid=61 AND status=1  [ RunTime:0.000191s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 14 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_article` [ RunTime:0.000901s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT * FROM `ch_article` WHERE status=1 ORDER BY apv DESC LIMIT 8   [ RunTime:0.000177s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_article` [ RunTime:0.000942s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT * FROM `ch_article` WHERE status=1 ORDER BY add_time DESC LIMIT 8   [ RunTime:0.000225s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_message` [ RunTime:0.000741s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT * FROM `ch_message` WHERE status=1 AND pid=0 AND aid=0 ORDER BY add_time DESC LIMIT 5   [ RunTime:0.000146s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [2] Invalid argument supplied for foreach() CommonAction.class.php 第 40 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_message` [ RunTime:0.000773s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT * FROM `ch_message` WHERE status=1 AND pid=0 AND aid!=0 ORDER BY add_time DESC LIMIT 5   [ RunTime:0.000167s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_link` [ RunTime:0.000688s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT * FROM `ch_link` WHERE status=1 ORDER BY sort DESC LIMIT 8   [ RunTime:0.000144s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_diary` [ RunTime:0.000696s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT * FROM `ch_diary` WHERE status=1 ORDER BY add_time DESC LIMIT 5   [ RunTime:0.000222s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_article` [ RunTime:0.002809s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT * FROM `ch_article` WHERE status=1 ORDER BY sort DESC LIMIT 8   [ RunTime:0.000236s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_photo` [ RunTime:0.003180s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT * FROM `ch_photo` WHERE status=1  [ RunTime:0.000856s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_video` [ RunTime:0.001264s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT * FROM `ch_video` WHERE ( `id` = 1 ) LIMIT 1   [ RunTime:0.004077s ]
+[ 2013-04-28T16:19:58+08:00 ] INFO: Tag[ view_template ] --START--
+[ 2013-04-28T16:19:58+08:00 ] INFO: Run LocationTemplate Behavior [ RunTime:0.000143s ]
+[ 2013-04-28T16:19:58+08:00 ] INFO: Tag[ view_template ] --END-- [ RunTime:0.000200s ]
+[ 2013-04-28T16:19:58+08:00 ] INFO: Tag[ view_parse ] --START--
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: link a1bd7ed7f2b77394a93d421be485691c.php 第 57 行.
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: intro a1bd7ed7f2b77394a93d421be485691c.php 第 58 行.
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.003740s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT `title` FROM `ch_category` WHERE ( `id` = '2' ) LIMIT 1   [ RunTime:0.000151s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000908s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT `title` FROM `ch_category` WHERE ( `id` = '3' ) LIMIT 1   [ RunTime:0.000080s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000719s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT `title` FROM `ch_category` WHERE ( `id` = '2' ) LIMIT 1   [ RunTime:0.000079s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000827s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT `title` FROM `ch_category` WHERE ( `id` = '5' ) LIMIT 1   [ RunTime:0.000075s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.002699s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT `title` FROM `ch_category` WHERE ( `id` = '2' ) LIMIT 1   [ RunTime:0.000144s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000885s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT `title` FROM `ch_category` WHERE ( `id` = '2' ) LIMIT 1   [ RunTime:0.000085s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000815s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT `title` FROM `ch_category` WHERE ( `id` = '2' ) LIMIT 1   [ RunTime:0.000464s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_category` [ RunTime:0.000927s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: id common.php 第 65 行.
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT `title` FROM `ch_category` WHERE ( `id` = '2' ) LIMIT 1   [ RunTime:0.000459s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined variable: keyword a1bd7ed7f2b77394a93d421be485691c.php 第 171 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_article` [ RunTime:0.001192s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT `title` FROM `ch_article` WHERE ( `id` = '1' ) LIMIT 1   [ RunTime:0.000083s ]
+[ 2013-04-28T16:19:58+08:00 ] SQL: SHOW COLUMNS FROM `ch_article` [ RunTime:0.000910s ]
+[ 2013-04-28T16:19:58+08:00 ] NOTIC: [8] Undefined index: _type Model.class.php 第 690 行.
+[ 2013-04-28T16:19:58+08:00 ] SQL: SELECT `title` FROM `ch_article` WHERE ( `id` = '1' ) LIMIT 1   [ RunTime:0.001970s ]
+[ 2013-04-28T16:19:58+08:00 ] INFO: Run ParseTemplate Behavior [ RunTime:0.053662s ]
+[ 2013-04-28T16:19:58+08:00 ] INFO: Tag[ view_parse ] --END-- [ RunTime:0.053721s ]
+[ 2013-04-28T16:19:58+08:00 ] INFO: Tag[ view_filter ] --START--
+[ 2013-04-28T16:19:58+08:00 ] INFO: Run ContentReplace Behavior [ RunTime:0.000357s ]
+[ 2013-04-28T16:19:58+08:00 ] INFO: Run TokenBuild Behavior [ RunTime:0.000341s ]
+[ 2013-04-28T16:19:58+08:00 ] INFO: Run WriteHtmlCache Behavior [ RunTime:0.000099s ]
+[ 2013-04-28T16:19:58+08:00 ] INFO: Run ShowRuntime Behavior [ RunTime:0.000252s ]
+[ 2013-04-28T16:19:58+08:00 ] INFO: Tag[ view_filter ] --END-- [ RunTime:0.001233s ]
+[ 2013-04-28T16:19:58+08:00 ] INFO: Tag[ view_end ] --START--
+[ 2013-04-28T16:19:58+08:00 ] INFO: Run ShowPageTrace Behavior [ RunTime:0.000109s ]
+[ 2013-04-28T16:19:58+08:00 ] INFO: Tag[ view_end ] --END-- [ RunTime:0.000164s ]
+
+------220.181.108.157 REQUEST_URI:/------
+
