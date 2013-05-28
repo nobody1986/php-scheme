@@ -19,8 +19,8 @@ def removetags(value, tags):
     value = singletag_re.sub('', value)
     return value
 
-#db = SqliteDatabase('data.db')
-db = MySQLDatabase('12pir2',user='root',passwd='iamsnow')
+db = SqliteDatabase('data.db')
+#db = MySQLDatabase('12pir2',user='root',passwd='iamsnow')
 
 # create a base model class that our application's models will extend
 class BaseModel(Model):
@@ -86,7 +86,7 @@ CREATE TABLE `ch_article` (
         return self.save()    
 
     @staticmethod  
-    def getByTitle(self,title):
+    def getByTitle(title):
         return ch_article.select(fn.Count(ch_article.id).alias('count')).where(ch_article.title == title)
 
 
@@ -138,5 +138,8 @@ class ch_category(BaseModel):
         self.newstemplate = ''
         return self.save() 
     @staticmethod  
-    def getByName(self,name):
+    def getByName(name):
         return ch_category.select().where(ch_category.title == name)
+
+#ch_article.create_table()
+#ch_category.create_table()

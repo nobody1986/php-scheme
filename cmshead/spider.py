@@ -82,6 +82,7 @@ import move
 import time
 
 def cb(url,content):
+    print(url)
     if(not content):
         return
     u = urlparse.urlparse(url)
@@ -135,19 +136,11 @@ def cb(url,content):
             new_content = new_content.replace(img,new_img)
         
     new_content = clearLinks(u.netloc,new_content)
-    topic_dict = TOPIC_DICT.copy()
-    topic_dict['title'] = title
-    topic_dict['content'] = new_content
-    topic_dict['add'] = int(time.time())
-    topic_dict['author'] = "admin"
-    topic_dict['nodename'] = config[u.netloc]["cata"]
     node = move.ch_category.getByName(topic_dict['nodename'])
-    topic_dict['nodeid'] = str(node["id"])
-    
-    id = model.Topic.add(topic_dict)
+    id=art.newArticle(title,new_content,'',int(time.time()),node["id"])
     if(id):
         print(title)
-        model.Node.incr_count(topic_dict['nodeid'], 1)
+        #model.Node.incr_count(topic_dict['nodeid'], 1)
 
 def get_file_name(url):
     import hashlib
@@ -169,8 +162,10 @@ def get_and_store(img_url):
     if(response.getcode() != 200 or info.subtype not in ["jpg","JPG",'jpeg','JPEG',"png","PNG","gif","GIF"]):
         return False
     name = get_file_name(img_url)
-    filename = "/var/www/cmshead/images/" + name
-    open(filename,"wb+").write(content).close()
+    filename = "./images/" + name
+    fp = open(filename,"wb+")
+    fp.write(content)
+    fp.close()
     return "/images/" + name
     
 def clearLinks(domain,content):
