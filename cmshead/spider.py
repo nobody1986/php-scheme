@@ -3,6 +3,7 @@ import urllib2
 import re
 import urlparse
 import os
+import multiprocessing
 
 
 def findUrls(arg):
@@ -16,6 +17,7 @@ def findUrls(arg):
         lines = response.readlines()
     except:
         return ret
+    #print(len(lines))
     if(callback):
         callback(url,lines)
     p = url.rfind('/')
@@ -40,29 +42,37 @@ def findUrls(arg):
     return ret
 
 class Spider:
-    def __init__(self, url, level,callback = None):
+    def __init__(self, url, level,callback = False):
         self.url = url
         self.level = level
         self.urlpool = {}
+        #self.pool = multiprocessing.Pool(processes=1)
         self.callback = callback
         
     def walk(self):
-        url = (self.url,self.callback)
+        url = [(self.url,self.callback)]
         level = 0
-        #result = self.pool.apply_async(findUrls, [20]) 
+        #result = self.pool.apply_async(findUrls, [10]) 
         #result.get(timeout=1)  
-        #url = []
-        #gevent.spawn(findUrls,url)
-
+        # url = []
+        url_pd = urlparse.urlparse(self.url)
         while(level < self.level):
-            #print(findUrls)
-            ret = self.pool.map(findUrls, url)
+            ret = []
+            try:
+                #ret = self.pool.map(findUrls, url)
+                for u in url:
+                    ret.append(findUrls(u))
+            except :
+                pass
+            url = []
+            #print(ret)
             for x in ret:
                 for y in x:
-                    if(not self.urlpool.has_key(y)):
+                    t_url_pd = urlparse.urlparse(y)
+                    if(url_pd.netloc == t_url_pd.netloc and not self.urlpool.has_key(y)):
+                        #print(y)
                         url.append((y,self.callback))
                         self.urlpool[y] = True
-                        
             level  = level + 1
             
 def parseRuleFile(filename):
@@ -82,7 +92,7 @@ import move
 import time
 
 def cb(url,content):
-    print(url)
+    #print(url)
     if(not content):
         return
     u = urlparse.urlparse(url)
@@ -104,7 +114,8 @@ def cb(url,content):
     content_regs = content_search.regs
     content = content_raw[content_regs[1][0]:content_regs[1][1]]
     topic = move.ch_article.getByTitle(title)
-    if(topic):
+    print(topic)
+    if(topic > 0):
         return
     
     #增加图片处理
@@ -136,8 +147,9 @@ def cb(url,content):
             new_content = new_content.replace(img,new_img)
         
     new_content = clearLinks(u.netloc,new_content)
-    node = move.ch_category.getByName(topic_dict['nodename'])
-    id=art.newArticle(title,new_content,'',int(time.time()),node["id"])
+    node = move.ch_category.getByName(config[u.netloc]["cata"] )
+    art = move.ch_article()
+    id=art.newArticle(title,new_content,'',int(time.time()),1)
     if(id):
         print(title)
         #model.Node.incr_count(topic_dict['nodeid'], 1)

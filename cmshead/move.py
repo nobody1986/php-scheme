@@ -87,7 +87,7 @@ CREATE TABLE `ch_article` (
 
     @staticmethod  
     def getByTitle(title):
-        return ch_article.select(fn.Count(ch_article.id).alias('count')).where(ch_article.title == title)
+        return ch_article.select(fn.Count(ch_article.id).alias('count')).where(ch_article.title == title).count()
 
 
 '''
