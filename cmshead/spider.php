@@ -8,11 +8,12 @@ class Spider {
     protected $_urls_visit = array();
     protected $_db_connection = null;
 
-    const LEVEL = 2;
+    const LEVEL = 1;
 
     function __construct($config = 'spider.txt') {
         $this->_config = $config;
         $this->_db_connection = new PDO('sqlite:data.db');
+        #$this->_db_connection = new PDO('mysql:host=127.0.0.1;dbname=12pir2', 'root', 'iamsnow',array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES "UTF8"'));
     }
 
     function parseConfigFile() {
@@ -72,7 +73,9 @@ class Spider {
         $sql = 'SELECT * FROM ch_category where title=?';
         $stmt = $this->_db_connection->prepare($sql);
         $stmt->execute(array($name));
+//var_dump($stmt->errorInfo());
         $row = $stmt->fetch();
+var_dump($row);
         return $row;
     }
     
@@ -84,11 +87,16 @@ class Spider {
             $fields []= $k;
             $values []= $v;
         }
-        $this->_db_connection->beginTransaction();
+//        $this->_db_connection->beginTransaction();
         $sql = "{$sql} (".  implode(',', $fields).") values (".trim(str_repeat('?,', sizeof($fields)),',').")";
+        //echo $sql;
         $stmt = $this->_db_connection->prepare($sql);
-        $stmt->execute($values);
-        $this->_db_connection->commit();
+        $ret = $stmt->execute($values);
+//var_dump($ret);
+ //       $this->_db_connection->commit();
+   //     var_dump($this->_db_connection->errorInfo()); 
+//var_dump($stmt->errorCode());
+//var_dump($stmt->errorInfo());
         return $this->_db_connection->lastInsertId();
     }
 
@@ -103,7 +111,7 @@ class Spider {
                     }
                     $filename = md5($tmp_url) . substr($tmp['path'], strrpos($tmp['path'], '.'));
                     $img_content = $this->fetchurl($tmp_url);
-                    file_put_contents('pictures/' . $filename, $img_content);
+                    file_put_contents('./pictures/' . $filename, $img_content);
                     $content = str_replace($match[1], '/pictures/' . $filename, $content);
                 }
             }
@@ -111,7 +119,6 @@ class Spider {
         }
 
         function visit($url_main, $config) {
-            var_dump($config);
             $content = $this->fetchurl(urldecode($url_main));
             preg_match_all('#<a.+?href\s*=\s*["\'](.+?)["\']#i', $content, $matches, PREG_SET_ORDER);
             $baseurl_parsed = parse_url(urldecode($url_main));
@@ -120,7 +127,7 @@ class Spider {
                 foreach ($matches as $match) {
                     $url = $match[1];
                     $url_parsed = parse_url($url);
-                    if (!preg_match($config[2], $url)) {
+                    if (!preg_match('#'.$config[2].'#i', $url)) {
                         continue;
                     }
                     echo $url . "\n";
@@ -133,12 +140,12 @@ class Spider {
                     //
                     $getcontent = $this->fetchurl($url);
                     $article = str_replace("\n", " ", $getcontent);
-                    preg_match($config[3], $article, $titlearray);
+                    preg_match('#'.$config[3].'#i', $article, $titlearray);
                     $cat = $config[5];
                     $data = array();
                     $data['title'] = isset($titlearray[1]) ? $titlearray[1] : '';
                     //
-                    preg_match($config[4], $article, $code);
+                    preg_match('#'.$config[4].'#i', $article, $code);
                     if ($data['title'] == '' || !$code) {
                         continue;
                     }
@@ -156,9 +163,10 @@ class Spider {
                     }
 
                     $clearCode = $this->restoreImg($clearCode, $url_parsed);
+//var_dump($cat);
                     $cata = $this->getCataByName($cat);
                     $data['content'] = preg_replace('#<a[^>]+?href=[\'"]/.+?[\'"](>.+?)</a>#i', '$1', $clearCode);
-
+//var_dump($cata);
                     $data['add_time'] = time();
                     $data['update_time'] = time();
                     $data['description'] = strip_tags($data['content']);
@@ -168,6 +176,10 @@ class Spider {
                     $data['apv'] = 0;
                     $data['tid'] = $cata['id'];
                     $data['status'] = 1;
+                    $data['keywords'] = '';
+                    $data['img'] = '';
+                    $data['rewrite'] = '';
+                    $data['template'] = '';
 
                     $ret = $this->createArticle($data);
                     var_dump($ret);
