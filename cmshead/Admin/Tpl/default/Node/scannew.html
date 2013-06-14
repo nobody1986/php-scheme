@@ -1,0 +1,104 @@
+<div class="page">
+	<div class="layoutBox">
+    <empty name="apps">
+    <h2>没有发现可用的插件</h2>
+    <else/>
+	<form method="post" action="__URL__/installApp/navTabId/__MODULE__" class="pageForm required-validate" enctype="multipart/form-data" onsubmit="return iframeCallback(this, dialogAjaxDone)">
+		<input type="hidden" name="ajax" value="1">
+		<volist name="apps" id="app" offset="0" length="1"><input type="hidden" name="selectApp" value="{$app:ename}"></volist>
+		<div class="pageFormContent" layoutH="100">
+			<div class="unit">
+			<volist name="apps" id="app">
+				<a href="javascript:;" class="btn" onclick="showapp('{$app:ename}')">{$app:cname}</a>
+			</volist>
+			</div>
+			<volist name="apps" id="app">
+            <div class="applist" id="app_{$app:ename}"<if condition="$i gt 1"> style="display:none"</if>>
+                <div class="unit">
+                    <label>模型名：</label>
+                    <input name="ename" type="text" class="required" value="{$app:ename}" size="40" readonly="readonly">
+                    <span><?php echo $app['installed']==true ? ' 已安装' : ' <font color="blue">未安装</font>' ?></span>
+                </div>
+                <div class="unit">
+                    <label>模型中文名：</label>
+                    <input name="cname" type="text" class="required" value="{$app:cname}" size="40">
+                </div>
+                <div class="unit">
+                    <label>插件描述：</label>
+                    <textarea name="notes" rows="6" cols="75">{$app:notes}</textarea>
+                </div>
+				<div class="unit">
+                    <label>是否导入SQL：</label>
+                    <label><input type="checkbox" align="absbottom" name="import_sql" value="1"<?php echo $app['installed']!=true ? ' checked' : '' ?> />是</label>
+                    <span>自动备份原数据库到<a href="__ROOT__/data/bak/{$Think.config.DB_NAME}_from_node_no_{$app:ename|strtolower}.sql" target="_blank">__ROOT__/data/bak/{$Think.config.DB_NAME}_from_node_no_{$app:ename|strtolower}.sql</a></span>
+                </div>
+                <div class="unit">
+                    <label>属于大菜单：</label>
+                    <select name="menugroup">
+                    <volist name="Think.config.ADMIN_BMENU" id="val">
+                    <option value="{$key}" <eq name="app:menugroup" value="$key">selected</eq>>{$val}</option>
+                    </volist>
+                    </select>
+                </div>
+                <div class="unit">
+                    <label>排序：</label>
+                    <input name="sort" type="text" value="{$app:sort}" size="40">
+                </div>
+                <div class="unit">
+                    <label>开发作者：</label>
+                    <input name="author" type="text" value="{$app:author}" size="40" readonly="readonly">
+                </div>
+                <div class="unit">
+                    <label>版本：</label>
+                    <input name="version" type="text" value="{$app:version}" size="40" readonly="readonly">
+                </div>
+                <?php foreach($app->childmenus->children() as $obj){
+                	if($obj->ename){
+                	$k++;
+                ?>
+                <div style="background-color:<?php echo (($k+1) % 2 == 0) ? '#BFEBFF' : '#C4E1E1' ?>">
+                	 <div class="unit">
+                    <label>子模块名：</label>
+                    <input name="cm_ename[]" type="text" class="required" value="<?php echo $obj->ename ?>" size="40" readonly="readonly">
+                    </div>
+                    <div class="unit">
+                        <label>菜单显示名称：</label>
+                        <input name="cm_cname[]" type="text" class="required" value="<?php echo $obj->cname ?>" size="40">
+                    </div>
+                    <div class="unit">
+                        <label>属于大菜单：</label>
+                        <select name="cm_menugroup[]">
+                        <volist name="Think.config.ADMIN_BMENU" id="val">
+                        <option value="{$key}" <eq name="obj:menugroup" value="$key">selected</eq>>{$val}</option>
+                        </volist>
+                        </select>
+                    </div>
+                    <div class="unit">
+                        <label>排序：</label>
+                        <input name="cm_sort[]" type="text" value="<?php echo is_numeric($obj->sort) ? $obj->sort : 1 ?>" size="40">
+                    </div>
+                 </div>   
+                 <?php }
+                 }?>   
+                 <input type="hidden" name="db_prefix" value="{$app:db_prefix}">
+            </div>
+            </volist>
+		</div>
+        
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">安装此插件</button></div></div></li>
+				<li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+			</ul>
+		</div>
+	</form>
+    </empty>
+	</div>
+</div>
+<script language="javascript">
+function showapp(ename){
+	$('.applist').hide();
+	$('#app_'+ename).show();
+	$('input[name="selectApp"]').val(ename);
+}
+</script>

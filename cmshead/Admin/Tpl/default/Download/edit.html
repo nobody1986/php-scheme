@@ -1,0 +1,132 @@
+<div class="page">
+	<div class="layoutBox">
+	<form method="post" action="__URL__/update/navTabId/__MODULE__" class="pageForm required-validate" enctype="multipart/form-data" onsubmit="return iframeCallback(this,navTabAjaxDone);">
+		<input type="hidden" name="id" value="{$vo.id}" />
+		<input type="hidden" name="update_time" value="<?php echo time() ?>"/>
+        <input type="hidden" name="isb" id="isbInput" value="{$vo.isb}" />
+        <input type="hidden" name="isi" id="isiInput" value="{$vo.isi}" />
+        <input type="hidden" name="fieldarrs" value="attrtt,attrtj" />
+		<div class="pageFormContent" layoutH="10">
+
+			<div class="unit">
+				<label>软件标题：</label>
+				<input type="text" class="required" name="title" value="{$vo.title}" style="width:230px;color:{$vo.tcolor};font-weight:<?php echo $vo['isb'] ? 'bold' : 'normal' ?>;font-style:<?php echo $vo['isi'] ? 'italic' : 'normal' ?>;"/>
+                <dl>
+                <select name="tcolor" style="color:{$vo.tcolor};" onchange="var color=this.options[this.selectedIndex].value;$(this).css('color', color);$(this).parent().siblings('input').css('color', color);">
+					<option value="">A</option>
+					<option value="#FF0000" style="color:#F00"<if condition="$vo['tcolor'] eq '#FF0000'"> selected</if>>红</option>
+					<option value="#FF00FF" style="color:#F0F"<if condition="$vo['tcolor'] eq '#FF00FF'"> selected</if>>红</option>
+					<option value="#FF9900" style="color:#F90"<if condition="$vo['tcolor'] eq '#FF9900'"> selected</if>>橙</option>
+					<option value="#FFFF00" style="color:#FF0"<if condition="$vo['tcolor'] eq '#FFFF00'"> selected</if>>黄</option>
+					<option value="#6600CC" style="color:#60C"<if condition="$vo['tcolor'] eq '#6600CC'"> selected</if>>紫</option>
+					<option value="#0000FF" style="color:#00F"<if condition="$vo['tcolor'] eq '#0000FF'"> selected</if>>蓝</option>
+					<option value="#0066FF" style="color:#06F"<if condition="$vo['tcolor'] eq '#0066FF'"> selected</if>>蓝</option>
+					<option value="#006600" style="color:#060"<if condition="$vo['tcolor'] eq '#006600'"> selected</if>>绿</option>
+					<option value="#00FF00" style="color:#0F0"<if condition="$vo['tcolor'] eq '#00FF00'"> selected</if>>绿</option>
+				</select>&nbsp;&nbsp;
+                <a href="javascript:;" class="b" onclick="o=$(this).parent().siblings('input');if(o.css('font-weight')!='bold'&&o.css('font-weight')!='700') {o.css('font-weight','bold');$(this).parents('form').find('#isbInput').val(1);} else {o.css('font-weight','normal');$(this).parents('form').find('#isbInput').val(0);}">B</a>&nbsp;&nbsp;
+                <a href="javascript:;" class="i" onclick="o=$(this).parent().siblings('input');if(o.css('font-style')!='italic') {o.css('font-style','italic');$(this).parents('form').find('#isiInput').val(1);} else {o.css('font-style','normal');$(this).parents('form').find('#isiInput').val(0);}">I</a> 
+                </dl>
+			</div>
+			<div class="unit">
+				<label>头条属性：</label>
+                <dl><volist name=":ch2('attribute','where:attrtype="toutiao"')" id="sx">
+				<label><input type="checkbox" name="attrtt[]" value="{$sx.attrvalue}"<if condition="in_array($sx['attrvalue'], explode(',', $vo['attrtt']))"> checked</if> />{$sx.attrname}</label>
+                </volist></dl>
+			</div>
+			<div class="unit">
+				<label>推荐属性：</label>
+                <dl><volist name=":ch2('attribute','where:attrtype="tuijian"')" id="sx">
+				<label><input type="checkbox" name="attrtj[]" value="{$sx.attrvalue}"<if condition="in_array($sx['attrvalue'], explode(',', $vo['attrtj']))"> checked</if> />{$sx.attrname}</label>
+                </volist></dl>
+			</div>
+			<div class="unit">
+				<label>所属分类：</label>
+                <input type="text" class="required" size="40" readonly="readonly" id="categoryName_edit_download" name="categoryName" value="{$vo.tid|getCategoryName}"/>
+                <a class="unit btn" href="__APP__/Ui/tree/selparent/0/selmore/1/cid/tid_edit_download/cname/categoryName_edit_download" target="dialog" rel="tree" mask="true" title="选择分类" width="600" height="650">选择分类</a>
+                <input type="hidden" class="required" id="tid_edit_download" name="tid" value="{$vo.tid}" />
+                <input type="hidden" class="required" name="old_tid" value="{$vo.tid}" />
+			</div>
+			<div class="unit">
+				<label>外部网址：</label>
+				<input type="text" name="outurl" size="40" value="{$vo.outurl}"/>
+                <a class="unit btn" href="javascript:;" onclick="o=$(this).siblings('input');if(o.val()!='')window.open(o.val()); else o.focus();">查 看</a>
+			</div>
+			<div class="unit">
+				<label>关键字：</label>
+				<input type="text" name="keywords" size="40" value="{$vo.keywords}"/>
+                <a class="unit btn" href="javascript:;" onclick="setInputFromInput(this,1)">提 取</a>
+			</div>
+			<div class="unit">
+				<label>描述：</label>
+				<textarea name="description" style="width:230px;height:80px;">{$vo.description|htmlspecialchars}</textarea>
+                <a class="unit btn" href="javascript:;" onclick="setInputFromInput(this,2)">提 取</a>
+			</div>
+            <?php if($vo['img']!='' && !preg_match('/^\/(?!Public\/)|((https?|ftp):\/\/)/i',$vo['img'])){ ?>
+            <div class="unit">
+                <label>预览图片：</label>
+                <a href="{$vo.img|chimg=download}" target="_blank"><img src="{$vo.img|chimg=download,100,100}" height="40" border="0" /></a><input type="hidden" name="img" value="{$vo.img}" />
+                &nbsp;&nbsp;<a href="__URL__/delfile/id/{$vo.id}/field/img/navTabId/__MODULE__" target="ajaxTodo" title="你确定要删除图片吗？">删除图片</a>
+            </div>	
+            <?php }?>
+            <div class="unit">
+                <label>上传预览图片：</label>
+                <label><input type="file" name="img" /></label>
+				<span style="color:red">上传或外部必填一项</span>
+            </div>	
+            <div class="unit">
+                <label>外部预览图片：</label>
+                <input type="text" name="imgurl" id="imgurl" size="40" value="<?php echo preg_match('/^\/(?!Public\/)|((https?|ftp):\/\/)/i',$vo['img']) ? $vo['img'] : ''; ?>">
+            </div>            
+			<div class="unit">
+				<label>状态：</label>
+				<select name="status">
+					<option <eq name="vo.status" value="1" >selected</eq> value="1">启用</option>
+					<option <eq name="vo.status" value="0" >selected</eq> value="0">禁用</option>
+				</select>
+			</div>
+			<div class="unit">
+				<label>排序值：</label>
+				<input type="text" name="sort" size="40" value="{$vo.sort}"/>
+			</div>
+			<div class="unit">
+				<label>URL重写值：</label>
+				<input type="text" name="rewrite" size="40" value="{$vo.rewrite}"/>
+			</div>
+			<div class="unit">
+				<label>使用模板：</label>
+				<input type="text" name="template" id="template" size="40" value="{$vo.template}"/>
+                <a href="__APP__/Ui/seltpl/tplname/template" class="unit btn" target="dialog" rel="btn_tpl" mask="true" title="选择模板" width="600" height="800">选择模板</a>
+                <span>格式如：</span>
+                <select>
+                <option>直接选择模板</option>
+                <option>index2.html</option>
+                <option>index2.php</option>
+                <option>index2</option>
+                <option>Public:abc</option>
+                </select>
+			</div>					
+			<div class="unit">
+				<label>内容：</label>
+                <dl>
+				<label><input type="checkbox" name="remoteToLocal" value="1" checked />远程文件本地化</label>
+                </dl>
+			</div>
+			<div class="unit">
+				<textarea class="editor required" name="content" height="350" tools="full" pagetag upLinkUrl="__APP__/download/upload/" upImgUrl="__APP__/download/upload/" upFlashUrl="__APP__/download/upload/" upMediaUrl="__APP__/download/upload/">{$vo.content|htmlspecialchars}</textarea>
+			</div>
+			<div class="unit">
+				<label>软件版本：</label>
+				<input type="text" name="rjbb" size="40" value="{$vo.rjbb}" class="required">
+			</div>
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">提交</button></div></div></li>
+				<li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+			</ul>
+		</div>
+	</form>
+	
+	</div>
+</div>

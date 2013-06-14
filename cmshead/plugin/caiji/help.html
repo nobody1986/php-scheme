@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>CMSHead通用采集系统帮助</title>
+<style type="text/css">*{font-size:14px}</style>
+</head>
+
+<body>
+<table width="100%" border="0" align="center" cellpadding="4" cellspacing="1" bgcolor="#0080C0">
+  <tr style="color:#FFF; background-color:#00A9FB">
+    <th width="16%" height="26">项目</th>
+    <th width="54%">说明</th>
+    <th width="30%">用法示例</th>
+  </tr>
+  <tr>
+    <td height="26" align="center" bgcolor="#FFFFFF">入口页规则</td>
+    <td bgcolor="#FFFFFF">{p} - 表示分页的数字</td>
+    <td bgcolor="#FFFFFF">http://roll.news.sina.com.cn/news/index_{p}.shtml</td>
+  </tr>
+  <tr>
+    <td height="26" align="center" bgcolor="#FFFFFF">采集规则变量</td>
+    <td bgcolor="#FFFFFF">[变量] - 表示任意字符，非贪婪匹配<br />
+      [变量2] - 表示任意字符，贪婪匹配<br />    
+      [空白] - 表示任意空白字符 ，也可以直接打一个空格表示，贪婪匹配<br />
+      [取值] - 表示要取的值，非贪婪匹配，任意字符（只在字段采集赋值规则中使用）<br />
+      [取值2] - 同上，贪婪匹配（用在[取值2]后面还有[变量]等加上唯一标识时）<br />
+      [数字] - 表示任何数字，贪婪匹配<br />
+      [字符] - 表示英文下划线中划线，贪婪匹配<br />
+      [日期] - 表示中文或英文日期格式<br />
+      [日期时间] - 表示中文或英文日期和时间格式<br />
+      [时间] - 表示中文或英文时间格式</td>
+    <td bgcolor="#FFFFFF"><p>http://news.sina.com.cn/c/[日期]/[数字].shtml<br />
+      &lt;ul class=&quot;list_009&quot;&gt;[变量]&lt;/ul&gt;<br />
+      &lt;h1 id=&quot;artibodyTitle&quot;[变量]&gt;[取值]&lt;/h1&gt;<br />
+      <br />
+    支持变量加括号代替[取值]来准确取值，如：<br />
+    &lt;div class=&quot;operate&quot;&gt;[变量]([日期时间])[变量]&lt;/div&gt;</p></td>
+  </tr>
+  <tr>
+    <td height="26" align="center" bgcolor="#FFFFFF">字段过滤规则</td>
+    <td bgcolor="#FFFFFF">可填写标签名称如a|iframe，竖线分隔。html表示过滤html。<br />
+    也可以填写采集规则变量中除了[取值]以外的变量。</td>
+    <td bgcolor="#FFFFFF">a|iframe|script|object<br />
+      a|html|&lt;div id=&quot;page&quot;&gt;[变量]&lt;/div&gt;</td>
+  </tr>
+  <tr>
+    <td height="26" align="center" bgcolor="#FFFFFF">赋值规则</td>
+    <td bgcolor="#FFFFFF">直接赋值 - 如update_time的直接赋值为:add_time表示直接采用add_time字段的值</td>
+    <td bgcolor="#FFFFFF">:add_time 冒号字段名</td>
+  </tr>
+</table>
+</body>
+</html>

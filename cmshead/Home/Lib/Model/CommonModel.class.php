@@ -1,13 +1,8 @@
 <?php
 class CommonModel extends Model {
 	public function getPosition($id){
-		$type = D('Category')->where('status=1')->find($id);
-		if($type['pid']==0){
-			$position = $id;
-		}else{
-			$position = $type['pid'];
-		}
-		return $position;
+		$type = M('Category')->where('classstatus=1')->find($id);
+		return $type['classpid'] ? $type['classpid'] : $id;
 	}
     
 	/**
@@ -19,18 +14,16 @@ class CommonModel extends Model {
 	public function getCategoryMap($ids, $haveChild=1){
 		$map = array();
 		if(preg_match('/^\d+(,\d+)*$/', $ids)){			
-			$list = D('Category')->where('status=1')->field('id,pid')->where('id in ('.$ids.')')->select();
+			$list = M('Category')->where('classstatus=1')->field('classid,classchildids')->where('classid in ('.$ids.')')->select();
 				foreach($list as $rs){
-					$map['_string'] .= ' or find_in_set('.$rs['id'].', tid)';
-					if($haveChild && $rs['pid']==0){ //大栏目
-						$types = D('Category')->where('status=1 AND pid='.$rs['id'])->field('id')->select();
-						if(is_array($types)){
-							foreach($types as $val) $map['_string'] .= ' or find_in_set('.$val['id'].', tid)';					
-						}
+					if($haveChild){
+						foreach(explode(',',$rs['classchildids']) as $val) $map['_string'] .= ' or find_in_set('.$val.', tid)';
+					}else{
+						$map['_string'] .= ' or find_in_set('.$rs['classid'].', tid)';					
 					}
 				}
 		}
-		if(isset($map['_string'])) $map['_string'] = '('.ltrim($map['_string'], ' or ').')'; 
+		if(isset($map['_string'])) $map['_string'] = ltrim($map['_string'], ' or '); 
 		return $map;
-	}   
+	}    
 }

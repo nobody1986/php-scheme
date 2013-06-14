@@ -1,0 +1,89 @@
+<div class="page">
+	<div class="layoutBox">
+
+	<form method="post" action="__URL__/insert/navTabId/__MODULE__" class="pageForm required-validate"  enctype="multipart/form-data" onsubmit="return iframeCallback(this, dialogAjaxDone)">
+		<input type="hidden" name="add_time" value="<?php echo time() ?>"/>
+        <input type="hidden" name="isb" id="isbInput" value="0" />
+        <input type="hidden" name="isi" id="isiInput" value="0" />
+		<div class="pageFormContent" layoutH="100">
+            <div class="unit">
+				<label>图片名称：</label>
+				<input type="text" class="required" maxlength="120" name="title" id="title" style="width:230px;" />
+                <dl>
+                <select name="tcolor" onchange="var color=this.options[this.selectedIndex].value;$(this).css('color', color);$(this).parent().siblings('input').css('color', color);">
+					<option value="">A</option>
+					<option value="#FF0000" style="color:#F00">红</option>
+					<option value="#FF00FF" style="color:#F0F">红</option>
+					<option value="#FF9900" style="color:#F90">橙</option>
+					<option value="#FFFF00" style="color:#FF0">黄</option>
+					<option value="#6600CC" style="color:#60C">紫</option>
+					<option value="#0000FF" style="color:#00F">蓝</option>
+					<option value="#0066FF" style="color:#06F">蓝</option>
+					<option value="#006600" style="color:#060">绿</option>
+					<option value="#00FF00" style="color:#0F0">绿</option>
+				</select>&nbsp;&nbsp;
+                <a href="javascript:;" class="b" onclick="o=$(this).parent().siblings('input');if(o.css('font-weight')!='bold'&&o.css('font-weight')!='700') {o.css('font-weight','bold');$(this).parents('form').find('#isbInput').val(1);} else {o.css('font-weight','normal');$(this).parents('form').find('#isbInput').val(0);}">B</a>&nbsp;&nbsp;
+                <a href="javascript:;" class="i" onclick="o=$(this).parent().siblings('input');if(o.css('font-style')!='italic') {o.css('font-style','italic');$(this).parents('form').find('#isiInput').val(1);} else {o.css('font-style','normal');$(this).parents('form').find('#isiInput').val(0);}">I</a> 
+                </dl>
+			</div>		
+			<div class="unit">
+				<label>头条属性：</label>
+                <dl><volist name=":ch2('attribute','where:attrtype="toutiao"')" id="sx">
+				<label><input type="checkbox" name="attrtt[]" value="{$sx.attrvalue}" />{$sx.attrname}</label>
+                </volist></dl>
+			</div>
+			<div class="unit">
+				<label>推荐属性：</label>
+                <dl><volist name=":ch2('attribute','where:attrtype="tuijian"')" id="sx">
+				<label><input type="checkbox" name="attrtj[]" value="{$sx.attrvalue}" />{$sx.attrname}</label>
+                </volist></dl>
+			</div>
+            <div class="unit">
+                <label>所属分类：</label>
+                <input type="text" class="required" size="40" readonly="readonly" id="categoryName_add_photo" name="categoryName" value="{$Think.get.tid|getCategoryName}" />
+                <a class="unit btn" href="__APP__/Ui/tree/mod/__MODULE__/selparent/0/selmore/0/cid/tid_add_photo/cname/categoryName_add_photo" target="dialog" rel="tree" mask="true" title="选择分类" width="600" height="650">选择分类</a>
+                <input type="hidden" class="required" id="tid_add_photo" name="tid" value="{$Think.get.tid}" />
+            </div>
+			<div class="unit">
+				<label>外部网址：</label>
+				<input type="text" name="outurl" size="40" value="{$vo.outurl}"/>
+                <a class="unit btn" href="javascript:;" onclick="o=$(this).siblings('input');if(o.val()!='')window.open(o.val()); else o.focus();">查 看</a>
+			</div>
+            <div class="unit">
+                <label>上传图片：</label>
+                <input type="file" name="img" />
+            </div>
+			<div class="unit">
+				<label>外部图片：</label>
+				<input type="text" name="imgurl" size="40" id="imgurl" value="">
+			</div>
+            <div class="unit">
+                <label>链接地址：</label>
+                <input type="text" name="link" size="40" value="">
+            </div>
+			<div class="unit">
+				<label>图片简介：</label>
+				<textarea name="intro" style="width:230px;height:80px;"></textarea>
+			</div>
+            <div class="unit">
+                <label>排序值：</label>
+                <input type="text" name="sort" size="40" value="{$vo.sort}"/>
+            </div>
+            <div class="unit">
+                <label>状态：</label>
+                <select class="small bLeft"  name="status">
+                    <option value="1">启用</option>
+                    <option value="0">禁用</option>
+                </select>
+            </div>
+        </div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">提交</button></div></div></li>
+				<li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+			</ul>
+		</div>
+	</form>
+	
+	</div>
+</div>

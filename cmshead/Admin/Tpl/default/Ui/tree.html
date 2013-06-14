@@ -1,0 +1,34 @@
+{//选择栏目，可多选即一篇文章属于多个栏目没有主从之分，可以设置父级栏目是否能选择}
+<div class="page"><div class="layoutBox"><div layoutH="10">
+{$tree}
+</div></div></div>
+<if condition="$Think.request.link neq 'edit'">
+<script language="javascript">
+function selectClass(cid,cname){
+	var selmore = '{$Think.request.selmore}';
+	p=$.pdialog.findObj('#{$Think.request.cid}'), objcid=p.fobj;
+	p=$.pdialog.findObj('#{$Think.request.cname}'), objcname=p.fobj;
+	
+	if(objcid.length>0){
+		var v='',v1='';
+		if(selmore==1){	
+			if((","+objcid.val()+",").indexOf(","+cid+",")>-1){
+				v = (","+objcid.val()+",").replace(eval('/,'+cid+',|,'+cid+'|'+cid+',/g'),',');
+				v1 = (","+objcname.val()+",").replace(eval('/,'+cname+',|,'+cname+'|'+cname+',/g'),',');
+			}else{
+				v = objcid.val()+","+cid;
+				v1 = objcname.val()+","+cname;
+			}
+			v = v.replace(/^,|,$/g,'');
+			v1 = v1.replace(/^,|,$/g,'');
+		}else{
+			v = cid; 
+			v1 = cname;
+		}
+		objcid.val(v);
+		objcname.val(v1);
+	}
+	if(selmore==0) $.pdialog.closeCurrent();
+}
+</script>
+</if>

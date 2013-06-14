@@ -1,0 +1,72 @@
+<div class="page">
+	<div class="layoutBox">
+	<form method="post" action="__URL__/{$_GET['_URL_'][1]}/navTabId/__MODULE__" class="pageForm required-validate" onsubmit="return validateCallback(this,dialogAjaxDone);">
+		<input type="hidden" name="classid" value="{$classid}" class="required" />
+        <div class="pageFormContent" layoutH="70">
+			<div class="unit">
+				<label>包含之类：</label>
+				<label><input type="checkbox" name="haveChild" value="1" />是（需要包含所有下级栏目）</label>
+			</div>
+			<div class="unit">
+				<label>属性或信息操作：</label>
+                <select name="setURLType">
+                 <option value=""></option>
+                 <option value="1">设置URL重写值(分类中文名的拼音首字母)</option>
+                 <option value="2">设置URL重写值(分类中文名的拼音全拼)</option>
+                 <option value="3">去掉URL重写值</option>
+                 <option value="4">URL重写值转二级域名</option>
+                 <option value="5">去掉二级域名</option>
+                 <option value="6">去掉外部网址</option>
+                 <option value="10">清空栏目下所有信息</option>
+                </select>
+			</div>
+			<div class="unit">
+				<label>栏目页使用模板：</label>
+				<input type="text" name="classtemplate" id="classtemplate" size="40" value=""/>
+                <a href="__APP__/Ui/seltpl/tplname/classtemplate" class="unit btn" target="dialog" rel="btn_tpl" mask="true" title="选择模板" width="600" height="800">选择模板</a>
+                <a href="javascript:;" class="unit btn" onclick="$(this).siblings('input').val('NULL')">去掉模板</a>
+                <span>格式如：</span>
+                <select>
+                <option>直接选择模板</option>
+                <option>index2.html</option>
+                <option>index2.php</option>
+                <option>index2</option>
+                <option>Public:abc</option>
+                </select>
+			</div>
+			<div class="unit">
+				<label>内容页使用模板：</label>
+				<input type="text" name="newstemplate" id="newstemplate" size="40" value=""/>
+                <a href="__APP__/Ui/seltpl/tplname/newstemplate" class="unit btn" target="dialog" rel="btn_tpl" mask="true" title="选择模板" width="600" height="800">选择模板</a>
+                <a href="javascript:;" class="unit btn" onclick="$(this).siblings('input').val('NULL')">去掉模板</a>
+                <span>格式如：</span>
+                <select>
+                <option>直接选择模板</option>
+                <option>index2.html</option>
+                <option>index2.php</option>
+                <option>index2</option>
+                <option>Public:abc</option>
+                </select>
+			</div>
+
+			<div class="unit">
+				<label>关键字：</label>
+				<label><input type="text" size="30" name="skeywords" alt="查找字符可空可正则表达式" /></label>
+				<label><input type="text" size="50" name="rkeywords" alt="替换字符" /></label>
+			</div>
+			<div class="unit">
+				<label>描述：</label>
+				<label><input type="text" size="30" name="sdescription" alt="查找字符可空可正则表达式" /></label>
+				<label><input type="text" size="50" name="rdescription" alt="替换字符" /></label>
+			</div>
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">提交</button></div></div></li>
+				<li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+			</ul>
+		</div>
+	</form>
+	
+	</div>
+</div>

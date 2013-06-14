@@ -1,0 +1,25 @@
+    <include file="Public:right" />	
+
+	<div class="flink"><b>酷站链接：</b>
+	<volist name=":ch1('link','','8','links:3600')" id="vo">
+    	<a href="{$vo.url}" title="{$vo.intro}" target="_blank">{$vo.title}</a>
+    </volist>        
+    </div>
+        
+    <div class="footer">
+	<a href="javascript:;" onclick="this.style.behavior='url(#default#homepage)';this.setHomePage('{$Think.config.cmshead_url}');">设为首页</a> | 
+    <a href="javascript:window.external.addfavorite('{$Think.config.cmshead_url}','{$Think.config.SITE_NAME}');">加入收藏</a> | 
+    <a href="__ROOT__/rss.xml">RSS订阅</a> | 
+    <a href="__APP__/link">友情链接</a> | 
+    <a href="__APP__/message">留言反馈</a> | 
+    <a href="__ROOT__/admin.php">后台管理</a> | 
+    <a href="http://www.miitbeian.gov.cn/" target="_blank">{$Think.config.icp_num}</a> | 
+    <a href="http://www.cmshead.com" target="_blank">Powered By CMSHead V{$Think.config.cmshead_version}</a> | 
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fc9e324cb72550750149698654327fdb9' type='text/javascript'%3E%3C/script%3E"));
+</script>
+	</div>
+</div><!--main end-->
+</body>
+</html>

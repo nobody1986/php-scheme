@@ -1,0 +1,20 @@
+<include file="Public:header" />
+    <div class="wrap_left">
+        <volist name=":Sys::page($keytype, 'page:10')" id="vo">
+        {~$trueModule=$vo['module_name'] ? $vo['module_name'] : $keytype}
+        <div class="art_block">
+            <div class="art_left"></div>
+			<div class="art_center">
+                <div class="left"><empty name="vo.img"><img src="__PUBLIC__/images/noimg.jpg" /><else/><a href="{$vo.img|chimg=$trueModule}" target="_blank"><img src="{$vo.img|chimg=$trueModule,100,100}" border="0" /></a></empty></div>
+                <div class="right">
+                    <h1><a href="{$vo.url}" <empty name="vo.Theory_user.u_endtime">style="color:#00F"</empty>><eq name="vo.infotype" value="1"><img src="__PUBLIC__/images/ico1.gif" /></eq><?php echo setSearchKey($vo[trueMapField($trueModule,'title')], $keyword); ?></a></h1>
+                    <div>[<a href="{$vo.classurl}">{$vo.classtitle}</a>]  点击次数：{$vo.apv}次  发表时间：{$vo.add_time|date='Y-m-d H:i:s',###}</div>
+                    <p>{$vo['content']|setSearchKey=$keyword,130}</p>
+                </div>
+            </div>
+        </div>          
+        </volist><!--文档列表-->
+        <div class="clear"></div>
+        <div class="page">{:Sys::page()}</div>
+    </div>        
+<include file="Public:footer" />

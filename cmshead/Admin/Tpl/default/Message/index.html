@@ -1,0 +1,86 @@
+<div class="page">
+	<div class="layoutBox">
+        <div class="pageHeader">
+            <form id="pagerForm" onsubmit="return navTabSearch(this);" action="__URL__" method="post">
+            <input type="hidden" name="pageNum" value="1"/>
+            <input type="hidden" name="_search_likes" value="*"/><!--哪些字段是模糊查询，逗号分隔，*为所有-->
+            <div class="searchBar">
+                <ul class="searchContent">
+                    <li>
+                        <label>内容：</label>
+                        <input name="content" type="text" value="{$_REQUEST.content}" size="15"/>
+                    </li>
+                    <li>
+                        <label>父信息ID：</label>
+                        <input name="pid" type="text" value="{$_REQUEST.pid}" size="15"/>
+                    </li>
+                    <li>
+                        <label>被访问网址：</label>
+                        <input name="fromurl" type="text" value="{$_REQUEST.fromurl}" size="15"/>
+                    </li>
+					<li>
+                        <label>来源信息：</label>
+                        <input name="fromtitle" type="text" value="{$_REQUEST.fromtitle}" size="15"/>
+                    </li>
+                </ul>
+                <div class="subBar">
+                    <ul>
+                        <li><div class="buttonActive"><div class="buttonContent"><button type="submit">查询</button></div></div></li>
+                    </ul>
+                </div>
+            </div>
+            </form>
+        </div>
+		<div class="panelBar">
+			<ul class="toolBar">
+                <li><a class="delete" href="__URL__/foreverdelete/navTabId/__MODULE__" target="selectedTodo" posttype="string" rel="id" title="确实要删除这些记录吗？" warn="请至少选择一条记录"><span>删除</span></a></li>
+                <li class="line">line</li>
+				<li><a class="edit" href="__URL__/resume/navTabId/__MODULE__" target="selectedTodo" posttype="string" rel="id" mask="true" warn="请至少选择一条记录"><span>审核</span></a></li>
+				<li><a class="edit" href="__URL__/forbid/navTabId/__MODULE__" target="selectedTodo" posttype="string" rel="id" mask="true" warn="请至少选择一条记录"><span>禁用</span></a></li>
+			</ul>
+		</div>
+		<table class="list" width="100%" layoutH="100">
+			<thead>
+			<tr>
+				<th><input type="checkbox" group="id" class="checkboxCtrl"></th>
+				<th>编号</th>
+				<th>父信息ID</th>
+				<th>来源信息</th>
+				<th>内容</th>
+				<th>发表人昵称</th>
+				<th>邮箱</th>
+				<th>电话</th>
+				<th>发表时间</th>
+				<th>状态</th>
+				<th>操作</th>
+			</tr>
+			</thead>
+			<tbody>
+			<volist id="vo" name="list">
+				<tr target="sid_message" rel="{$vo['id']}">
+					<td><input type="checkbox" name="id" value="{$vo['id']}" /></td>
+					<td>{$vo['id']}</td>
+					<td>{$vo['pid']}</td>
+					<td><a href="__ROOT__{$vo['fromurl']|default='/message'}" title="{$vo.fromtitle|default='没有标题哦'}" target="_blank">{$vo.fromtitle|default='没有标题哦'|cutstr=15,1}</a></td>
+					<td title="{$vo['content']}">{$vo['content']|cutstr=20,1}</td>
+					<td>{$vo['adder_name']}</td>
+					<td>{$vo['adder_email']}</td>
+					<td>{$vo['tel']}</td>
+					<td>{$vo['add_time']|date='Y-m-d H:i:s',###}</td>
+					<td>{$vo['status']|getStatus}</td>
+					<td>{$vo['status']|showStatus=$vo['id']} <eq name="vo.pid" value="0">&nbsp;|&nbsp;<a class="add" href="__URL__/reply/id/{$vo.id}" target="dialog" width="590" height="180" mask="true"><span>回复</span></a></eq>&nbsp;|&nbsp;<a class="delete" href="__URL__/foreverdelete/id/{$vo['id']}/navTabId/__MODULE__" target="ajaxTodo" title="确实要删这条记录吗？"><span>删除</span></a>&nbsp;|&nbsp;<notempty name="vo.fromurl"><a href="__ROOT__{$vo['fromurl']}" target="_blank"><span>预览来源</span></a><else/><a href="__ROOT__/message" target="_blank"><span>留言页面</span></a></notempty></td>					
+				</tr>
+			</volist>
+			</tbody>
+		</table>
+		<div class="panelBar">
+			<div class="pages">
+				<span>共{$totalCount}条</span>
+			</div>
+			<div class="pagination" targetType="navTab" totalCount="{$totalCount}" numPerPage="{$numPerPage}" pageNumShown="10" currentPage="{$currentPage}"></div>
+		</div>
+
+	</div>
+	
+</div>
+

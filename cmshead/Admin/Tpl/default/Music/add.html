@@ -1,0 +1,58 @@
+<div class="page">
+	<div class="layoutBox">
+	
+	<form method="post" action="__URL__/insert/navTabId/__MODULE__" class="pageForm required-validate" enctype="multipart/form-data" onsubmit="return iframeCallback(this, dialogAjaxDone)">
+		<input type="hidden" name="adder_id" value="<?php echo $_SESSION[C('USER_AUTH_KEY')] ?>"/>
+		<input type="hidden" name="add_time" value="<?php echo time()?>"/>
+		<div class="pageFormContent" layoutH="100">
+            <div class="unit">
+				<label>音乐名：</label>
+				<input type="text" class="required" size="40" name="title" />
+			</div>
+            <div class="unit">
+                <label>所属分类：</label>
+                <input type="text" class="required" size="40" readonly="readonly" id="categoryName_add_music" name="categoryName" value="{$Think.get.tid|getCategoryName}" />
+                <a class="unit btn" href="__APP__/Ui/tree/mod/__MODULE__/selparent/0/selmore/0/cid/tid_add_music/cname/categoryName_add_music" target="dialog" rel="tree" mask="true" title="选择分类" width="600" height="650">选择分类</a>
+                <input type="hidden" class="required" id="tid_add_music" name="tid" value="{$Think.get.tid}" />
+            </div>
+			<div class="unit">
+				<label>作者：</label>
+				<input type="text" name="author" size="40"/>
+			</div>
+			<div class="unit">
+				<label>排序值：</label>
+				<input type="text" name="sort" size="40"/>
+			</div>
+			<div class="unit">
+				<label>状态：</label>
+				<select name="status">
+					<option value="1">启用</option>
+					<option value="0">禁用</option>
+				</select>
+			</div>			
+			<div class="unit">
+				<label>上传音乐：</label>
+				<input type="file" name="file" />
+			</div>
+			<div class="unit">
+				<label>外部音乐：</label>
+				<input type="text" name="fileurl" size="40"/>
+			</div>
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">提交</button></div></div></li>
+				<li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+			</ul>
+		</div>
+	</form>
+	
+	</div>
+</div>
+<script>
+$(document).ready(function(){
+	$('.music').click(function(){
+		$('#url').val($(this).attr('value'));
+	});	
+});
+</script>

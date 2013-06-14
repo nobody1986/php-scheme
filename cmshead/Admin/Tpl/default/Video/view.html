@@ -1,0 +1,26 @@
+<div class="page">
+	<volist name=":ch2('Video','where:id='.$id)" id="info">
+	<div class="layoutBox">
+       <empty name="info.file">
+        没有视频文件
+        <else/>
+        <if condition="preg_match('/\.(swf|flv)/i', $info.file)">
+            <if condition="false nheq stripos(str_ireplace(C('SITE_URL'),'',$info.file),'http')">
+                <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,29,0" width="570" height="360">
+                <param name="movie" value="__PUBLIC__/Plugin/Flvplayer/Flvplayer.swf">
+                <param name="quality" value="high">
+                <param name="wmode" value="transparent">
+                <param name="allowFullScreen" value="true" />
+                <param name="FlashVars" value="vcastr_file={$info.file|chimg='video'}&IsAutoPlay=0" />	
+                <embed src="__PUBLIC__/Plugin/Flvplayer/Flvplayer.swf" allowFullScreen="true" FlashVars="vcastr_file={$info.file|chimg='video'}&IsAutoPlay=0" quality="high" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash" width="570" height="360" wmode="transparent"></embed>
+                </object>
+            <else/>
+                <embed src="{$info.file}" allowFullScreen="true" quality="high" width="570" height="360" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash"></embed>
+            </if>
+        <else/>
+            <EMBED type="application/x-mplayer2" pluginspage="http://www.microsoft.com/Windows/Downloads/Contents/MediaPlayer/" width=570 height=360 src="{$info.file|chimg='video'}" autorewind="true" showdisplay="false" showstatusbar="true" showcontrols="true" autostart="true" filename="{$info.file|chimg='video'}"></EMBED>
+        </if>   
+       </empty>            	
+	</div>
+    </volist>
+</div>

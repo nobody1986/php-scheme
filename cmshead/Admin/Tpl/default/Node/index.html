@@ -1,0 +1,60 @@
+<form id="pagerForm" action="__URL__" method="post">
+	<input type="hidden" name="pageNum" value="1"/>
+</form>
+
+<div class="page">
+	<div class="layoutBox">
+        <notempty name="Think.request.pid">
+		<div class="panelBar">
+			<ul class="toolBar">
+				<eq name="Think.get.pid" value="1"><li><a class="add" href="__URL__/scannew" target="dialog" mask="true" width="700" height="600"><span>扫描新插件</span></a></li></eq>
+				<li><a class="add" href="__URL__/add/tid/{$Think.request.tid}" target="dialog" mask="true" width="590" height="420"><span>新增</span></a></li>
+				<li><a class="edit" href="__URL__/edit/id/{sid_node}" target="dialog" width="590" height="420" mask="true" warn="请选择一条记录"><span>修改</span></a></li>
+				<li><a class="delete" href="__URL__/foreverdelete/id/{sid_node}/navTabId/__MODULE__" target="ajaxTodo" calback="navTabAjaxMenu" title="你确定要删除吗？" warn="请选择一条记录"><span>删除</span></a></li>
+				<li><a class="add" href="__URL__/index/pid/{$Think.get.pid|getParentNodeId}/" target="navTab" rel="__MODULE__"><span>返回上层</span></a></li>
+			</ul>
+         </div>   
+        </notempty>
+
+
+		<table class="list" width="100%" layoutH="50">
+			<thead>
+			<tr>
+				<th>编号</th>
+				<th>名称</th>
+				<th>显示名</th>
+				<eq name="level" value="2"><th>分组</th></eq>				
+				<eq name="level" value="2"><th>模型</th></eq>
+				<th>排序</th>
+				<th>状态</th>
+				<th>操作</th>
+			</tr>
+			</thead>
+			<tbody>
+			<volist id="vo" name="list">
+            	<?php
+                	$child = M('Node')->where(array('pid'=>$vo['id']))->count();
+                    $isExists = in_array(C('DB_PREFIX').strtolower($vo['name']), $tables) || is_Model($vo['id'],0);
+                ?>
+				<tr target="sid_node" rel="{$vo['id']}">
+					<td>{$vo.id}</td>
+					<td><gt name="child" value="0"><a href="__URL__/index/pid/{$vo['id']}/" target="navTab" rel="__MODULE__">{$vo['name']}</a><else/>{$vo['name']}</gt></td>
+					<td>{$vo['title']}</td>
+					<eq name="level" value="2"><td>{$vo['group_id']|getNodeGroupName}</td></eq>
+					<eq name="level" value="2"><td>{$vo['id']|is_Model}</td></eq>
+					<td onclick="setSort('__URL__',this,{$vo['id']})" class="xingmu">{$vo['sort']}</td>
+					<td>{$vo['status']|getStatus}</td>
+					<td><notempty name="Think.request.pid"><a href="__URL__/edit/id/{$vo['id']}" target="dialog" mask="true" width="590" height="420">编辑</a>&nbsp;|&nbsp;{$vo['status']|showStatus=$vo['id'],'','navTabAjaxMenu'}<notempty name="vo.group_id">&nbsp;|&nbsp;<a href="__URL__/removeApp/id/{$vo['id']}" target="ajaxTodo" callback="navTabAjaxMenu" title="你确定要卸载（删除）此应用吗？">卸载</a><if condition="$isExists">&nbsp;|&nbsp;<a href="__URL__/chead/id/{$vo['id']}" target="navTab">代码自动完成</a></if></notempty></notempty></td>
+				</tr>
+			</volist>
+			</tbody>
+		</table>
+
+		<div class="panelBar">
+			<div class="pages">
+				<span>共{$totalCount}条</span>
+			</div>
+			<div class="pagination" targetType="navTab" totalCount="{$totalCount}" numPerPage="{$numPerPage}" pageNumShown="10" currentPage="{$currentPage}"></div>
+		</div>
+	</div>
+</div>

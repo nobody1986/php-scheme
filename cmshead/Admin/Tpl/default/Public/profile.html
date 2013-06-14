@@ -1,0 +1,33 @@
+<div class="page">
+	<div class="layoutBox">
+	
+	<form method="post" action="__URL__/change/navTabId/__MODULE__" class="pageForm required-validate" enctype="multipart/form-data" onsubmit="return iframeCallback(this, dialogAjaxDone)">
+		<input type="hidden" name="id" value="{$vo.id}">
+		<div class="pageFormContent" layoutH="100">
+		
+            <div class="unit">
+                <label>呢称：</label>
+                <input  name="nickname" type="text" class="required" value="{$vo.nickname}" size="40"/>
+            </div>
+            
+            <div class="unit">
+                <label>邮箱：</label>
+                <input  name="email" type="text" class="required email" value="{$vo.email}" size="40"/>
+            </div>
+            
+            <div class="unit">
+                <label>备注：</label>
+                <textarea class="required"  name="remark"  rows="5" cols="50" >{$vo.remark|htmlspecialchars}</textarea>
+            </div>
+		</div>
+        
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">提交</button></div></div></li>
+				<li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+			</ul>
+		</div>
+	</form>
+	
+	</div>
+</div>

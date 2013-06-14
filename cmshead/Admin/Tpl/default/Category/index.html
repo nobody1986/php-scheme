@@ -1,0 +1,109 @@
+<div class="page">
+	<div class="layoutBox">
+        <div class="pageHeader">
+            <form id="pagerForm" onsubmit="return navTabSearch(this);" action="__URL__" method="post">
+            <input type="hidden" name="pageNum" value="1"/>
+            <input type="hidden" name="_search_likes" value="*"/><!--哪些字段是模糊查询，逗号分隔，*为所有-->
+            <div class="searchBar">
+                <ul class="searchContent">
+                    <li>
+                        <label>父级分类：</label>
+                        <label>
+                        <input type="text" size="30" readonly="readonly" id="categoryName_index2" name="categoryName" value="<notempty name='Think.request.categoryName'>{$Think.request.categoryName}<else/>{$Think.request.tid|getCategoryName}</notempty>"/>
+                        <a class="unit btn" href="__APP__/Ui/tree/selparent/1/selmore/1/cid/pid_index2/cname/categoryName_index2/selroot/1" target="dialog" rel="tree" mask="true" title="选择分类" width="600" height="650">选择分类</a>
+                        <input type="hidden" id="pid_index2" name="classpid" value="{$Think.request.classpid}" />
+                        </label>
+                    </li>
+                    <li>
+                        <label>分类名：</label>
+                        <input name="classtitle" type="text" value="{$_REQUEST.classtitle}" size="30"/>
+                    </li>
+                    <li>
+                        <label>模型名：</label>
+                        <SELECT name="classmodule">
+                        <option value="">选择模型</option>
+                        <volist name="classmodule" id="vo">
+                            <option value="{$key}" <eq name="key" value="$_REQUEST.classmodule">selected</eq>>{$vo}</option>
+                        </volist>
+                        </SELECT>
+                    </li>
+                </ul>
+                <div class="subBar">
+                    <ul>
+                        <li><div class="buttonActive"><div class="buttonContent"><button type="submit">查询</button></div></div></li>
+                    </ul>
+                </div>
+            </div>
+            </form>
+        </div>
+	
+		<div class="panelBar">
+			<ul class="toolBar">
+				<li><a class="add" href="__URL__/add/tid/{$Think.request.tid}" target="dialog" width="700" height="550" mask="true"><span>新增</span></a></li>
+				<li><a class="edit" href="__URL__/edit/classid/{sid_category}" target="dialog"  width="700" height="550" mask="true" warn="请选择一条记录"><span>编辑</span></a></li>
+				<li><a class="delete" href="__URL__/foreverdelete/navTabId/__MODULE__" target="selectedTodo" posttype="string" rel="classid" title="确实要删除这些记录吗？" warn="请至少选择一条记录"><span>删除</span></a></li>
+				<li class="line">line</li>
+				<li><a class="add" href="__APP__/Ui/tree/selparent/1/selmore/0/link/edit" target="dialog" width="600" height="650" rel="tree"><span>树形结构显示</span></a> </li>				
+
+                <li class="line">line</li>
+				<li><a class="edit" href="__URL__/copy" target="selectedTodo" showType="dialog" posttype="string" rel="classid" width="500" height="240" mask="true" alt="复制栏目到某些栏目" warn="请至少选择一条记录"><span>复制</span></a></li>
+				<li><a class="edit" href="__URL__/move" target="selectedTodo" showType="dialog" posttype="string" rel="classid" width="500" height="180" mask="true" alt="移动栏目到某个栏目" warn="请至少选择一条记录"><span>移动</span></a></li>
+				<li><a class="edit" href="__URL__/merge" target="selectedTodo" showType="dialog" posttype="string" rel="classid" width="500" height="180" mask="true" alt="合并栏目到某个栏目" warn="请至少选择一条记录"><span>合并</span></a></li>
+                <li class="line">line</li>
+				<li><a class="edit" href="__URL__/attr" target="selectedTodo" showType="dialog" posttype="string" rel="classid" width="700" height="320" mask="true" alt="所选栏目设置字段属性包括替换" warn="请至少选择一条记录"><span>属性</span></a></li>
+
+                <notempty name="Think.request.classpid">
+                <li class="line">line</li>
+                <li><a class="edit" href="__URL__/index/classpid/{$Think.request.classpid|getParents=0}" target="navTab" rel="Category"><span>返回上级</span></a></li>
+                </notempty>			
+            </ul>
+		</div>
+        
+		<table class="list" width="100%" layoutH="100">
+			<thead>
+			<tr>
+				<th><input type="checkbox" group="classid" class="checkboxCtrl"></th>
+				<th>编号</th>
+				<th>分类名</th>
+				<th>所属父类</th>
+				<th>所属模型</th>
+				<th>预览图片</th>
+				<th>URL重写</th>
+				<th>分类模板</th>
+				<th>文章模板</th>
+				<th>排序值</th>
+				<th>状态</th>
+				<th>操作</th>
+			</tr>
+			</thead>
+			<tbody>
+			<volist id="vo" name="list">
+				<tr target="sid_category" rel="{$vo['classid']}">
+					<td><input type="checkbox" name="classid" value="{$vo['classid']}" /></td>
+					<td>{$vo['classid']}</td>
+					<td><empty name="vo.classchild">{$vo['classtitle']}<else/><a href="__URL__/index/classpid/{$vo['classid']}" target="navTab" rel="Category">{$vo['classtitle']}</a></empty></td>
+					<td>{$vo['classpid']|getCategoryName}</td>
+					<td>{$vo['classmodule']|getModuleName}</td>
+					<td><notempty name="vo.classimg"><a href="{$vo.classimg|chimg=category}" target="_blank"><img src="{$vo.classimg|chimg=category,100,100}" width="40" border="0" /></a></notempty></td>
+					<td>{$vo['classrewrite']}</td>
+					<td>{$vo['classtemplate']}</td>
+					<td>{$vo['newstemplate']}</td>
+					<td onclick="setSort('__URL__',this,{$vo['classid']})" class="xingmu">{$vo['classsort']}</td>
+					<td>{$vo['classstatus']|getStatus}</td>
+					<td><a class="edit" href="__URL__/edit/classid/{$vo['classid']}" target="dialog"  width="700" height="550" mask="true">编辑</a>&nbsp;|&nbsp;{$vo['classstatus']|showStatus=$vo['classid']}&nbsp;|&nbsp;<a class="delete" href="__URL__/foreverdelete/classid/{$vo['classid']}/navTabId/__MODULE__" target="ajaxTodo" title="确实要删这条记录吗？"><span>删除</span></a>&nbsp;|&nbsp;<a href="{$vo['classid']|chURL=MODULE_NAME}" target="_blank"><span>预览</span></a></td>
+				</tr>
+			</volist>
+			</tbody>
+		</table>
+        
+		<div class="panelBar">
+			<div class="pages">
+				<span>共{$totalCount}条</span>
+			</div>
+			<div class="pagination" targetType="navTab" totalCount="{$totalCount}" numPerPage="{$numPerPage}" pageNumShown="10" currentPage="{$currentPage}"></div>
+		</div>
+
+	</div>
+	
+</div>
+

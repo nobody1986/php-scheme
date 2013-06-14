@@ -1,0 +1,110 @@
+        <div class="wrap_right">
+            <div class="rbox4">
+                <div class="rbox4_top"></div>
+                <div class="rbox4_center">
+                	<div class="item_title">
+						<a href="javascript:;" onclick="show('hot_block')" style="font-weight:bolder">热门文章 </a> ｜ 
+						<a href="javascript:;" onclick="show('top_block')" style="color:#a1a1a1">最新文章</a>
+					</div>
+                   
+                    <div id="hot_block">
+                    <volist name=":ch2('order:2','limit:8','cache:hotNews:3600')" id="vo">                        	
+                        <div class="line">
+                            <div title="{$vo.title}"  class="nowrap">
+								<div class="hot_ico"></div>
+								<a href="{$vo.url}" title="{$vo.title}">{$vo.title|titlestyle=$vo['tcolor'],$vo['isb'],$vo['isi']}</a>
+							</div>
+                            <div style="color:#A1A1A1">浏览次数：{$vo.apv} 次</div>
+                        </div>
+                    </volist>
+                    </div><!--热门-->
+                   
+                    <div id="top_block" style="display:none">
+                    <volist name=":ch2('order:1','limit:8','cache:newNews:3600')" id="vo">                        	
+                        <div class="line">
+                            <div title="{$vo.title}" class="nowrap">
+								<div class="new_ico"></div>
+								<a href="{$vo.url}" title="{$vo.title}">{$vo.title|titlestyle=$vo['tcolor'],$vo['isb'],$vo['isi']}</a>
+							</div>
+                            <div style="color:#A1A1A1">浏览次数：{$vo.apv} 次</div>
+                        </div>
+                    </volist>
+                    </div><!--最新-->     
+                </div>
+                <div class="rbox4_bottom"></div>
+            </div><!--文章Tab-->
+            <div class="rbox4">
+                <div class="rbox4_top"></div>
+                <div class="rbox4_center">
+                     <div class="item_title"><b>站内搜索</b></div>
+                     <form name="searchForm" action="__APP__/Index/search/" method="post">
+                     <div style="border-top:1px solid #D8E6F8; width:234px; padding:10px 12px;">
+                         <div class="productsearchform">
+                            <select name="keytype" id="keytype" class="box" style="display:none; width:224px; height:22px;">
+                            <option value="article,video,test">选择搜索范围</option><!--这个是允许全站搜索的模块必须要有独立的详细页地址的，多个逗号分隔-->
+                            <?php
+                             $arr = ch2('model','field:ename,cname','order:id');
+                             foreach($arr as $v){
+                             	$fields .= ($fields ? ',' : '') . $v['ename'].':'.$v['cname'];
+                             }                            
+                             echo PrintOption($keytype, $fields);
+                             ?>
+                            </select>
+                            <script language="javascript">
+                            makeSelectBox('keytype','__PUBLIC__/Plugin/selectbox/');
+                            </script>
+                          </div>
+                     </div>
+                     <div class="search">                        
+                     	<input type="text" name="keyword" id="keyword" class="text" value="{$keyword}">
+                        <input type="submit" value="" class="btn">                        
+                    </div>
+                    </form>
+                </div>
+                <div class="rbox4_bottom"></div>
+            </div><!--站内搜索-->
+                                    
+            <div class="rbox4">
+                <div class="rbox4_top"></div>
+                <div class="rbox4_center">
+                    <div class="item_title">
+						<a href="javascript:;" onclick="show('mes_block')" style="font-weight:bolder">最新留言</a> ｜ 
+						<a href="javascript:;" onclick="show('com_block')" style="color:#a1a1a1">最新评论</a>
+					</div>
+                    
+                    <div id="mes_block">
+                    <volist name=":Sys::newmessage('ly')" id="vo">
+                        <div class="block" >   
+                            <div class="left"><img class="avatar" src="__PUBLIC__/Theme/Front/default/msg1.png"/></div>
+                            <div class="right" title="{$vo.content}">{$vo.adder_name} 说:<div class="nowrap">{$vo.content}</div></div>
+                        </div>
+                    </volist>
+                    </div><!--留言-->
+                    
+                    <div id="com_block" style="display:none">
+                    <volist name=":Sys::newmessage('pl')" id="vo">
+                        <div class="block" >   
+                            <div class="left"><img class="avatar" src="__PUBLIC__/Theme/Front/default/msg1.png"/></div>
+                            <div class="right">
+                            	<div class="nowrap">{$vo.adder_name}评论了<a href="__ROOT__{$vo.fromurl}" style="color:#F00" title="{$vo.fromtitle|default='没有标题哦'}" target="_blank">{$vo.fromtitle|default='没有标题哦'|cutstr=10,1}</a></div>
+                            	<div class="nowrap" title="{$vo.content}" >{$vo.content}</div>		
+                            </div>
+                        </div>
+                    </volist>
+                    </div> <!--评论-->                   
+                </div>
+                <div class="rbox4_bottom"></div>
+            </div><!--评论留言Tab-->
+        </div>
+        <script language="javascript">
+		function show(obj){
+			$('#'+obj).siblings("[class!=item_title]").css('display','none');
+			$('#'+obj).css('display','');
+		}
+		$(document).ready(function(){
+			$('.rbox4 .item_title a').click(function(){
+				$(this).css({color:"#3C99C9","font-weight":"bolder"});
+				$(this).siblings().css({color:"#a1a1a1","font-weight":"normal"});							   
+			});
+		});
+		</script>

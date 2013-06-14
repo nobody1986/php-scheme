@@ -1,5 +1,5 @@
-<?php
-// 链接模块
-class LinkAction extends CommonAction {
-	
+<?php
+// 链接模块
+class LinkAction extends CommonAction {
+	
 }

@@ -1,0 +1,30 @@
+<include file="Public:header" />
+    <div class="wrap_left">
+        <div class="rbox5">
+            <div class="rbox5_top"></div>
+            <div class="rbox5_center">
+            {~$cid = $App['vars']['id'] ? $App['vars']['id'] : $_GET['id']}
+            {~$childClassList = ch2('class','where:classpid='.safe($cid,'int'))}
+           	<notempty name="childClassList">
+            	<h2>
+                	<volist name="childClassList" id="vo">
+                    	<a href="{$vo.url}" style="margin-right:20px">{$vo.classtitle}</a>
+                    </volist>
+                </h2>
+             </notempty>   
+                
+                <volist name=":Sys::page('video','page:20')" id="vo">
+                    <div>
+                    	<table class="video_table">
+                    		<tr><td style="border-bottom:#FFF solid 1px; height:97px"><a href="{$vo.url}"><img src="{$vo.img|chimg=$vo['module_name'],128,84|default='__PUBLIC__/images/noimg.jpg'}" /></a></td></tr>
+                    		<tr><td align="center"><a href="{$vo.url}" style="display:block; height:20px; overflow:hidden">{$vo.title}</a></td></tr>
+                    	</table>
+                    </div>
+            	</volist>
+                <div class="clear"></div>
+                <div class="page">{:Sys::page()}</div>
+            </div>
+            <div class="rbox5_bottom"></div>            
+        </div><!--留言列表-->
+    </div>        
+<include file="Public:footer" />

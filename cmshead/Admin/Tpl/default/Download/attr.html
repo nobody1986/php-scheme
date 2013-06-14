@@ -1,0 +1,104 @@
+<div class="page">
+	<div class="layoutBox">
+	<form method="post" action="__URL__/{$_GET['_URL_'][1]}/navTabId/__MODULE__" class="pageForm required-validate" onsubmit="return validateCallback(this,dialogAjaxDone);">
+		<input type="hidden" name="id" value="{$id}" class="required" />
+        <div class="pageFormContent" layoutH="70">
+			<div class="unit">
+				<label>内容页使用模板：</label>
+				<input type="text" name="template" id="template" size="40" value=""/>
+                <a href="__APP__/Ui/seltpl/tplname/template" class="unit btn" target="dialog" rel="btn_tpl" mask="true" title="选择模板" width="600" height="800">选择模板</a>
+                <a href="javascript:;" class="unit btn" onclick="$(this).siblings('input').val('NULL')">去掉模板</a>
+                <span>格式如：</span>
+                <select>
+                <option>直接选择模板</option>
+                <option>index2.html</option>
+                <option>index2.php</option>
+                <option>index2</option>
+                <option>Public:abc</option>
+                </select>
+			</div>
+
+			<div class="unit">
+				<label>头条属性：</label>
+                <select name="attrttSet">
+                <option value="NULL">不设置</option>
+                <option value="0">去掉属性</option>
+                <option value="1">附加属性</option>
+                <option value="2">覆盖属性</option>
+                </select>
+                <dl><volist name=":ch2('attribute','where:attrtype="toutiao"')" id="sx">
+				<label><input type="checkbox" name="attrtt[]" value="{$sx.attrvalue}" />{$sx.attrname}</label>
+                </volist></dl>
+			</div>
+			<div class="unit">
+				<label>推荐属性：</label>
+                <select name="attrtjSet">
+                <option value="NULL">不设置</option>
+                <option value="0">去掉属性</option>
+                <option value="1">附加属性</option>
+                <option value="2">覆盖属性</option>
+                </select>
+                <dl><volist name=":ch2('attribute','where:attrtype="tuijian"')" id="sx">
+				<label><input type="checkbox" name="attrtj[]" value="{$sx.attrvalue}" />{$sx.attrname}</label>
+                </volist></dl>
+			</div>
+			<div class="unit">
+				<label>软件标题：</label>
+				<label><input type="text" name="stitle" alt="查找字符可空可正则表达式" /></label>
+				<label><input type="text" name="rtitle" alt="替换字符" /></label>
+                <dl>
+                <select name="tcolor" onchange="var color=this.options[this.selectedIndex].value;$(this).css('color', color=='NULL' ? '' : color);">
+					<option value="NULL">不设置</option>
+					<option value="">A</option>
+					<option value="#FF0000" style="color:#F00">红</option>
+					<option value="#FF00FF" style="color:#F0F">红</option>
+					<option value="#FF9900" style="color:#F90">橙</option>
+					<option value="#FFFF00" style="color:#FF0">黄</option>
+					<option value="#6600CC" style="color:#60C">紫</option>
+					<option value="#0000FF" style="color:#00F">蓝</option>
+					<option value="#0066FF" style="color:#06F">蓝</option>
+					<option value="#006600" style="color:#060">绿</option>
+					<option value="#00FF00" style="color:#0F0">绿</option>
+				</select>&nbsp;&nbsp;
+                <select name="isb">
+                <option value="NULL">不设置</option>
+                <option value="0">去掉加粗</option>
+                <option value="1">设为加粗</option>
+                </select>
+                <select name="isi">
+                <option value="NULL">不设置</option>
+                <option value="0">去掉斜体</option>
+                <option value="1">设为斜体</option>
+                </select>
+                </dl>
+			</div>
+			<div class="unit">
+				<label>关键字：</label>
+				<label><input type="text" size="30" name="skeywords" alt="查找字符可空可正则表达式" /></label>
+				<label><input type="text" size="50" name="rkeywords" alt="替换字符" /></label>
+			</div>
+			<div class="unit">
+				<label>描述：</label>
+				<label><input type="text" size="30" name="sdescription" alt="查找字符可空可正则表达式" /></label>
+				<label><input type="text" size="50" name="rdescription" alt="替换字符" /></label>
+			</div>
+			<div class="unit">
+				<label>内容：</label>
+				<label><input type="text" size="30" name="scontent" alt="查找字符可空可正则表达式" /></label>
+				<label><input type="text" size="50" name="rcontent" alt="替换字符" /></label>
+			</div>
+			<div class="unit">
+				<label>软件版本：</label>
+				<input type="text" name="rjbb" size="40" value="" class="required">
+			</div>
+		</div>
+		<div class="formBar">
+			<ul>
+				<li><div class="buttonActive"><div class="buttonContent"><button type="submit">提交</button></div></div></li>
+				<li><div class="button"><div class="buttonContent"><button type="button" class="close">取消</button></div></div></li>
+			</ul>
+		</div>
+	</form>
+	
+	</div>
+</div>
