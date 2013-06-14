@@ -3,21 +3,21 @@
 class LinkAction extends CommonAction {
 	//列表
 	public function index(){
-		$this->seo('友情链接列表');
+		$this->assign('list',D('Link')->where('status=1')->order('sort DESC')->select());
+		$this->seo('友情链接列表', C('SITE_KEYWORDS'), C('SITE_DESCRIPTION'), 0);
 		$this->display();
 	}
 	//申请链接
 	public function add(){
 		if($_SESSION['verify']!=md5($_POST['verify'])){
-			 echo '验证码错误，发表失败！';
+			 echo '<div class="pop">验证码错误，发表失败！</div>';
 			 return false;
 		}else{
-			unset($_SESSION['verify']);
-			$data = safe($_POST);
+			$data = $_POST;
 			if(D('Link')->add($data)){
-				echo '发表成功，请等待审核！'; 
+				echo '<div class="pop">发表成功，请等待审核！</div>'; 
 			}else{
-				echo '发表失败！';
+				echo '<div class="pop">发表失败！</div>';
 			}
 		}
 	}

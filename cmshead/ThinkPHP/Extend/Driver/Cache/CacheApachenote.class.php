@@ -2,56 +2,75 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2012 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2009 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
+// $Id: CacheApachenote.class.php 2504 2011-12-28 07:35:29Z liu21st $
 
-defined('THINK_PATH') or exit();
 /**
- * Apachenote缓存驱动
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver
+ +------------------------------------------------------------------------------
+ * Apachenote缓存类
+ +------------------------------------------------------------------------------
+ * @category   Think
+ * @package  Think
+ * @subpackage  Util
  * @author    liu21st <liu21st@gmail.com>
+ * @version   $Id: CacheApachenote.class.php 2504 2011-12-28 07:35:29Z liu21st $
+ +------------------------------------------------------------------------------
  */
 class CacheApachenote extends Cache {
 
     /**
+     +----------------------------------------------------------
      * 架构函数
-     * @param array $options 缓存参数
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      */
-    public function __construct($options=array()) {
-        if(!empty($options)) {
-            $this->options =  $options;
-        }
-        if(empty($options)) {
-            $options = array (
-                'host'        =>  '127.0.0.1',
-                'port'        =>  1042,
-                'timeout'     =>  10,
+    public function __construct($options='') {
+        if(empty($options)){
+            $options = array(
+                'host' => '127.0.0.1',
+                'port' => 1042,
+                'timeout' => 10,
+                'length'   =>0
             );
         }
-        $this->options  =   $options;
-        $this->options['prefix']    =   isset($options['prefix'])?  $options['prefix']  :   C('DATA_CACHE_PREFIX');
-        $this->options['length']    =   isset($options['length'])?  $options['length']  :   0;
         $this->handler = null;
         $this->open();
+        $this->options = $options;
     }
 
     /**
-     * 读取缓存
+     +----------------------------------------------------------
+     * 是否连接
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
+     * @return boolen
+     +----------------------------------------------------------
+     */
+    public function isConnected() {
+        return $this->connected;
+    }
+
+    /**
+     +----------------------------------------------------------
+     * 读取缓存
+     +----------------------------------------------------------
+     * @access public
+     +----------------------------------------------------------
      * @param string $name 缓存变量名
+     +----------------------------------------------------------
      * @return mixed
+     +----------------------------------------------------------
      */
      public function get($name) {
          $this->open();
-         $name  =   $this->options['prefix'].$name;
-         $s     =   'F' . pack('N', strlen($name)) . $name;
+         $s = 'F' . pack('N', strlen($name)) . $name;
          fwrite($this->handler, $s);
 
          for ($data = ''; !feof($this->handler);) {
@@ -63,18 +82,22 @@ class CacheApachenote extends Cache {
      }
 
     /**
+     +----------------------------------------------------------
      * 写入缓存
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      * @param string $name 缓存变量名
      * @param mixed $value  存储数据
+     +----------------------------------------------------------
      * @return boolen
+     +----------------------------------------------------------
      */
     public function set($name, $value) {
         N('cache_write',1);
         $this->open();
-        $value  =   serialize($value);
-        $name   =   $this->options['prefix'].$name;        
-        $s      =   'S' . pack('NN', strlen($name), strlen($value)) . $name . $value;
+        $value = serialize($value);
+        $s = 'S' . pack('NN', strlen($name), strlen($value)) . $name . $value;
 
         fwrite($this->handler, $s);
         $ret = fgets($this->handler);
@@ -90,24 +113,31 @@ class CacheApachenote extends Cache {
     }
 
     /**
+     +----------------------------------------------------------
      * 删除缓存
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      * @param string $name 缓存变量名
+     +----------------------------------------------------------
      * @return boolen
+     +----------------------------------------------------------
      */
      public function rm($name) {
-        $this->open();
-        $name   =   $this->options['prefix'].$name;         
-        $s      =   'D' . pack('N', strlen($name)) . $name;
-        fwrite($this->handler, $s);
-        $ret    = fgets($this->handler);
-        $this->close();
-        return $ret === "OK\n";
+         $this->open();
+         $s = 'D' . pack('N', strlen($name)) . $name;
+         fwrite($this->handler, $s);
+         $ret = fgets($this->handler);
+         $this->close();
+         return $ret === "OK\n";
      }
 
     /**
+     +----------------------------------------------------------
      * 关闭缓存
+     +----------------------------------------------------------
      * @access private
+     +----------------------------------------------------------
      */
      private function close() {
          fclose($this->handler);
@@ -115,12 +145,16 @@ class CacheApachenote extends Cache {
      }
 
     /**
+     +----------------------------------------------------------
      * 打开缓存
+     +----------------------------------------------------------
      * @access private
+     +----------------------------------------------------------
      */
      private function open() {
          if (!is_resource($this->handler)) {
              $this->handler = fsockopen($this->options['host'], $this->options['port'], $_, $_, $this->options['timeout']);
+             $this->connected = is_resource($this->handler);
          }
      }
 

@@ -7,13 +7,11 @@ $basedir = '.';
 $auto = 1;
 checkdir($basedir);
 function checkdir($basedir){
-if (false!=($dh = opendir($basedir))) {
+if ($dh = opendir($basedir)) {
   while (($file = readdir($dh)) !== false) {
    if ($file != '.' && $file != '..'){
     if (!is_dir($basedir."/".$file)) {
-    	if(preg_match('/\.(php|js|txt|shtml|shtm|html|htm|tpl|asp|aspx|jsp)$/i',$file)){
-    		echo "filename: $basedir/$file ".checkBOM("$basedir/$file")." <br>";
-    	}
+     echo "filename: $basedir/$file ".checkBOM("$basedir/$file")." <br>";
     }else{
      $dirname = $basedir."/".$file;
      checkdir($dirname);
@@ -33,7 +31,7 @@ if (ord($charset[1]) == 239 && ord($charset[2]) == 187 && ord($charset[3]) == 19
   if ($auto == 1) {
    $rest = substr($contents, 3);
    rewrite ($filename, $rest);
-   return ("<font color=red>BOM found, automatically removed.</font>");
+   return ("<font color=red>BOM found, automatically removed._<a href=http://www.k686.com>http://www.k686.com</a></font>");
   } else {
    return ("<font color=red>BOM found.</font>");
   }

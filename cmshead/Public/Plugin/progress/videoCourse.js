@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 此js为__PUBLIC__/Plugin/progress/videoPlayer.swf的配套js。flash播放器内部会自动调用这里的函数。
 **/
 var id=0,start=0,current=0,isRead=0,isalt=0;

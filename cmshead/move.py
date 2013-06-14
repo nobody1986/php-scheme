@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
+import model
+from config import *
+import filestore
 import time
 
 from peewee import *
 import hashlib
 import time
 import re
+import pymongo
 
 
 def removetags(value, tags):
@@ -19,8 +23,8 @@ def removetags(value, tags):
     value = singletag_re.sub('', value)
     return value
 
-db = SqliteDatabase('data.db')
-#db = MySQLDatabase('12pir2',user='root',passwd='iamsnow')
+#db = SqliteDatabase('data.db')
+db = MySQLDatabase('12pir2',user='root',passwd='iamsnow')
 
 # create a base model class that our application's models will extend
 class BaseModel(Model):
@@ -67,7 +71,7 @@ CREATE TABLE `ch_article` (
     template = CharField(max_length=50) # <-- VARCHAR
 
 
-    def newArticle(self,title,content,code,created,tid):
+    def newArticle(self,title,content,code,created,tid,img=''):
         self.tid = tid
         self.title = title.encode("utf-8")
         self.keywords = ''
@@ -81,13 +85,9 @@ CREATE TABLE `ch_article` (
         self.adder_id=1
         self.sort=0
         self.apv = 0
-        self.img=''
+        self.img=img
         self.template=''
         return self.save()    
-
-    @staticmethod  
-    def getByTitle(title):
-        return ch_article.select(fn.Count(ch_article.id).alias('count')).where(ch_article.title == title).count()
 
 
 '''
@@ -136,10 +136,19 @@ class ch_category(BaseModel):
         self.module='Article'
         self.rewrite = ''
         self.newstemplate = ''
+        return self.save()
+    
+    def getByTitle(self,title):
+        self.pid = 0
+        self.title = title.encode("utf-8")
+        self.keywords = ''
+        self.status = 1
+        self.description = ''
+        self.sort=0
+        self.template=''
+        self.module='Article'
+        self.rewrite = ''
+        self.newstemplate = ''
         return self.save() 
-    @staticmethod  
-    def getByName(name):
-        return ch_category.select().where(ch_category.title == name)
 
-#ch_article.create_table()
-#ch_category.create_table()
+

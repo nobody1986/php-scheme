@@ -24,6 +24,7 @@ class FileAction extends CommonAction {
 		$dir = new Dir($path);
 		$list = $dir->_values;
 		foreach ($list as $key => $val){
+			$list[$key]['filename'] = iconv('gbk', 'utf-8', $list[$key]['filename']);
 			$list[$key]['fileimg'] = $this->getFileImg($val);
 		}
 		$this->assign('list',$list);
@@ -91,18 +92,18 @@ class FileAction extends CommonAction {
 	}
 	//文件编辑
 	public function edit(){
-		if(isset($_POST['content'])){
+		if($_POST['content']){
 			$path = $_SESSION['path'].'/'.$_POST['filename'];
 			$data = $_POST['content'];
-			file_put_contents(iconv("utf-8", "gbk", $path), $data);
-			$this->success('编辑成功！');
+			file_put_contents($path, $data);
+			$this->success('编辑成功！');			
 		}else{
 			$filename = $_GET['filename'];
 			$path = $_SESSION['path'].'/'.$filename;
 			$content = file_get_contents($path);
+			mb_detect_encoding($content);
 			if(mb_detect_encoding($content)!='UTF-8') $content = iconv("gbk", "utf-8", $content);
 			$this->assign('content',$content);
-			$this->assign('filename',iconv("gbk", "utf-8", $path));
 			$this->display();
 		}
 	}
@@ -110,13 +111,24 @@ class FileAction extends CommonAction {
 	public function rename(){
 		if($_POST['newname']){
 			$path = $_SESSION['path'];
-			if(rename(iconv("utf-8", "gbk", $path.'/'.$_POST['oldname']), iconv("utf-8", "gbk", $path.'/'.$_POST['newname']))){
-				$this->success('文件重命名成功！');
+			if(rename($path.'/'.$_POST['oldname'], $path.'/'.$_POST['newname'])){
+				echo '<script type="text/javascript">
+					var response = {
+						"status":"1",
+						"info":"文件重命名成功！",
+						"navTabId":"File",
+						"forwardUrl":"'.__URL__ .'/index",
+						"callbackType":"closeCurrent"
+					};
+					if(window.parent.donecallback) {
+						 window.parent.donecallback(response);
+					}
+			    </script>';
 			}else{
 				$this->error('文件重命名失败！');
 			} 
 		}else{
-			$this->assign('filename',iconv("gbk", "utf-8", $_GET['filename']));
+			$this->assign('filename',$_GET['filename']);
 			$this->display();
 		}
 	}
@@ -125,14 +137,25 @@ class FileAction extends CommonAction {
 		if(!empty($_FILES['file']['name'])){
 			import("ORG.Net.UploadFile");
 			$upload = new UploadFile();
-			$upload->maxSize  = 1048576 * 100;
+			$upload->maxSize  = 1048576 * 3 ; 
+			$upload->allowExts  = array('jpg', 'gif', 'png', 'jpeg'); 
 			$upload->savePath =  $_SESSION['path'].'/';
-			$upload->saveRule = '';
-			$upload->uploadReplace = true;
+			$upload->saveRule = 'uniqid';			
 			if(!$upload->upload()) { 
 				$this->error('上传失败！');
 			}else{
-				$this->success('上传成功！');
+				echo '<script type="text/javascript">
+					var response = {
+						"status":"1",
+						"info":"上传成功！",
+						"navTabId":"File",
+						"forwardUrl":"'.__URL__ .'/index",
+						"callbackType":"closeCurrent"
+					};
+					if(window.parent.donecallback) {
+						 window.parent.donecallback(response);
+					}
+			    </script>';
 			}
 		}else{
 			$this->display();
@@ -140,7 +163,7 @@ class FileAction extends CommonAction {
 	}
 	//文件删除，不支持删除非空文件夹
 	public function foreverdelete(){
-		$filename = iconv("utf-8", "gbk", $_SESSION['path'].'/'.$_GET['filename']);
+		$filename = $_SESSION['path'].'/'.$_GET['filename'];
 		if($_GET['filetype']=='file'){
 			if(unlink($filename)) $this->success('文件删除成功！');else $this->error('文件删除失败！');
 		}elseif ($_GET['filetype']=='dir'){
@@ -152,22 +175,24 @@ class FileAction extends CommonAction {
 		if($_POST['newpath']){
 			$oldpath = $_POST['filename'];
 			$newpath = str_replace('//', '/', $_POST['newpath']);
-			//不能一样
-			if( strtolower($newpath) == strtolower($oldpath) ){
-				$this->error('两个目录不能一样！');
-			}
-			//不能跳出网站目录
-			if( false===stripos($newpath, $_SERVER['DOCUMENT_ROOT'].__ROOT__.'/') ){
-				$this->error('不能跳出网站目录！');
-			} 
-			
-			if(rename(iconv("utf-8", "gbk", $oldpath), iconv("utf-8", "gbk", $newpath))) {
-				$this->success('文件移动成功！');
+			if(rename($oldpath, $newpath)) {
+				echo '<script type="text/javascript">
+					var response = {
+						"status":"1",
+						"info":"文件移动成功！",
+						"navTabId":"File",
+						"forwardUrl":"'.__URL__ .'/index",
+						"callbackType":"closeCurrent"
+					};
+					if(window.parent.donecallback) {
+						 window.parent.donecallback(response);
+					}
+			    </script>';
 			}else {
 				$this->error('文件移动失败！');
 			}
 		}else{
-			$this->assign('filename',iconv("gbk", "utf-8", str_replace('//', '/', $_SESSION['path'].'/'.$_GET['filename'])));
+			$this->assign('filename',str_replace('//', '/', $_SESSION['path'].'/'.$_GET['filename']));
 			$this->display();
 		}
 	}

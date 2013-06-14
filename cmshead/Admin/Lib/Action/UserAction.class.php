@@ -68,10 +68,14 @@ class UserAction extends CommonAction {
         	$this->error('重置密码失败！');
         }
     }   
-     //删除时同时删除其他表
+ 
 	public function _before_foreverdelete() {
-		$pkValue = $_REQUEST['id'];		
-		$ids = is_array($pkValue) ? $pkValue : explode(',',$pkValue);
-		M('role_user')->where( array('user_id'=>array('in', $ids)) )->delete();
-	}    
+		if($_REQUEST['id']){
+			$id = is_array($_REQUEST['id']) ? implode(',',$_REQUEST['id']) :(preg_match('/^\d+(,\d+)*$/',$_REQUEST['id']) || is_numeric($_REQUEST['id']) ? $_REQUEST['id'] : 0);
+			if($id){
+				//删除部门-用户对应关系
+				D('Role_user')->where("user_id in ($id)")->delete();
+			}
+		}
+	}
 }

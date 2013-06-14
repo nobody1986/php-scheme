@@ -1,7 +1,7 @@
 <?php
 /*空类*/
 class EmptyAction extends Action {
-	//空模型
+	//空模块
 	public function index(){		
 		$this->redirect('index/index');
     }

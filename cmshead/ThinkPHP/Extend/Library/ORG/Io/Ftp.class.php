@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * 仿写CodeIgniter的FTP类 awen
  * FTP基本操作：

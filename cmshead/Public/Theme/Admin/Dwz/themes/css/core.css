@@ -207,9 +207,6 @@ a:hover {text-decoration:underline;}
 .tree .folder_expandable { background-position:0 0;}
 .tree .folder_collapsable { background-position:0 -50px;}
 .tree .file { background-position:0 -100px;}
-/**覆盖.file**/
-.tree .fadd { background:url("../fadd.gif") no-repeat}
-.tree .fadd:hover { background:url("../fadd.gif") 0 -24px no-repeat}
 
 .tree .unchecked { background-position:0 0;}
 .tree .hover .unchecked { background-position:0 -50px;}
@@ -433,10 +430,8 @@ body { overflow:hidden;}
 #footer {position:absolute; bottom:0; left:0; text-align:center; width:100%; height:21px; padding:0 5px;}
 
 #header .headerNav { height:50px; background-repeat:no-repeat; background-position:100% -50px;}
-#header .logo { float:left;margin-right:5px;}
-#header .logo a{ float:left; width:250px; height:50px; text-indent:-1000px;}
+#header .logo { float:left; width:250px; height:50px; text-indent:-1000px;}
 
-#header .right{float:right;}
 #header .nav { display:block; height:21px; position:absolute; top:8px; right:0; z-index:31;}
 #header .nav li { float:left; margin-left:-1px; padding:0 10px; line-height:11px; position:relative;}
 #header .nav li a { line-height:11px;}
@@ -469,15 +464,6 @@ body { overflow:hidden;}
 #sidebar_s .toggleCollapse div { width:21px; border:0; background-position:-2px -147px;}
 #sidebar_s .toggleCollapse div:hover { background-position:-2px -197px;}
 
-/* navMenu（顶部大菜单） */
-#navMenu { float:left; display:block; overflow:hidden; height:50px; background-repeat:repeat-x;}
-#navMenu ul { float:left; display:block; overflow:hidden; position:relative;}
-#navMenu li { float:left; position:relative; margin:0 1px;}
-#navMenu li a { float:left;text-decoration:none;}
-#navMenu li span { float:left; font-weight:bold; cursor:pointer; padding:0 15px;}
-#navMenu li a, #navMenu li span { line-height:50px; font-size:14px;}
-#navMenu li.selected {z-index:1;}
-
 /* Pages default */
 .page { display:block; overflow:hidden;float:left; width:100%;}
 .page .pageHeader { display:block; overflow:auto; margin-bottom:1px; padding:5px; border-style:solid; border-width:0 0 1px 0; position:relative;}
@@ -497,24 +483,11 @@ body { overflow:hidden;}
 .pageFormContent { display:block; overflow:auto; padding:10px 5px; position:relative;}
 .pageFormContent div { clear:both; display:block; overflow:hidden; height:auto;}
 .pageFormContent div.unit {display:block; _width:100%; margin:0; padding:5px 0; position:relative;}
-.pageFormContent div.unit label { float:left; min-width:100px; padding:0 5px; line-height:21px;}
-.pageFormContent div.unit label.radioButton { float:left; width:auto; padding:0 10px 0 0; line-height:21px;}
-
-/** 右边的容器 **/
-.pageFormContent div.unit input,.pageFormContent div.unit select,.pageFormContent div.unit textarea{float:left}
-.pageFormContent div.unit dl{padding:0;}
-.pageFormContent div.unit dl label{min-width:0;padding:0 2px 0 0;}
-.pageFormContent div.unit dl a.b{font-size:18px; font-weight:bold; font-family:Tahoma, Geneva, sans-serif;}
-.pageFormContent div.unit dl a.i{font-size:18px; font-weight:bold; font-family:Tahoma, Geneva, sans-serif; font-style:italic;}
-
-.pageFormContent div.unit ul{float:left; width:auto;}
-.pageFormContent div.unit ul li{ padding:2px 0;}
-.pageFormContent div.unit ul li:hover{color:#0080FF; font-weight:bold}
-.pageFormContent div.unit ul label{float:none; width:auto;padding:0;}
-
 .pageFormContent p { float:left; display:block; width:380px; height:21px; margin:0; padding:5px 0; position:relative;}
 .pageFormContent p.textareaBar { height:auto;}
 .pageFormContent .radioGroup { float:left; display:block; overflow:hidden;}
+.pageFormContent label { float:left; width:120px; padding:0 5px; line-height:21px;}
+.pageFormContent label.radioButton { float:left; width:auto; padding:0 10px 0 0; line-height:21px;}
 .pageFormContent .textInput { float:left;}
 .pageFormContent span { float:left; line-height:21px; padding-left:5px;}
 .pageFormContent select { float:left;}
@@ -526,8 +499,6 @@ body { overflow:hidden;}
 .pageForm .formBar ul { float:right;}
 .pageForm .formBar li { float:left; margin-left:5px;}
 .divider { clear:both; display:block; overflow:hidden; text-indent:-1000px; width:auto; height:1px; padding:4px 0 0 0; margin-bottom:5px; border-style:dotted; border-width:0 0 1px 0;}
-
-.layoutBox .header{clear:both; padding:0 10px; height:28px; line-height:30px; background-color:#E8EDF3; color:#6787AD; font-weight:bold;}
 
 /* Pages dialog */
 .dialog .pageHeader { border-style:solid; border-width:1px;}
@@ -587,8 +558,4 @@ h2.contentTitle{margin-bottom:10px; padding:0 10px; line-height:30px; font-size:
 
 /*awen add*/
 a.btn{background-color:#289FD2; color:#FFF;text-decoration:none; padding:4px; display:block; float:left; text-align:center; margin-left:2px;}
-a.btn:hover,a.btn:active{background-color:#F60;color:#FFF;}
-.Content{ background-color:#FFF} 
-.xingmu{background-color:#E1FFFF; font-style:italic}
-.success{color:#090; font-style:inherit}
-.err{color:#F00}
+a.btn:hover{background-color:#F60;color:#FFF;}

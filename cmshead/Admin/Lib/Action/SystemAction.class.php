@@ -13,17 +13,17 @@ class SystemAction extends CommonAction {
 			Dir::delDir($dir);
 		}
 		$this->success('清除成功！');
-	} 
+	}
 	//备份数据库
-	public function backdb($from=''){
+	public function backdb(){
 		import("Db");
-		$db =   DB::getInstance();
+		$db =   DB::getInstance();  
 		$tables = $db->getTables();
-		foreach ($tables as $tbname){
+		foreach ($tables as $tbname){  
 			//表结构
 			$tempsql.="DROP TABLE IF EXISTS `$tbname`;\n";
 			$struct=$db->query("show create table `$tbname`");
-			$tempsql.= $struct[0]['Create Table'].";\n";  
+			$tempsql.= $struct[0]['Create Table'].";\n\n";  
 			$sql='';
 			//数据
 			$coumt=$db->getFields($tbname);  
@@ -38,73 +38,29 @@ class SystemAction extends CommonAction {
 					$sql .="'".mysql_real_escape_string($v)."',";  
 				}  
 			$sql=substr($sql,0,-1);  
-			$sql .= ");\n";  
+			$sql .= ");\n\n";  
 			$tempsql.= $sql;  
 			$sql='';  
 			}   
-		}
-		if($from!=''){
-			$filename = C('DB_NAME').'_from_'.$from.'.sql';
-			$filepath = $_SERVER[DOCUMENT_ROOT].__ROOT__.'/data/bak/'.$filename;
-			return (false !== file_put_contents($filepath,$tempsql));
-		}else{		
-			$filename= C('DB_NAME').'_'.date('YmdHis').'.sql';			
-			$filepath = './data/bak/'.$filename;
-			$fp = fopen($filepath,'w');
-			if(fputs($fp,$tempsql) === false){
-				$this->error('备份数据失败！');
-			}else{
-				$filepath = $_SERVER[DOCUMENT_ROOT].__ROOT__.'/data/bak/'.$filename;
-				header("Content-type: application/octet-stream");  
-				header("Content-Length: ".filesize($filepath));  
-				header("Content-Disposition: attachment; filename=$filename");	
-				$fp = fopen($filepath, 'rb');
-				fpassthru($fp);  
-				fclose($fp); 
-				unlink($filepath);
-			}
+		}		
+		$filename= 'db-'.date('Y').'-'.date('m').'-'.date('d').'.sql';	
+		$filepath = './Public/Upload/download/'.$filename;
+		$fp = fopen($filepath,'w');         
+		if(fputs($fp,$tempsql) === false){
+			$this->error('备份数据失败！');
+		}else{
+			$filepath = $_SERVER[DOCUMENT_ROOT].__ROOT__.'/Public/Upload/download/'.$filename;
+			header("Content-type: application/octet-stream");  
+			header("Content-Length: ".filesize($filepath));  
+			header("Content-Disposition: attachment; filename=$filename");	
+			$fp = fopen($filepath, 'rb');  
+			fpassthru($fp);  
+			fclose($fp); 
+			unlink($filepath);
 		}
 	}
 	//执行SQL语句
-	public function querysql($fileOrSql='',$db_prefix=''){
-		//这里是其他地方调用
-		if($fileOrSql!=''){
-			if( is_file($fileOrSql) ){
-				$sql = @file_get_contents($fileOrSql);
-			}else{
-				$sql = $fileOrSql;
-			}
-			unset($fileOrSql);
-			if(!$sql) return false;
-	    	$sql = str_replace("\r", "\n",preg_replace('/(\/\*[\s\S]*?\*\/)|(--.*)|(#.*)/i','',$sql));	    	
-	    	//表前缀替换    	
-	    	if($db_prefix!='') $sql = preg_replace('/`'.$db_prefix.'(\w+)`/', '`'.C('DB_PREFIX')."\\1`", $sql);
-
-	    	$num = 0; $childtables = $dbquerys = array();
-			foreach(explode(";\n", trim($sql)) as $query){
-				$dbquerys[$num] = str_replace("\n", '', trim($query));
-				$num ++;
-			}
-			unset($sql);
-	    	import("Db");
-	    	$db = DB::getInstance();
-			$dbtables = array(); $db_tables = $db->query('show tables');
-	   		foreach($db_tables as $v){
-	   			$dbtables[] = str_replace(C('DB_PREFIX'),'',$v['Tables_in_'.C('DB_NAME')]);
-	   		}	
-	    	foreach($dbquerys as $query){
-				if($query){
-					if(substr($query, 0, 12) == 'CREATE TABLE'){
-						$table = preg_replace("/CREATE TABLE `(".C('DB_PREFIX').")([a-z0-9_]+)` .*/is", "\\2", $query);						
-						if( !in_array($table, $dbtables) ) $childtables[] = $table; //新表
-					}
-					$db->query($query);
-					//if(false===$db->query($query)) return false;
-				}
-			}
-			return $childtables ? $childtables : true;
-		}
-		//下面是后台页面触发
+	public function querysql(){
 		if($_POST){
 			import("Db");
 			$db = DB::getInstance();  
@@ -112,8 +68,12 @@ class SystemAction extends CommonAction {
 			if(!$sql) $this->error('没有需要执行的SQL语句！');
 			$sql = str_replace("\r", "\n",$sql);
 			foreach(explode(";\n", trim($sql)) as $query){
-				$query = str_replace("\n", '', trim($query));
-				if(false===$db->query($query)){					
+				$queries = explode("\n", trim($query));
+				$sq = "";
+				foreach($queries as $query){
+					$sq .= $query;
+				}
+				if(false===$db->query($sq)){					
 					$this->error('执行出错，中止执行！');
 					break;					
 				} 

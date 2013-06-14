@@ -1,124 +1,124 @@
-<include file="Public:header" />
-    <div class="wrap_left">
-        <div class="rbox5">
-            <div class="rbox5_top"></div>
-            <div class="rbox5_center">					
-            <link rel="stylesheet" type="text/css" media="screen" href="__PUBLIC__/Plugin/Jplayer/mplayer.css"/><!--音乐播放CSS--> 
-            
-            <div id="mp_container">
-                <div id="jquery_jplayer"></div> 
-                <div id="player_title">
-                    <h1>
-                    <volist name="types" id="vo">
-                        <span><a href="{$vo.url}">{$vo.title}</a></span>
-                    </volist>
-                    </h1>
-                </div>
-                <div id="playlist_list"> 
-                    <div class="playlist_main">
-                        <div class="playlist_wrap" >
-                            <div class="playlist_cc">
-                            <ul class="playlist_content" > 
-                                <volist name="list" id="vo">
-                                <li class="player" jplayer="{$vo.url}" songer="{$vo.author}" ablum="{$vo.title}" songimg="">		
-                                    <a href="#" class="controllink" ></a>
-                                    <p>{$vo.title}</p>
-                                    <span style=" position:absolute; left:350px; top:5px">{$vo.author}</span>
-                                    <span style=" position:absolute; left:450px; top:5px">{$vo.tid|getCategoryName}</span>
-                                    <span style=" position:absolute; left:550px; top:5px">{$vo.adder_id|getUserName}</span>
-                                </li>
-                                </volist>
-                            </ul>
-                            </div> 
-                        </div>
-                    </div> 
-                    <div class="playlist_footer_content">
-                        <ul class="playlist_footer">
-                            <li class="list_play_zhi"><a href="#">直接播放</a></li>
-                            <li class="list_up_one"><a href="#">上一首</a></li>
-                            <li class="list_up"><a href="#">上 翻</a></li>
-                            <li class="list_down"><a href="#">下 翻</a></li>
-                            <li class="list_down_one"><a href="#">下一首</a></li>
-                            <li class="list_ramdom"><a href="#">随便听听</a></li>
-                        </ul>
-                    </div>
-                </div> 
-            </div>
-            <script language="javascript">
-            var ROOT='__ROOT__'; 
-            </script>
-            <script type="text/javascript" src="__PUBLIC__/Plugin/Jplayer/mplayer.js"></script><!--音乐播放JS-->	
-            </div>
-            <div class="rbox5_bottom"></div>            
-        </div><!--音乐播放块-->
-        
-        <div class="rbox5">
-            <div class="rbox5_top"></div>
-            <div class="rbox5_center">
-                <h2>我要推荐</h2>
-                <div id="postTemp"></div>
-				<div id="ajaxContent"></div>
-                <div class="sub_form">
-                        <div>
-                            <select name="tid" id="tid"><volist name="types" id="vo"><option value="{$vo.id}">{$vo.title}</option></volist></select>
-                            <label>音乐类型</label>
-                        </div>
-                        <div>
-                            <input type="text" name="title" id="title" class="long" />
-                            <label class="required">音乐名（必须）</label>
-                        </div>
-                        <div>
-                            <input type="text" name="author" id="author" class="long" />
-                            <label class="required">作者（必须）</label>
-                        </div>
-                        <div><input type="text" name="url" id="url" class="long" />
-                            <label class="required">链接地址（必须）</label>
-                        </div>
-                        <div>
-                            <table><tr><td>
-                            <img src="__APP__/common/verify" alt="点击刷新验证码" id="verifyImg" class="code" onclick="this.src+='?' + Math.random();" /></td><td>
-                            <input type="text" name="verify" id="verify" class="short" maxlength="4" />
-                            <label class="required">验证码（必须）</label></td></tr></table>
-                        </div>
-                        <div>
-                            <input type="button" class="button" value="" onclick="return chksub()" />
-                        </div>                            
-                	</div>
-                </div>
-            <div class="rbox5_bottom"></div>            
-        </div><!--音乐推荐-->
-        <script>
-		function chksub(){		    
-		    if($("#title").val() == ''){
-		        alert('请输入音乐名！');
-		        $("#title").focus();
-		        return false;
-		    }
-		    if($("#url").val() == ''){
-		        alert('请输入音乐链接地址！');
-		        $("#url").focus();
-		        return false;
-		    }
-		    if($("#verify").val() == ''){
-		        alert('请输入验证码！');
-		        $("#verify").focus();
-		        return false;
-		    }
-		    postData();
-		}
-		
-		//提交链接
-		function postData(){
-			$("#postTemp").html('<div class="pop">正在发表，请稍等。。。</div>');
-			$.post("__URL__/add", {"verify":$("#verify").val(),"title":$("#title").val(),"author":$("#author").val(),"url":$("#url").val(),"tid":$("#tid").val()}, function(msg) {
-				$("#postTemp").html(msg);
-				$("#verify").val('');
-				$("#title").val('');
-				$("#url").val('');
-				$("#verifyImg").attr("src",function(){this.src+='?'+Math.random();});
-				$(".pop").fadeOut(3000);
-			});
-		}
-        </script>
-	</div>
-<include file="Public:footer" />
+<include file="Public:header" />
+    <div class="wrap_left">
+        <div class="rbox5">
+            <div class="rbox5_top"></div>
+            <div class="rbox5_center">					
+            <link rel="stylesheet" type="text/css" media="screen" href="__PUBLIC__/Plugin/Jplayer/mplayer.css"/><!--音乐播放CSS--> 
+            
+            <div id="mp_container">
+                <div id="jquery_jplayer"></div> 
+                <div id="player_title">
+                    <h1>
+                    <volist name="types" id="vo">
+                        <span><a href="{$vo.url}">{$vo.title}</a></span>
+                    </volist>
+                    </h1>
+                </div>
+                <div id="playlist_list"> 
+                    <div class="playlist_main">
+                        <div class="playlist_wrap" >
+                            <div class="playlist_cc">
+                            <ul class="playlist_content" > 
+                                <volist name="list" id="vo">
+                                <li class="player" jplayer="{$vo.url}" songer="{$vo.author}" ablum="{$vo.title}" songimg="">		
+                                    <a href="#" class="controllink" ></a>
+                                    <p>{$vo.title}</p>
+                                    <span style=" position:absolute; left:350px; top:5px">{$vo.author}</span>
+                                    <span style=" position:absolute; left:450px; top:5px">{$vo.tid|getCategoryName}</span>
+                                    <span style=" position:absolute; left:550px; top:5px">{$vo.adder_id|getUserName}</span>
+                                </li>
+                                </volist>
+                            </ul>
+                            </div> 
+                        </div>
+                    </div> 
+                    <div class="playlist_footer_content">
+                        <ul class="playlist_footer">
+                            <li class="list_play_zhi"><a href="#">直接播放</a></li>
+                            <li class="list_up_one"><a href="#">上一首</a></li>
+                            <li class="list_up"><a href="#">上 翻</a></li>
+                            <li class="list_down"><a href="#">下 翻</a></li>
+                            <li class="list_down_one"><a href="#">下一首</a></li>
+                            <li class="list_ramdom"><a href="#">随便听听</a></li>
+                        </ul>
+                    </div>
+                </div> 
+            </div>
+            <script language="javascript">
+            var ROOT='__ROOT__'; 
+            </script>
+            <script type="text/javascript" src="__PUBLIC__/Plugin/Jplayer/mplayer.js"></script><!--音乐播放JS-->	
+            </div>
+            <div class="rbox5_bottom"></div>            
+        </div><!--音乐播放块-->
+        
+        <div class="rbox5">
+            <div class="rbox5_top"></div>
+            <div class="rbox5_center">
+                <h2>我要推荐</h2>
+                <div id="postTemp"></div>
+				<div id="ajaxContent"></div>
+                <div class="sub_form">
+                        <div>
+                            <select name="tid" id="tid"><volist name="types" id="vo"><option value="{$vo.id}">{$vo.title}</option></volist></select>
+                            <label>音乐类型</label>
+                        </div>
+                        <div>
+                            <input type="text" name="title" id="title" class="long" />
+                            <label class="required">音乐名（必须）</label>
+                        </div>
+                        <div>
+                            <input type="text" name="author" id="author" class="long" />
+                            <label class="required">作者（必须）</label>
+                        </div>
+                        <div><input type="text" name="url" id="url" class="long" />
+                            <label class="required">链接地址（必须）</label>
+                        </div>
+                        <div>
+                            <table><tr><td>
+                            <img src="__APP__/common/verify" alt="点击刷新验证码" id="verifyImg" class="code" onclick="this.src+='?' + Math.random();" /></td><td>
+                            <input type="text" name="verify" id="verify" class="short" maxlength="4" />
+                            <label class="required">验证码（必须）</label></td></tr></table>
+                        </div>
+                        <div>
+                            <input type="button" class="button" value="" onclick="return chksub()" />
+                        </div>                            
+                	</div>
+                </div>
+            <div class="rbox5_bottom"></div>            
+        </div><!--音乐推荐-->
+        <script>
+		function chksub(){		    
+		    if($("#title").val() == ''){
+		        alert('请输入音乐名！');
+		        $("#title").focus();
+		        return false;
+		    }
+		    if($("#url").val() == ''){
+		        alert('请输入音乐链接地址！');
+		        $("#url").focus();
+		        return false;
+		    }
+		    if($("#verify").val() == ''){
+		        alert('请输入验证码！');
+		        $("#verify").focus();
+		        return false;
+		    }
+		    postData();
+		}
+		
+		//提交链接
+		function postData(){
+			$("#postTemp").html('<div class="pop">正在发表，请稍等。。。</div>');
+			$.post("__URL__/add", {"verify":$("#verify").val(),"title":$("#title").val(),"author":$("#author").val(),"url":$("#url").val(),"tid":$("#tid").val()}, function(msg) {
+				$("#postTemp").html(msg);
+				$("#verify").val('');
+				$("#title").val('');
+				$("#url").val('');
+				$("#verifyImg").attr("src",function(){this.src+='?'+Math.random();});
+				$(".pop").fadeOut(3000);
+			});
+		}
+        </script>
+	</div>
+<include file="Public:footer" />

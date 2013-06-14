@@ -35,110 +35,101 @@
     </div><!--导航-->
     
     <div class="crumb">
-		<span class="crumb_ad"></span>你的位置：<a href="__APP__">首页</a>
+		<span class="crumb_ad"><font color="red">欢迎使用 CMSHead V1.0 正式版！！！</font></span>你的位置：<a href="__APP__">首页</a>
         <?php if(($position) != "0"): ?><span class="gt"></span>
 	        <a href="__APP__/<?php echo (getmodulebyid($position)); ?>/index/id/<?php echo ($position); ?>"><?php echo (getcategoryname($position)); ?></a>
 	        <?php if((ACTION_NAME) == "view"): ?><span class="gt"></span>
 	        <?php echo ($info["title"]); endif; endif; ?>
     </div><!--位置-->	
 
-<div class="rbox1">
-    <div class="rbox1_top"></div>
-    <div class="rbox1_center">
+    <div class="rbox1">
+        <div class="rbox1_top"></div>
+        <div class="rbox1_center">
         <div id="play">	
-            <div id="play_bg"></div>
-            <div id="play_info"></div>
-            <div id="play_control">
-                <ul>
-                    <?php if(is_array($slide)): $i = 0; $__LIST__ = $slide;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li><b><?php echo ($i); ?></b></li><?php endforeach; endif; else: echo "" ;endif; ?>
-                </ul>
-            </div>
-            <div id="play_list">
-                <?php if(is_array($slide)): $i = 0; $__LIST__ = $slide;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><a href="<?php echo ($vo["link"]); ?>" target="_blank">
+                <div id="play_bg"></div>
+                <div id="play_info"></div>
+                <div id="play_control">
+                        <ul>
+                            <?php if(is_array($slide)): $i = 0; $__LIST__ = $slide;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><li><b><?php echo ($i); ?></b></li><?php endforeach; endif; else: echo "" ;endif; ?>
+                        </ul>
+                </div>
+                <div id="play_list">
+                	<?php if(is_array($slide)): $i = 0; $__LIST__ = $slide;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><a href="<?php echo ($vo["link"]); ?>" target="_blank">
                         <img src="__PUBLIC__/Upload/photo/<?php echo ($vo["img"]); ?>" title="<?php echo ($vo["title"]); ?>" alt="<?php echo ($vo["intro"]); ?>" />
                     </a><?php endforeach; endif; else: echo "" ;endif; ?>                    
-            </div>
-        </div><!--play-->
+                </div>
+            </div><!--play-->
 
-        <script type="text/javascript">
-            var t = n = 0, count = $("#play_list a").size();
-            $(function() {
-                $("#play_list a:not(:first-child)").hide();
-                $("#play_info").html($("#play_list a:first-child").find("img").attr('alt'));
-                $("#play_control li:first-child").css({"background-position": "-17px -215px"});
-                $("#play_info").click(function() {
-                    window.open($("#play_list a:first-child").attr('href'), "_blank")
-                });
-                $("#play_control li").click(function() {
-                    var i = $(this).text() - 1;
-                    n = i;
-                    if (i >= count)
-                        return;
-                    $("#play_info").html($("#play_list a").eq(i).find("img").attr('alt'));
-                    $("#play_info").unbind().click(function() {
-                        window.open($("#play_list a").eq(i).attr('href'), "_blank")
+            <script type="text/javascript">
+                    var t = n = 0, count = $("#play_list a").size();
+                    $(function(){	
+                        $("#play_list a:not(:first-child)").hide();
+                        $("#play_info").html($("#play_list a:first-child").find("img").attr('alt'));
+                        $("#play_control li:first-child").css({"background-position":"-17px -215px"});
+                        $("#play_info").click(function(){window.open($("#play_list a:first-child").attr('href'), "_blank")});
+                        $("#play_control li").click(function() {
+                            var i = $(this).text() - 1;
+                            n = i;
+                            if (i >= count) return;
+                            $("#play_info").html($("#play_list a").eq(i).find("img").attr('alt'));
+                            $("#play_info").unbind().click(function(){window.open($("#play_list a").eq(i).attr('href'), "_blank")})
+                            $("#play_list a").filter(":visible").fadeOut(500).parent().children().eq(i).fadeIn(1000);
+                            $(this).css({"background-position":"-17px -215px"}).siblings().css({"background-position":"0 -215px"});
+                        });
+                        t = setInterval("showAuto()", 3500);
+                        $("#play").hover(function(){clearInterval(t)}, function(){t = setInterval("showAuto()", 3500);});
                     })
-                    $("#play_list a").filter(":visible").fadeOut(500).parent().children().eq(i).fadeIn(1000);
-                    $(this).css({"background-position": "-17px -215px"}).siblings().css({"background-position": "0 -215px"});
-                });
-                t = setInterval("showAuto()", 3500);
-                $("#play").hover(function() {
-                    clearInterval(t)
-                }, function() {
-                    t = setInterval("showAuto()", 3500);
-                });
-            })
 
-            function showAuto()
-            {
-                n = n >= (count - 1) ? 0 : ++n;
-                $("#play_control li").eq(n).trigger('click');
-            }
-        </script>
-    </div><!--play_center-->
-    <div class="rbox1_bottom"></div>
-</div><!--幻灯特效-->
-
-<div class="rbox2">
-    <div class="rbox2_top"></div>
-    <div class="rbox2_center">
-        <div class="top">
-            <a target="_blank" href="#"><img src="__PUBLIC__/Images/admin_head.png" /></a>   
-            <div class="line"><a href="__URL__/diary" class="more">查看更多</a>站长日记 </div>
-            <div class="line">微博：@圆周率 Email：2378921965@qq.com</div>   
-            <div class="line">我的微博： <a target="_blank" href="http://t.qq.com/the12pir2">腾讯微博</a></div>
+                    function showAuto()
+                    {
+                        n = n >= (count - 1) ? 0 : ++n;
+                        $("#play_control li").eq(n).trigger('click');
+                    }
+            </script>
+        </div><!--play_center-->
+        <div class="rbox1_bottom"></div>
+    </div><!--幻灯特效-->
+    
+    <div class="rbox2">
+        <div class="rbox2_top"></div>
+        <div class="rbox2_center">
+            <div class="top">
+				<a target="_blank" href="#"><img src="__PUBLIC__/Images/admin_head.png" /></a>   
+				<div class="line"><a href="__URL__/diary" class="more">查看更多</a>站长日记 </div>
+				<div class="line">微博：@还是这个味 Email：782039296@qq.com</div>   
+				<div class="line">我的博客：<a target="_blank" href="http://code.google.com/p/cmshead/">谷歌代码分享</a> <a target="_blank" href="http://code.google.com/p/cmshead/">CMSHead</a></div>
+            </div>
+            <div class="bottom">
+                <?php if(is_array($diary)): $i = 0; $__LIST__ = $diary;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><div title="<?php echo ($vo["content"]); ?>"><font color="#00CCFF">※</font> <?php echo ($vo["content"]); ?></div><?php endforeach; endif; else: echo "" ;endif; ?>
+            </div>
         </div>
-        <div class="bottom">
-            <?php if(is_array($diary)): $i = 0; $__LIST__ = $diary;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><div title="<?php echo ($vo["content"]); ?>"><font color="#00CCFF">※</font> <?php echo ($vo["content"]); ?></div><?php endforeach; endif; else: echo "" ;endif; ?>
+        <div class="rbox2_bottom"></div>
+    </div><!--站长日记-->
+    
+    <div class="rbox3">
+        <div class="rbox3_top"> </div>
+        <div class="rbox3_center">
+            <embed src="<?php echo ($video["url"]); ?>" quality="high" width="277" height="238" align="middle" allowScriptAccess="sameDomain" type="application/x-shockwave-flash"></embed>
         </div>
+        <div class="rbox3_bottom"></div>
     </div>
-    <div class="rbox2_bottom"></div>
-</div><!--站长日记-->
 
-<div class="rbox3">
-    <div class="rbox3_top"> </div>
-    <div class="rbox3_center">
-        <embed src="<?php echo ($video["url"]); ?>" quality="high" width="277" height="238" align="middle" allowScriptAccess="sameDomain" type="application/x-shockwave-flash"></embed>
-    </div>
-    <div class="rbox3_bottom"></div>
-</div>
-
-<div class="wrap_left">
-    <?php if(is_array($top_art)): $i = 0; $__LIST__ = $top_art;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><div class="art_block">
+    <div class="wrap_left">
+        <?php if(is_array($top_art)): $i = 0; $__LIST__ = $top_art;if( count($__LIST__)==0 ) : echo "" ;else: foreach($__LIST__ as $key=>$vo): $mod = ($i % 2 );++$i;?><div class="art_block">
             <div class="art_left"></div>
             <?php if($vo["sort"] > 0): ?><div class="art_center art_top">
-                    <?php else: ?>
-                    <div class="art_center"><?php endif; ?>
-                        <div class="left"><?php if(empty($vo["img"])): ?><img src="__PUBLIC__/images/noimg.jpg" /><?php else: ?><img src="__PUBLIC__/Upload/article/<?php echo ($vo["img"]); ?>" /><?php endif; ?></div>
-                        <div class="right">
-                            <h1><a href="<?php echo ($vo["url"]); ?>"><?php echo (msubstr($vo["title"],0,30)); ?></a></h1>
-                            <div>[<a href="__APP__/article/index/id/<?php echo (idsfirst($vo["tid"])); ?>"><?php echo (getcategoryname($vo["tid"])); ?></a>] 浏览次数：<?php echo ($vo["apv"]); ?> 次  发表时间：<?php echo (date('Y-m-d H:i:s',$vo["add_time"])); ?></div>
-                            <p><?php echo (msubstr(str_replace('　', '',strip_tags($vo["content"])),0,300)); ?></p>
-                        </div>
-                    </div>
-                </div><?php endforeach; endif; else: echo "" ;endif; ?>
-        </div><!--文章列表-->             
-                    <div class="wrap_right">
+			<?php else: ?>
+			<div class="art_center"><?php endif; ?>
+                <div class="left"><?php if(empty($vo["img"])): ?><img src="__PUBLIC__/images/noimg.jpg" /><?php else: ?><img src="__PUBLIC__/Upload/article/<?php echo ($vo["img"]); ?>" /><?php endif; ?></div>
+                <div class="right">
+                    <h1><a href="<?php echo ($vo["url"]); ?>"><?php echo (msubstr($vo["title"],0,30)); ?></a></h1>
+                    <div>[<a href="__APP__/article/index/id/<?php echo (idsfirst($vo["tid"])); ?>"><?php echo (getcategoryname($vo["tid"])); ?></a>] 浏览次数：<?php echo ($vo["apv"]); ?> 次  发表时间：<?php echo (date('Y-m-d H:i:s',$vo["add_time"])); ?></div>
+                    <p><?php echo (msubstr(str_replace('　', '',strip_tags($vo["content"])),0,300)); ?></p>
+                </div>
+            </div>
+        </div><?php endforeach; endif; else: echo "" ;endif; ?>
+    </div><!--文章列表-->             
+            <div class="wrap_right">
             <div class="rbox4">
                 <div class="rbox4_top"></div>
                 <div class="rbox4_center">
@@ -233,24 +224,14 @@
         
     <div class="footer">
 	<a href="__APP__" onclick="this.style.behavior='url(#default#homepage)';this.setHomePage('<?php echo (C("xpcms_url")); ?>');">设为首页</a> | 
-    <a href="javascript:window.external.addfavorite('<?php echo (C("xpcms_url")); ?>','12PIR2');">加入收藏</a> | 
+    <a href="javascript:window.external.addfavorite('<?php echo (C("xpcms_url")); ?>','CMSHead');">加入收藏</a> | 
     <a href="__ROOT__/rss.xml">RSS订阅</a> | 
     <a href="mailto:<?php echo (C("email")); ?>">联系站长</a> | 
+    <a href="__ROOT__/admin.php" target="_blank">后台登录</a> | 
     <a href="__APP__/link">友情链接</a> | 
     <a href="__APP__/message">留言反馈</a> | 
+    <a href="javascript:;"><?php echo (C("icp_num")); ?></a> | 
     <a href="http://www.cmshead.com" target="_blank">Powered By CMSHead <?php echo (C("xpcms_version")); ?></a> | 
-    <script src="http://s21.cnzz.com/stat.php?id=3912645&web_id=3912645" language="JavaScript"></script>
-    <script type="text/javascript">
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-5632077-6']);
-  _gaq.push(['_setDomainName', '12pir2.com']);
-  _gaq.push(['_trackPageview']);
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-</script>
 	</div>
 </div><!--main end-->
 </body>

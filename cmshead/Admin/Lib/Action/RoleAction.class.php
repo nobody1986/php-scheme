@@ -382,15 +382,19 @@ class RoleAction extends CommonAction {
         $this->display();
         return;
     }
-    //删除时同时删除其他表
+	
 	public function _before_foreverdelete() {
-		$pkValue = $_REQUEST['id'];		
-		$ids = is_array($pkValue) ? $pkValue : explode(',',$pkValue);
-		$ulist = M('role_user')->where( array('role_id'=>array('in', $ids)) )->field('user_id')->select();
-		foreach($ulist as $rs){
-			M('user')->where( array('id'=>$rs['user_id']) )->delete();
+		if($_REQUEST['id']){
+			$id = is_array($_REQUEST['id']) ? implode(',',$_REQUEST['id']) :(preg_match('/^\d+(,\d+)*$/',$_REQUEST['id']) || is_numeric($_REQUEST['id']) ? $_REQUEST['id'] : 0);
+			if($id){
+				//删除用户
+				$list = D('Role_user')->where("role_id in ($id)")->select();
+				foreach($list as $rs){
+					D('User')->where("id = {$rs['user_id']}")->delete();					
+				}
+				//删除部门-用户对应关系
+				D('Role_user')->where("role_id in ($id)")->delete();					
+			}
 		}
-		M('access')->where( array('role_id'=>array('in', $ids)) )->delete();
-		M('role_user')->where( array('role_id'=>array('in', $ids)) )->delete();
-	}    
+	}
 }

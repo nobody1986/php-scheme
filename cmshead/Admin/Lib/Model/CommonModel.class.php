@@ -51,7 +51,7 @@ class CommonModel extends Model {
 
     /**
      +----------------------------------------------------------
-     * 根据条件审核表数据
+     * 根据条件恢复表数据
      +----------------------------------------------------------
      * @access public
      +----------------------------------------------------------
@@ -65,13 +65,13 @@ class CommonModel extends Model {
             $this->error =  L('_OPERATION_WRONG_');
             return false;
         }else {
-            return true;
+            return True;
         }
     }
 
     /**
      +----------------------------------------------------------
-     * 根据条件审核表数据
+     * 根据条件恢复表数据
      +----------------------------------------------------------
      * @access public
      +----------------------------------------------------------
@@ -116,12 +116,14 @@ class CommonModel extends Model {
 	public function getCategoryMap($ids, $haveChild=1){
 		$map = array();
 		if(preg_match('/^\d+(,\d+)*$/', $ids)){			
-			$list = D('Category')->where('classstatus=1')->field('classid,classchildids')->where('classid in ('.$ids.')')->select();
+			$list = D('Category')->where('status=1')->field('id,pid')->where('id in ('.$ids.')')->select();
 				foreach($list as $rs){
-					if($haveChild){
-						foreach(explode(',',$rs['classchildids']) as $val) $map['_string'] .= ' or find_in_set('.$val.', tid)';
-					}else{
-						$map['_string'] .= ' or find_in_set('.$rs['classid'].', tid)';					
+					$map['_string'] .= ' or find_in_set('.$rs['id'].', tid)';
+					if($haveChild && $rs['pid']==0){ //大栏目
+						$types = D('Category')->where('status=1 AND pid='.$rs['id'])->field('id')->select();
+						if(is_array($types)){
+							foreach($types as $val) $map['_string'] .= ' or find_in_set('.$val['id'].', tid)';					
+						}
 					}
 				}
 		}

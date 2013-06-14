@@ -8,14 +8,19 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
+// $Id: IpLocation.class.php 2504 2011-12-28 07:35:29Z liu21st $
 
 /**
+ +------------------------------------------------------------------------------
  *  IP 地理位置查询类 修改自 CoolCode.CN
  *  由于使用UTF8编码 如果使用纯真IP地址库的话 需要对返回结果进行编码转换
+ +------------------------------------------------------------------------------
  * @category   ORG
  * @package  ORG
  * @subpackage  Net
  * @author    liu21st <liu21st@gmail.com>
+ * @version   $Id: IpLocation.class.php 2504 2011-12-28 07:35:29Z liu21st $
+ +------------------------------------------------------------------------------
  */
 class IpLocation {
     /**
@@ -54,10 +59,10 @@ class IpLocation {
      */
     public function __construct($filename = "UTFWry.dat") {
         $this->fp = 0;
-        if (($this->fp      = fopen(dirname(__FILE__).'/'.$filename, 'rb')) !== false) {
-            $this->firstip  = $this->getlong();
-            $this->lastip   = $this->getlong();
-            $this->totalip  = ($this->lastip - $this->firstip) / 7;
+        if (($this->fp = fopen(dirname(__FILE__).'/'.$filename, 'rb')) !== false) {
+            $this->firstip = $this->getlong();
+            $this->lastip = $this->getlong();
+            $this->totalip = ($this->lastip - $this->firstip) / 7;
         }
     }
 
@@ -108,8 +113,8 @@ class IpLocation {
     private function getstring($data = "") {
         $char = fread($this->fp, 1);
         while (ord($char) > 0) {        // 字符串按照C格式保存，以\0结束
-            $data  .= $char;             // 将读取的字符连接到给定字符串之后
-            $char   = fread($this->fp, 1);
+            $data .= $char;             // 将读取的字符连接到给定字符串之后
+            $char = fread($this->fp, 1);
         }
         return $data;
     }
@@ -192,32 +197,32 @@ class IpLocation {
                 switch (ord($byte)) {
                     case 2:             // 标志字节为2，表示国家信息又被重定向
                         fseek($this->fp, $this->getlong3());
-                        $location['country']    = $this->getstring();
+                        $location['country'] = $this->getstring();
                         fseek($this->fp, $countryOffset + 4);
-                        $location['area']       = $this->getarea();
+                        $location['area'] = $this->getarea();
                         break;
                     default:            // 否则，表示国家信息没有被重定向
-                        $location['country']    = $this->getstring($byte);
-                        $location['area']       = $this->getarea();
+                        $location['country'] = $this->getstring($byte);
+                        $location['area'] = $this->getarea();
                         break;
                 }
                 break;
             case 2:                     // 标志字节为2，表示国家信息被重定向
                 fseek($this->fp, $this->getlong3());
-                $location['country']    = $this->getstring();
+                $location['country'] = $this->getstring();
                 fseek($this->fp, $offset + 8);
-                $location['area']       = $this->getarea();
+                $location['area'] = $this->getarea();
                 break;
             default:                    // 否则，表示国家信息没有被重定向
-                $location['country']    = $this->getstring($byte);
-                $location['area']       = $this->getarea();
+                $location['country'] = $this->getstring($byte);
+                $location['area'] = $this->getarea();
                 break;
         }
-        if (trim($location['country']) == 'CZ88.NET') {  // CZ88.NET表示没有有效信息
-            $location['country'] = '未知';
+        if ($location['country'] == " CZ88.NET") {  // CZ88.NET表示没有有效信息
+            $location['country'] = "未知";
         }
-        if (trim($location['area']) == 'CZ88.NET') {
-            $location['area'] = '';
+        if ($location['area'] == " CZ88.NET") {
+            $location['area'] = "";
         }
         return $location;
     }

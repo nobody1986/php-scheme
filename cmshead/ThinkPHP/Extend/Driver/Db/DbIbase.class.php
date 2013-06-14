@@ -2,28 +2,36 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2012 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2009 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
+// $Id: DbIbase.class.php 2707 2012-02-04 04:22:48Z liu21st $
 
-defined('THINK_PATH') or exit();
 /**
- * Firebird数据库驱动
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver.Db
- * @author    剑雷
+ +------------------------------------------------------------------------------
+ * Firebird数据库驱动类 剑雷 2007.12.28
+ +------------------------------------------------------------------------------
+ * @category   Think
+ * @package  Think
+ * @subpackage  Db
+ * @author    liu21st <liu21st@gmail.com>
+ * @version   $Id: DbIbase.class.php 2707 2012-02-04 04:22:48Z liu21st $
+ +------------------------------------------------------------------------------
  */
 class DbIbase extends Db{
 
     protected $selectSql  =     'SELECT %LIMIT% %DISTINCT% %FIELD% FROM %TABLE%%JOIN%%WHERE%%GROUP%%HAVING%%ORDER%';
     /**
+     +----------------------------------------------------------
      * 架构函数 读取数据库配置信息
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      * @param array $config 数据库配置数组
+     +----------------------------------------------------------
      */
     public function __construct($config='') {
         if ( !extension_loaded('interbase') ) {
@@ -38,9 +46,13 @@ class DbIbase extends Db{
     }
 
     /**
+     +----------------------------------------------------------
      * 连接数据库方法
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      * @throws ThinkExecption
+     +----------------------------------------------------------
      */
     public function connect($config='',$linkNum=0) {
         if ( !isset($this->linkID[$linkNum]) ) {
@@ -62,8 +74,11 @@ class DbIbase extends Db{
     }
 
     /**
+     +----------------------------------------------------------
      * 释放查询结果
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      */
     public function free() {
         ibase_free_result($this->queryID);
@@ -71,10 +86,17 @@ class DbIbase extends Db{
     }
 
     /**
+     +----------------------------------------------------------
      * 执行查询 返回数据集
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      * @param string $str  sql指令
+     +----------------------------------------------------------
      * @return mixed
+     +----------------------------------------------------------
+     * @throws ThinkExecption
+     +----------------------------------------------------------
      */
     public function query($str) {
         $this->initConnect(false);
@@ -96,10 +118,17 @@ class DbIbase extends Db{
     }
 
     /**
+     +----------------------------------------------------------
      * 执行语句
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      * @param string $str  sql指令
+     +----------------------------------------------------------
      * @return integer
+     +----------------------------------------------------------
+     * @throws ThinkExecption
+     +----------------------------------------------------------
      */
     public function execute($str) {
         $this->initConnect(true);
@@ -134,44 +163,61 @@ class DbIbase extends Db{
     }
 
     /**
+     +----------------------------------------------------------
      * 用于非自动提交状态下面的查询提交
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      * @return boolen
+     +----------------------------------------------------------
+     * @throws ThinkExecption
+     +----------------------------------------------------------
      */
     public function commit() {
         if ($this->transTimes > 0) {
             $result =  ibase_commit($this->_linkID);
             $this->transTimes = 0;
             if(!$result){
-                $this->error();
-                return false;
+                throw_exception($this->error());
             }
         }
         return true;
     }
 
     /**
+     +----------------------------------------------------------
      * 事务回滚
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      * @return boolen
+     +----------------------------------------------------------
+     * @throws ThinkExecption
+     +----------------------------------------------------------
      */
     public function rollback() {
         if ($this->transTimes > 0) {
             $result =ibase_rollback($this->_linkID);
             $this->transTimes = 0;
             if(!$result){
-                $this->error();
-                return false;
+                throw_exception($this->error());
             }
         }
         return true;
     }
 
     /**
+     +----------------------------------------------------------
      * BLOB字段解密函数 Firebird特有
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      * @param $blob 待解密的BLOB
+     +----------------------------------------------------------
      * @return 二进制数据
+     +----------------------------------------------------------
+     * @throws ThinkExecption
+     +----------------------------------------------------------
      */
      public function BlobDecode($blob) {
         $maxblobsize = 262144;
@@ -190,9 +236,15 @@ class DbIbase extends Db{
     }
 
     /**
+     +----------------------------------------------------------
      * 获得所有的查询数据
+     +----------------------------------------------------------
      * @access private
+     +----------------------------------------------------------
      * @return array
+     +----------------------------------------------------------
+     * @throws ThinkExecption
+     +----------------------------------------------------------
      */
     private function getAll() {
         //返回数据集
@@ -224,8 +276,13 @@ class DbIbase extends Db{
     }
 
     /**
+     +----------------------------------------------------------
      * 取得数据表的字段信息
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
+     * @throws ThinkExecption
+     +----------------------------------------------------------
      */
     public function getFields($tableName) {
         $result   =  $this->query('SELECT RDB$FIELD_NAME AS FIELD, RDB$DEFAULT_VALUE AS DEFAULT1, RDB$NULL_FLAG AS NULL1 FROM RDB$RELATION_FIELDS WHERE RDB$RELATION_NAME=UPPER(\''.$tableName.'\') ORDER By RDB$FIELD_POSITION');
@@ -268,8 +325,13 @@ where a.rdb$constraint_type=\'PRIMARY KEY\' and a.rdb$relation_name=UPPER(\''.$t
     }
 
     /**
+     +----------------------------------------------------------
      * 取得数据库的表信息
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
+     * @throws ThinkExecption
+     +----------------------------------------------------------
      */
     public function getTables($dbName='') {
         $sql='SELECT DISTINCT RDB$RELATION_NAME FROM RDB$RELATION_FIELDS WHERE RDB$SYSTEM_FLAG=0';
@@ -282,8 +344,11 @@ where a.rdb$constraint_type=\'PRIMARY KEY\' and a.rdb$relation_name=UPPER(\''.$t
     }
 
     /**
+     +----------------------------------------------------------
      * 关闭数据库
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      */
     public function close() {
         if ($this->_linkID){
@@ -293,35 +358,33 @@ where a.rdb$constraint_type=\'PRIMARY KEY\' and a.rdb$relation_name=UPPER(\''.$t
     }
 
     /**
+     +----------------------------------------------------------
      * 数据库错误信息
      * 并显示当前的SQL语句
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      * @return string
+     +----------------------------------------------------------
+     * @throws ThinkExecption
+     +----------------------------------------------------------
      */
     public function error() {
         $this->error = ibase_errmsg();
-        if('' != $this->queryStr){
+        if($this->debug && '' != $this->queryStr){
             $this->error .= "\n [ SQL语句 ] : ".$this->queryStr;
         }
-        trace($this->error,'','ERR');
         return $this->error;
     }
 
     /**
-     * SQL指令安全过滤
-     * @access public
-     * @param string $str  SQL指令
-     * @return string
-     */
-    public function escapeString($str) {
-        return str_replace("'", "''", $str);
-    }
-
-    /**
+     +----------------------------------------------------------
      * limit
+     +----------------------------------------------------------
      * @access public
-     * @param $limit limit表达式
+     +----------------------------------------------------------
      * @return string
+     +----------------------------------------------------------
      */
 	public function parseLimit($limit) {
         $limitStr    = '';
@@ -335,4 +398,5 @@ where a.rdb$constraint_type=\'PRIMARY KEY\' and a.rdb$relation_name=UPPER(\''.$t
         }
 		return $limitStr;
 	}
+
 }

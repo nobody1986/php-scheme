@@ -3,96 +3,48 @@
 class MusicAction extends CommonAction {
 	//赋值音乐可用分类
 	public function _before_add() {
-		$list	=	M("Category")->where('classstatus=1 AND classmodule="Music"')->select();
+		$model	=	M("Category");
+		$list	=	$model->where('status=1 AND module="Music"')->select();
 		$this->assign('list',$list);
+        $this->assign('files',$this->list_file());
 	}
 	//赋值音乐可用分类	
 	public function _before_edit() {
-		$this->_before_add();
+		$model	=	M("Category");
+		$list	=	$model->where('status=1 AND module="Music"')->select();
+		$this->assign('list',$list);
+        $this->assign('files',$this->list_file());
 	}
-	//添加视频,上传视频图片
-	public function insert() {
-		//值为数组的 转换成逗号分隔的字符串
-		foreach($_POST as $key=>$val){
-			if(is_array($val)){
-				$_POST[$key] = implode(',', $val);
-			}
-		}
-		$model = D ('Music');
-		if (false === $model->create ()) {
-			$this->error ( $model->getError () );
-		}	
-		
-		$this->do_upload($model); //上传字段处理
-				
-		//保存当前数据对象
-		if ($model->add ()!==false) { //保存成功
-			if($_POST['rewrite']){
-				$data['rewrite']=$_POST['rewrite'];
-				$data['url']='music/view/id/'.$model->getLastInsID();
-				if(!D('Router')->add($data)){
-					$model->where( 'id='.(is_numeric($_POST['id']) ? $_POST['id'] : $model->getLastInsID()) )->setField('rewrite','');
-				}
-			}
-			$this->to_category_map();
-			$this->success ('新增成功！');
-		} else {
-			//失败提示
-			$this->error ('新增失败！');
-		}		
-	}
-	//更新视频
-	public function update(){
-		//值为数组的 转换成逗号分隔的字符串
-		foreach($_POST as $key=>$val){
-			if(is_array($val)){
-				$_POST[$key] = implode(',', $val);
-			}
-		}		
-		if($_POST['fieldarrs']){ //多选型字段, 模板中<input type="hidden" name="fieldarrs" value="attrtt,attrtj" />
-			foreach(explode(',',$_POST['fieldarrs']) as $key){
-				if(!isset($_POST[$key])) $_POST[$key] = '';
-			}
-		}
-		$model = D ( 'Music' );
-		if (false === $model->create ()) {
-			$this->error ( $model->getError () );
-		}
-		
-		$this->do_upload($model); //上传字段处理
-		
-		//保存当前数据对象
-		if ($model->save () !== false) {
-			//成功提示
-			D('Router')->where("url='music/view/id/{$_POST['id']}'")->delete();
-			if($_POST['rewrite']){
-				$data['url']="video/view/id/".$_POST['id'];
-				$data['rewrite']=$_POST['rewrite'];
-				if(!D('Router')->add($data)){
-					$model->where( 'id='.(is_numeric($_POST['id']) ? $_POST['id'] : $model->getLastInsID()) )->setField('rewrite','');
-				}
-			}
-			$this->to_category_map();
-			$this->success ('编辑成功！');
-		} else {
-			//错误提示
-			$this->error ('编辑失败！');
-		}	
-	}
-	
-	//删除测试时删除预览图片,删除路由规则
-	public function _before_foreverdelete() {
-		$ids = $this->_beforDelFiles(MODULE_NAME);
-		if($ids){
-			$list = M(MODULE_NAME)->where( array(M(MODULE_NAME)->getPk()=>array('in', $ids)) )->field('rewrite')->select();
-			foreach($list as $rs) $rewrite .= ($rewrite ? "','" : '') . $rs['rewrite'];
-			if($rewrite) M('Router')->where( "rewrite in ('{$rewrite}')" )->delete();
-		}
-	}
-	
+	//对音乐地址进行判断
 	public function view(){
-		is_numeric($_GET['id']) or $this->error('参数错误！');
-		parent::$id = $_GET['id'];
-		$this->display();
-	}	
+		if($_GET['id']){
+			$info = D('Music')->find($_GET['id']);
+			if(!strstr($info['url'],'http')) $info['url']='__PUBLIC__/Upload/music/'.$info['url'];
+			$this->assign('info',$info);
+			$this->display();
+		}
+	}
+	//删除音乐时同时删除站内音乐
+	public function _before_foreverdelete() {
+		if($_GET['id']){
+			$id = $_GET['id'];			
+			$url = D('Music')->where('id='.$id)->getField('url');
+			if(!strstr($url,'http')){
+				$src = './Public/Upload/music/'.$url;
+				if(is_file($src))unlink($src);
+			}
+		}
+	}
+	//列出站内音乐文章
+	public function list_file(){
+		$dir = './Public/Upload/music';
+		if ($handle = opendir($dir)) {
+			while (false !== ($file = readdir($handle))) {
+		        if ($file != "." && $file != "..") {
+		        	$files[]=$file;
+		        }
+		    }
+		    return $files;			
+		}
+	}
 }

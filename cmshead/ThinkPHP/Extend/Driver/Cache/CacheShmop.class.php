@@ -2,51 +2,60 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2012 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2009 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
+// $Id: CacheShmop.class.php 2504 2011-12-28 07:35:29Z liu21st $
 
-defined('THINK_PATH') or exit();
 /**
- * Shmop缓存驱动 
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver.Cache
+ +------------------------------------------------------------------------------
+ * Shmop缓存类
+ +------------------------------------------------------------------------------
+ * @category   Think
+ * @package  Think
+ * @subpackage  Util
  * @author    liu21st <liu21st@gmail.com>
+ * @version   $Id: CacheShmop.class.php 2504 2011-12-28 07:35:29Z liu21st $
+ +------------------------------------------------------------------------------
  */
 class CacheShmop extends Cache {
 
     /**
+     +----------------------------------------------------------
      * 架构函数
-     * @param array $options 缓存参数
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      */
-    public function __construct($options=array()) {
+    public function __construct($options='') {
         if ( !extension_loaded('shmop') ) {
             throw_exception(L('_NOT_SUPPERT_').':shmop');
         }
         if(!empty($options)){
             $options = array(
-                'size'      => C('SHARE_MEM_SIZE'),
-                'temp'      => TEMP_PATH,
-                'project'   => 's',
-                'length'    =>  0,
+                'size' => C('SHARE_MEM_SIZE'),
+                'tmp'  => TEMP_PATH,
+                'project' => 's',
+                'length'   =>0,
                 );
         }
         $this->options = $options;
-        $this->options['prefix'] =  isset($options['prefix'])?  $options['prefix']  :   C('DATA_CACHE_PREFIX');        
-        $this->options['length'] =  isset($options['length'])?  $options['length']  :   0;        
         $this->handler = $this->_ftok($this->options['project']);
     }
 
     /**
+     +----------------------------------------------------------
      * 读取缓存
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      * @param string $name 缓存变量名
+     +----------------------------------------------------------
      * @return mixed
+     +----------------------------------------------------------
      */
     public function get($name = false) {
         N('cache_read',1);
@@ -58,7 +67,6 @@ class CacheShmop extends Cache {
             if ($name === false) {
                 return $ret;
             }
-            $name   =   $this->options['prefix'].$name;
             if(isset($ret[$name])) {
                 $content   =  $ret[$name];
                 if(C('DATA_CACHE_COMPRESS') && function_exists('gzcompress')) {
@@ -75,11 +83,16 @@ class CacheShmop extends Cache {
     }
 
     /**
+     +----------------------------------------------------------
      * 写入缓存
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      * @param string $name 缓存变量名
      * @param mixed $value  存储数据
+     +----------------------------------------------------------
      * @return boolen
+     +----------------------------------------------------------
      */
     public function set($name, $value) {
         N('cache_write',1);
@@ -90,7 +103,6 @@ class CacheShmop extends Cache {
             //数据压缩
             $value   =   gzcompress($value,3);
         }
-        $name   =   $this->options['prefix'].$name;
         $val[$name] = $value;
         $val = serialize($val);
         if($this->_write($val, $lh)) {
@@ -104,26 +116,35 @@ class CacheShmop extends Cache {
     }
 
     /**
+     +----------------------------------------------------------
      * 删除缓存
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      * @param string $name 缓存变量名
+     +----------------------------------------------------------
      * @return boolen
+     +----------------------------------------------------------
      */
     public function rm($name) {
         $lh = $this->_lock();
         $val = $this->get();
         if (!is_array($val)) $val = array();
-        $name   =   $this->options['prefix'].$name;
         unset($val[$name]);
         $val = serialize($val);
         return $this->_write($val, $lh);
     }
 
     /**
+     +----------------------------------------------------------
      * 生成IPC key
+     +----------------------------------------------------------
      * @access private
+     +----------------------------------------------------------
      * @param string $project 项目标识名
+     +----------------------------------------------------------
      * @return integer
+     +----------------------------------------------------------
      */
     private function _ftok($project) {
         if (function_exists('ftok'))   return ftok(__FILE__, $project);
@@ -139,10 +160,15 @@ class CacheShmop extends Cache {
     }
 
     /**
+     +----------------------------------------------------------
      * 写入操作
+     +----------------------------------------------------------
      * @access private
+     +----------------------------------------------------------
      * @param string $name 缓存变量名
+     +----------------------------------------------------------
      * @return integer|boolen
+     +----------------------------------------------------------
      */
     private function _write(&$val, &$lh) {
         $id  = shmop_open($this->handler, 'c', 0600, $this->options['size']);
@@ -157,27 +183,37 @@ class CacheShmop extends Cache {
     }
 
     /**
+     +----------------------------------------------------------
      * 共享锁定
+     +----------------------------------------------------------
      * @access private
+     +----------------------------------------------------------
      * @param string $name 缓存变量名
+     +----------------------------------------------------------
      * @return boolen
+     +----------------------------------------------------------
      */
     private function _lock() {
         if (function_exists('sem_get')) {
             $fp = sem_get($this->handler, 1, 0600, 1);
             sem_acquire ($fp);
         } else {
-            $fp = fopen($this->options['temp'].$this->options['prefix'].md5($this->handler), 'w');
+            $fp = fopen($this->options['tmp'].$this->prefix.md5($this->handler), 'w');
             flock($fp, LOCK_EX);
         }
         return $fp;
     }
 
     /**
+     +----------------------------------------------------------
      * 解除共享锁定
+     +----------------------------------------------------------
      * @access private
+     +----------------------------------------------------------
      * @param string $name 缓存变量名
+     +----------------------------------------------------------
      * @return boolen
+     +----------------------------------------------------------
      */
     private function _unlock(&$fp) {
         if (function_exists('sem_release')) {
@@ -186,4 +222,5 @@ class CacheShmop extends Cache {
             fclose($fp);
         }
     }
+
 }

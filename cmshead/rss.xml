@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+<channel>
+<title></title>
+<link></link>
+<keywords>phpcms,php cms,最好的cms</keywords>
+<description>CMSHEAD是最好的cms</description>
+	<item>
+		<title>朝鲜第一夫人被曝用迪奥包 价值1600美元(图)</title>
+		<link>/article/view/id/1</link>
+		<description>东方网8月9日消息：据新闻晚报报道，朝鲜第一夫人李雪主被人拍摄到使用法国迪奥名牌手袋。目前尚未清楚该手袋是否真货，据韩国 《中央日报》8日报道，若是真货，在首尔将价值180万韩元（约合1600美元，10166元人民币）。</description>
+		<pubDate>2012-08-09 22:30:26</pubDate>
+	</item>
+	<item>
+		<title>上海浦东机场两客机发生碰擦 两机机翼受损(图)</title>
+		<link>/article/view/id/2</link>
+		<description>上海浦东机场两客机发生碰擦 两机机翼受损(图)</description>
+		<pubDate>2012-08-09 22:37:36</pubDate>
+	</item>
+	<item>
+		<title>国内新闻测试</title>
+		<link>/article/view/id/8</link>
+		<description></description>
+		<pubDate>2012-08-28 11:13:28</pubDate>
+	</item>
+	<item>
+		<title>111111111</title>
+		<link>/article/view/id/9</link>
+		<description></description>
+		<pubDate>2012-08-28 14:16:59</pubDate>
+	</item>
+	<item>
+		<title>22222222222222</title>
+		<link>/article/view/id/10</link>
+		<description></description>
+		<pubDate>2012-08-28 14:22:43</pubDate>
+	</item>
+	<item>
+		<title>口袋的天空</title>
+		<link>/music/view/id/1</link>
+		<description></description>
+		<pubDate>2012-08-09 21:16:28</pubDate>
+	</item>
+	<item>
+		<title>隐形的翅膀</title>
+		<link>/music/view/id/2</link>
+		<description></description>
+		<pubDate>2012-08-09 21:19:20</pubDate>
+	</item>
+	<item>
+		<title>薄谷开来、张晓军故意杀人案一审开庭 作案细节首次曝光 </title>
+		<link>/video/view/id/1</link>
+		<description>薄谷开来、张晓军故意杀人案一审开庭 作案细节首次曝光</description>
+		<pubDate>2012-08-09 21:21:05</pubDate>
+	</item>
+	<item>
+		<title>心情不错，试试看吧。</title>
+		<link>/diary/view/id/1</link>
+		<weather>晴朗</weather>
+		<pubDate>2012-08-27 09:45:36</pubDate>
+	</item>
+	<item>
+		<title>北影小仙女赵思诺</title>
+		<link>/photo/view/id/1</link>
+		<description></description>
+		<pubDate>2012-08-09 21:58:22</pubDate>
+	</item>
+	<item>
+		<title>北影小仙女赵思诺</title>
+		<link>/photo/view/id/2</link>
+		<description></description>
+		<pubDate>2012-08-09 22:03:26</pubDate>
+	</item>
+	<item>
+		<title>北影小仙女赵思诺</title>
+		<link>/photo/view/id/3</link>
+		<description></description>
+		<pubDate>2012-08-09 22:19:27</pubDate>
+	</item>
+</channel>
+</rss>

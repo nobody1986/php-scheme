@@ -165,11 +165,7 @@ body, #splitBar { background:#e5edef;}
 #taskbar, #taskbar li, #taskbar li .taskbutton { background:url(./images/layout/taskbar.png) no-repeat;}
 #taskbar .close, #taskbar .restore, #taskbar .minimize { background:url(./images/layout/taskbar_icon.png) no-repeat;}
 #taskbar li .taskbutton span { color:#FFF;}
-#taskbar .taskbarLeft, #taskbar .taskbarRight { background:url(./images/layout/taskbar_control.png) repeat-x;}
-
-/* navMenu（顶部大菜单） */
-#navMenu li a, #navMenu li span { color:#B9CCDA; }
-#navMenu li.selected span, #navMenu li span:hover {color:#FFF;background:url(./images/menu/menu.png) no-repeat;}
+#taskbar .taskbarLeft, #taskbar .taskbarRight { background:url(./images/layout/taskbar_control.png) no-repeat;}
 
 /* Homepage */
 .sidebarContent { display:block; overflow:auto; height:500px; border:solid 1px #86B4EC; background:#FFF;}

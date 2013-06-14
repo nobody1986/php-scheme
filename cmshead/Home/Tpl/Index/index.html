@@ -1,216 +1,108 @@
 <include file="Public:header" />
-
 <div class="rbox1">
-
     <div class="rbox1_top"></div>
-
     <div class="rbox1_center">
-
         <div id="play">	
-
             <div id="play_bg"></div>
-
             <div id="play_info"></div>
-
             <div id="play_control">
-
                 <ul>
-
                     <volist name="slide" id="vo">
-
                         <li><b>{$i}</b></li>
-
                     </volist>
-
                 </ul>
-
             </div>
-
             <div id="play_list">
-
                 <volist name="slide" id="vo">
-
                     <a href="{$vo.link}" target="_blank">
-
                         <img src="__PUBLIC__/Upload/photo/{$vo.img}" title="{$vo.title}" alt="{$vo.intro}" />
-
                     </a>
-
                 </volist>                    
-
             </div>
-
         </div><!--play-->
 
-
-
         <script type="text/javascript">
-
             var t = n = 0, count = $("#play_list a").size();
-
             $(function() {
-
                 $("#play_list a:not(:first-child)").hide();
-
                 $("#play_info").html($("#play_list a:first-child").find("img").attr('alt'));
-
                 $("#play_control li:first-child").css({"background-position": "-17px -215px"});
-
                 $("#play_info").click(function() {
-
                     window.open($("#play_list a:first-child").attr('href'), "_blank")
-
                 });
-
                 $("#play_control li").click(function() {
-
                     var i = $(this).text() - 1;
-
                     n = i;
-
                     if (i >= count)
-
                         return;
-
                     $("#play_info").html($("#play_list a").eq(i).find("img").attr('alt'));
-
                     $("#play_info").unbind().click(function() {
-
                         window.open($("#play_list a").eq(i).attr('href'), "_blank")
-
                     })
-
                     $("#play_list a").filter(":visible").fadeOut(500).parent().children().eq(i).fadeIn(1000);
-
                     $(this).css({"background-position": "-17px -215px"}).siblings().css({"background-position": "0 -215px"});
-
                 });
-
                 t = setInterval("showAuto()", 3500);
-
                 $("#play").hover(function() {
-
                     clearInterval(t)
-
                 }, function() {
-
                     t = setInterval("showAuto()", 3500);
-
                 });
-
             })
 
-
-
             function showAuto()
-
             {
-
                 n = n >= (count - 1) ? 0 : ++n;
-
                 $("#play_control li").eq(n).trigger('click');
-
             }
-
         </script>
-
     </div><!--play_center-->
-
     <div class="rbox1_bottom"></div>
-
 </div><!--幻灯特效-->
 
-
-
 <div class="rbox2">
-
     <div class="rbox2_top"></div>
-
     <div class="rbox2_center">
-
         <div class="top">
-
             <a target="_blank" href="#"><img src="__PUBLIC__/Images/admin_head.png" /></a>   
-
             <div class="line"><a href="__URL__/diary" class="more">查看更多</a>站长日记 </div>
-
             <div class="line">微博：@圆周率 Email：2378921965@qq.com</div>   
-
             <div class="line">我的微博： <a target="_blank" href="http://t.qq.com/the12pir2">腾讯微博</a></div>
-
         </div>
-
         <div class="bottom">
-
             <volist name="diary" id="vo">
-
                 <div title="{$vo.content}"><font color="#00CCFF">※</font> {$vo.content}</div>
-
             </volist>
-
         </div>
-
     </div>
-
     <div class="rbox2_bottom"></div>
-
 </div><!--站长日记-->
 
-
-
 <div class="rbox3">
-
     <div class="rbox3_top"> </div>
-
     <div class="rbox3_center">
-
         <embed src="{$video.url}" quality="high" width="277" height="238" align="middle" allowScriptAccess="sameDomain" type="application/x-shockwave-flash"></embed>
-
     </div>
-
     <div class="rbox3_bottom"></div>
-
 </div>
 
-
-
 <div class="wrap_left">
-
     <volist name="top_art" id="vo">
-
         <div class="art_block">
-
             <div class="art_left"></div>
-
             <if condition="$vo.sort gt 0">
-
                 <div class="art_center art_top">
-
                     <else />
-
                     <div class="art_center">
-
                         </if>
-
-                        <div class="left"><empty name="vo.img"><img src="__PUBLIC__/Images/noimg.jpg" /><else/><img src="__PUBLIC__/Upload/article/{$vo.img}" /></empty></div>
-
+                        <div class="left"><empty name="vo.img"><img src="__PUBLIC__/images/noimg.jpg" /><else/><img src="__PUBLIC__/Upload/article/{$vo.img}" /></empty></div>
                         <div class="right">
-
                             <h1><a href="{$vo.url}">{$vo.title|msubstr=0,30}</a></h1>
-
                             <div>[<a href="__APP__/article/index/id/{$vo.tid|idsfirst}">{$vo.tid|getCategoryName}</a>] 浏览次数：{$vo.apv} 次  发表时间：{$vo.add_time|date='Y-m-d H:i:s',###}</div>
-
                             <p>{$vo.content|strip_tags|str_replace='　', '',###|msubstr=0,300}</p>
-
                         </div>
-
                     </div>
-
                 </div>
-
                 </volist>
-
         </div><!--文章列表-->             
-
         <include file="Public:footer" />
-

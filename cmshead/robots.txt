@@ -1,5 +1,3 @@
 User-agent: *
 
-Disallow:/Public/
-
-Sitemap: /sitemap.xml
+Disallow: /

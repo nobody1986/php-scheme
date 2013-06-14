@@ -1,5 +1,5 @@
 <?php
-// 日记模型
+// 日记模块
 class DiaryAction extends CommonAction {
 
 }

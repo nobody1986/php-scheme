@@ -150,7 +150,7 @@ body, #splitBar { background:#EDEDED;}
 
 #header, #header .headerNav { background:url(./images/header_bg.png) repeat-x;}
 #header { background-color:#102c4a;}
-#header .logo { background:url(./images/logo.png) no-repeat;_background:url(./images/logo.gif) no-repeat;}
+#header .logo { background:url(./images/logo.png) no-repeat;}
 #header .nav li { float:left; margin-left:-1px; padding:0 8px; line-height:11px; background:url(./images/listLine.png) no-repeat;}
 #header .nav li a { color:#fff;}
 #header .themeList li div { background:url(../default/images/themeButton.png) no-repeat;}
@@ -164,10 +164,6 @@ body, #splitBar { background:#EDEDED;}
 #taskbar .close, #taskbar .restore, #taskbar .minimize { background:url(./images/layout/taskbar_icon.png) no-repeat;}
 #taskbar li .taskbutton span { color:#FFF;}
 #taskbar .taskbarLeft, #taskbar .taskbarRight { background:url(./images/layout/taskbar_control.png) no-repeat;}
-
-/* navMenu（顶部大菜单） */
-#navMenu li a, #navMenu li span { color:#DDDDDD; }
-#navMenu li.selected span, #navMenu li span:hover {color:#FFF;background:url(./images/menu/menu.png) no-repeat;}
 
 /* Homepage */
 .sidebarContent { display:block; overflow:auto; height:500px; border:solid 1px #86B4EC; background:#FFF;}

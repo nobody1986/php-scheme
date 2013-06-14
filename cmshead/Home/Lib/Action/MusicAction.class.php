@@ -5,33 +5,35 @@ class MusicAction extends CommonAction {
 	public function index($id=0){
 		$id = $id ? $id : $_GET['id'];
 		if(!is_numeric($id)) $this->error('参数错误！');
-		parent::$id = $id; //chapp可用
-		$type = D('Category')->find($id);
-		$type && $type['classstatus']==1 or $this->error('没有这个分类！');	
-		$type['method']=str_replace('Action::', '/', __METHOD__); //固定的
+		$type = D('Category')->where('status=1')->find($id);
+		$type or $this->error('没有这个分类！');	
+		$type['method']=__FUNCTION__; //固定的
 		$map = D('Common')->getCategoryMap($id);
-		parent::$map = $map['_string'] ? $map['_string'] : NULL;		
-		$this->seo($type);
+		$list = D('Music')->where($map)->order('sort DESC')->select();
+		foreach ($list as $key=>$val){
+			if(!strstr($val['url'],'http'))$list[$key]['url']='__PUBLIC__/Upload/music/'.$val['url'];
+		}
+		$types = D('Category')->where('status=1 AND pid!=0 AND module="Music"')->order('sort DESC')->select();
+		foreach ($types as $key=>$val){
+			$val['method']=$val['module'].'/index';
+			$types[$key] = $this->changurl($val);
+		}
+		$this->assign('types',$types);
+		$this->assign('list',$list);
+		$this->seo($type['title'], $type['keywords'], $type['description'], D('Common')->getPosition($id));
 		$this->choosetpl($type);
 	}
 	//推荐音乐
 	public function add(){
 		if($_SESSION['verify']!=md5($_POST['verify'])){
-			 echo '验证码错误，发表失败！';
+			 echo '<div class="pop">验证码错误，发表失败！</div>';
 			 return false;
 		}else{
-			unset($_SESSION['verify']);
-			$data = safe($_POST);
-			$data['status'] = C('HOME_SEND_STATUS');
-			$data['add_time'] = time();
+			$data = $_POST;
 			if(D('Music')->add($data)){
-				if(C('HOME_SEND_STATUS')){
-					echo '发表成功！';
-				}else{
-					echo '发表成功，请等待审核！';
-				} 
+				echo '<div class="pop">发表成功，请等待审核！</div>'; 
 			}else{
-				echo '发表失败！';
+				echo '<div class="pop">发表失败！</div>';
 			}
 		}
 	}

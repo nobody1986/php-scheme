@@ -2,11 +2,44 @@
 //公开类
 class PublicAction extends Action {
 	// 检查用户是否登录
-	public function checkUser() {
+	protected function checkUser() {
 		if(!isset($_SESSION[C('USER_AUTH_KEY')])) {
 			$this->assign('jumpUrl','Public/login');
 			$this->error('没有登录');
 		}
+	}
+
+	// 菜单页面
+	public function menu() {
+        $this->checkUser();
+        if(isset($_SESSION[C('USER_AUTH_KEY')])) {
+            //显示菜单项
+            $menu  = array();
+            
+        	//读取数据库模块列表生成菜单项
+			$node    =   M("Node");
+			$id	=	$node->getField("id");
+			$where['level']=2;
+			$where['status']=1;
+			$where['pid']=$id;
+			$list	=	$node->where($where)->field('id,name,group_id,title')->order('sort asc')->select();			
+			$accessList = $_SESSION['_ACCESS_LIST'];
+			foreach($list as $key=>$module) {
+			     if(isset($accessList[strtoupper(APP_NAME)][strtoupper($module['name'])]) || $_SESSION['administrator']) {
+				//设置模块访问权限
+				$module['access'] =   1;
+				$menu[$key]  = $module;
+			    }
+			}
+              
+            if(!empty($_GET['tag'])){
+                $this->assign('menuTag',$_GET['tag']);
+            }
+            $this->assign('menu',$menu);
+		}
+		C('SHOW_RUN_TIME',false);			// 运行时间显示
+		C('SHOW_PAGE_TRACE',false);
+		$this->display();
 	}
 
     // 后台首页 查看系统信息
@@ -15,8 +48,7 @@ class PublicAction extends Action {
             '操作系统'=>PHP_OS,
             '运行环境'=>$_SERVER["SERVER_SOFTWARE"],
             'PHP运行方式'=>php_sapi_name(),
-            'CMSHead版本'=>C('CMSHEAD_VERSION').' [ <a href="http://www.cmshead.com" target="_blank">查看CMSHead最新版本</a> ]',
-            'ThinkPHP版本'=>THINK_VERSION.' [ <a href="http://thinkphp.cn" target="_blank">查看ThinkPHP最新版本</a> ]',
+            'ThinkPHP版本'=>THINK_VERSION.' [ <a href="http://thinkphp.cn" target="_blank">查看最新版本</a> ]',
             '上传附件限制'=>ini_get('upload_max_filesize'),
             '执行时间限制'=>ini_get('max_execution_time').'秒',
             '服务器时间'=>date("Y年n月j日 H:i:s"),
@@ -77,7 +109,6 @@ class PublicAction extends Action {
 		if($_SESSION['verify'] != md5($_POST['verify'])) {
 			$this->error('验证码错误！');
 		}
-//		unset($_SESSION['verify']);
 		import ( 'ORG.Util.RBAC' );
         $authInfo = RBAC::authenticate($map);
         //使用用户名、密码和状态的方式进行认证
@@ -92,7 +123,7 @@ class PublicAction extends Action {
             $_SESSION['loginUserName']		=	$authInfo['nickname'];
             $_SESSION['lastLoginTime']		=	$authInfo['last_login_time'];
 			$_SESSION['login_count']	=	$authInfo['login_count'];
-            if($authInfo['type_id']=='9') {
+            if($authInfo['account']=='admin') {
             	$_SESSION['administrator']		=	true;
             }
             			
@@ -126,7 +157,6 @@ class PublicAction extends Action {
 		if(md5($_POST['verify'])	!= $_SESSION['verify']) {
 			$this->error('验证码错误！');
 		}
-		unset($_SESSION['verify']);
 		$map	=	array();
         $map['password']= pwdHash($_POST['oldpassword']);
         if(isset($_POST['account'])) {
@@ -157,7 +187,6 @@ class PublicAction extends Action {
 	//验证码
 	public function verify()
     {
-		ob_end_clean();
 		$type = isset($_GET['type'])?$_GET['type']:'gif';
         import("ORG.Util.Image");
         Image::buildImageVerify(4,1,$type,48,20);
@@ -176,5 +205,5 @@ class PublicAction extends Action {
 		}else{
 			$this->error('资料修改失败!');
 		}
-	}		
+	}
 }

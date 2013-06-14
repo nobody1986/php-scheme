@@ -84,8 +84,7 @@ class Dispatcher {
         // URL常量
         define('__SELF__',$_SERVER['REQUEST_URI']);
         // 当前项目地址
-        define('__APP__', PHP_FILE);
-        //define('__APP__', C('SITE_URL') ? C('SITE_URL') : PHP_FILE); //awen edit 对二级域名的支持，必须是绝对路径
+        define('__APP__',PHP_FILE);
         // 当前模块和分组地址
         $module = defined('P_MODULE_NAME')?P_MODULE_NAME:MODULE_NAME;
         if(defined('GROUP_NAME')) {

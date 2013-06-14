@@ -55,20 +55,15 @@ class Dir extends Think implements IteratorAggregate
 		$guid	=	md5($pathname.$pattern);
 		if(!isset($_listDirs[$guid])){
 			$dir = array();
-			$list	=	glob(iconv('utf-8', 'gbk', $pathname.$pattern)); //awen edit
+			$list	=	glob($pathname.$pattern);
 			foreach ($list as $i=>$file){
-					//awen edit{
-					$nfile = iconv('gbk', 'utf-8', $file);
-					$dir[$i]['file']		= $file;
-					$arr = explode('/',$nfile);
-					$dir[$i]['filename']    = $arr[count($arr)-1];
-					$dir[$i]['pathname']    = iconv('gbk', 'utf-8', realpath($file));
-					//awen edit}
+					$dir[$i]['filename']    = basename($file);
+					$dir[$i]['pathname']    = realpath($file);
 					$dir[$i]['owner']        = fileowner($file);
 					$dir[$i]['perms']        = fileperms($file);
 					$dir[$i]['inode']        = fileinode($file);
 					$dir[$i]['group']        = filegroup($file);
-					$dir[$i]['path']        = iconv('gbk', 'utf-8', dirname($file));
+					$dir[$i]['path']        = dirname($file);
 					$dir[$i]['atime']        = fileatime($file);
 					$dir[$i]['ctime']        = filectime($file);
 					$dir[$i]['size']        = filesize($file);
@@ -527,34 +522,8 @@ class Dir extends Think implements IteratorAggregate
 	 */
 	function createDir($dir){         
 	    return is_dir($dir) || (Dir::createDir(dirname($dir)) && mkdir($dir, 0777)); 
-	}	
+	}
 
-	/**
-	* 遍历目录所有子目录及文件 awen add
-	* 
-	* @param string $path 遍历的绝对路径
-	* @param string $filtext 过滤的文件格式
-	* @param boolean $havedir 是否包含扫描到的目录
-	* @return array 所有子目录及文件全路径
-	*/
-	function get_allfiles( $path, $filtext=null, $havedir=true ){
-	    $list = array();
-	    foreach( glob( $path . '/*') as $item ){
-	        if( is_dir( $item ) ){
-	        	if($havedir) $list[] = $item;
-	            $list = array_merge( $list , Dir::get_allfiles( $item, $filtext ) );
-	        }
-	        else{   
-	            if(is_string($filtext)){     
-	                if(preg_match('/\.('.$filtext.')$/i', $item)) $list[] = $item;
-	            }
-	            else{
-	                $list[] = $item;
-	            }
-	        }
-	    }
-	    return $list;
-	}    
 }//类定义结束
 
 if(!class_exists('DirectoryIterator')) {

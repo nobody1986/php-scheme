@@ -6,8 +6,8 @@ class UserModel extends CommonModel {
 		array('password','require','密码必须'),
 		array('nickname','require','昵称必须'),
 		array('repassword','require','确认密码必须'),
-		array('repassword','password','确认密码不一致',0,'confirm'),
-		array('account','','帐号已经存在',0,'unique',self::MODEL_INSERT),
+		array('repassword','password','确认密码不一致',self::EXISTS_VAILIDATE,'confirm'),
+		array('account','','帐号已经存在',self::EXISTS_VAILIDATE,'unique',self::MODEL_INSERT),
 		);
 
 	public $_auto		=	array(

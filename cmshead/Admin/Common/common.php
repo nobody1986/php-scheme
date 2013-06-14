@@ -1,13 +1,9 @@
 <?php
-//返回前台DEFAULT_THEME
-function getHomeDefTheme(){
-	include __ROOT__.'/Home/Conf/config.php';	
-	return $home_config['DEFAULT_THEME'] ? $home_config['DEFAULT_THEME'] : 'default';
-}
+//公共函数
+
 /**
  * 根据字段与搜索域对应关系生成查询条件 
  * 返回支持空格的关键字查询 
- * 可以单独制定哪些字段需要like模糊查询<input type="hidden" name="_search_likes" value="*"/>字段名逗号分隔，*为所有
  * 参数如：
  * $where = getSearchMap(array('title'=>'keyword','content'=>'keyword'));
    $where['_logic'] = 'OR';
@@ -16,31 +12,27 @@ function getHomeDefTheme(){
  * @return array map
  */
 function getSearchMap($fieldMap){
-	$map = array ();
-	if(is_array($fieldMap) && !empty($fieldMap)){
-		$_search_likes = $_REQUEST ['_search_likes']; $arr_search_likes = (false!==strpos($_search_likes,',')) ? explode(',',$_search_likes) : array();
-		foreach ( $fieldMap as $key => $val ) {
-			if (isset ( $_REQUEST [$val] ) && ($keyword = htmlspecialchars(trim($_REQUEST [$val]))) != '') {
-				$mapkey = is_numeric($key) ? $val : $key;
-				$is_like = ($_search_likes=='*' || in_array($mapkey, $arr_search_likes));
-				
-				if(false!==strpos($keyword,' ')){
-					$childstr = ''; $childarr = array();
-					$arr = explode(' ', $keyword);
-					foreach($arr as $v){
-						$v = trim($v);
-						if($v!=''){
-							$childstr .= ($childstr!='' ? '&' : '') . $mapkey;
-							$childarr[] = $is_like ? array('like', "%{$v}%") : $v;
-						}
+	$map = array();
+	if(is_array($fieldMap))
+	foreach ( $fieldMap as $key => $val ) {		
+		if (isset ( $_REQUEST [$val] ) && ($keyword = trim(htmlspecialchars($_REQUEST [$val]))) != '') {
+			$mapkey = is_numeric($key) ? $val : $key;
+			if(false!==strpos($_REQUEST [$val],' ')){
+				$childstr = ''; $childarr = array();
+				$arr = explode(' ', $keyword);
+				foreach($arr as $v){
+					$v = trim($v);
+					if($v!=''){
+						$childstr .= ($childstr!='' ? '&' : '') . $mapkey;
+						$childarr[] = $v;
 					}
-					if($childarr){
-						$childarr['_multi'] = true;
-						$map[$childstr]	= $childarr;
-					} 				
-				}else{
-					$map [$mapkey] = $is_like ? array('like', "%{$keyword}%") : $keyword;
 				}
+				if($childarr){
+					$childarr['_multi'] = true;
+					$map[$childstr]	= $childarr;					
+				} 				
+			}else{
+				$map [$mapkey] = $keyword;
 			}
 		}
 	}
@@ -61,7 +53,7 @@ function setSearchKey(&$val, $keyword, $strlen=0){
 	$arr = explode(' ', $keyword);
 	foreach($arr as $v){
 		$v = trim($v);
-		if($v!='') $val=str_ireplace($v,"<font color=red><b>{$v}</b></font>",$val);		
+		if($v!='') $val=str_replace($v,"<font color=red><b>{$v}</b></font>",$val);		
 	}
 	return $val;
 }
@@ -82,6 +74,45 @@ function unsetValue(&$searchArray, $remove){
 	}
 }
 
+function toDate($time, $format = 'Y-m-d H:i:s') {
+	if (empty ( $time )) {
+		return '';
+	}
+	$format = str_replace ( '#', ':', $format );
+	return date ($format, $time );
+}
+
+// 缓存文件
+function cmssavecache($name = '', $fields = '') {
+	$Model = D ( $name );
+	$list = $Model->select ();
+	$data = array ();
+	foreach ( $list as $key => $val ) {
+		if (empty ( $fields )) {
+			$data [$val [$Model->getPk ()]] = $val;
+		} else {
+			// 获取需要的字段
+			if (is_string ( $fields )) {
+				$fields = explode ( ',', $fields );
+			}
+			if (count ( $fields ) == 1) {
+				$data [$val [$Model->getPk ()]] = $val [$fields [0]];
+			} else {
+				foreach ( $fields as $field ) {
+					$data [$val [$Model->getPk ()]] [] = $val [$field];
+				}
+			}
+		}
+	}
+	$savefile = cmsgetcache ( $name );
+	// 所有参数统一为大写
+	$content = "<?php\nreturn " . var_export ( array_change_key_case ( $data, CASE_UPPER ), true ) . ";\n?>";
+	file_put_contents ( $savefile, $content );
+}
+
+function cmsgetcache($name = '') {
+	return DATA_PATH . '~' . strtolower ( $name ) . '.php';
+}
 function getStatus($status, $imageShow = true) {
 	switch ($status) {
 		case 0 :
@@ -103,20 +134,7 @@ function getStatus($status, $imageShow = true) {
 
 	}
 	return ($imageShow) ?  $showImg  : $showText;
-}
-function is_Model($id, $imageShow = true){
-	$ename = M('Node')->where('id='.$id)->getField('name');
-	$is_model = M('Model')->where("ename='{$ename}'")->count() ? 1 : 0;
-	if($imageShow===0) return $is_model;
-	if($imageShow===1) return array($is_model,$ename);
-	if($is_model){
-		$showText = '是';
-		$showImg = '<IMG SRC="' . __PUBLIC__ . '/Images/ok.png" WIDTH="20" HEIGHT="17" BORDER="0" ALT="是">';
-	}else{
-		$showText = '否';
-		$showImg = '<IMG SRC="' . __PUBLIC__ . '/Images/error.png" WIDTH="20" HEIGHT="17" BORDER="0" ALT="否">';
-	}
-	return ($imageShow) ?  $showImg  : $showText;
+
 }
 function getDefaultStyle($style) {
 	if (empty ( $style )) {
@@ -139,12 +157,44 @@ function IP($ip = '', $file = 'UTFWry.dat') {
 	return $_ip [$ip];
 }
 
+function getNodeName($id) {
+	if (Session::is_set ( 'nodeNameList' )) {
+		$name = Session::get ( 'nodeNameList' );
+		return $name [$id];
+	}
+	$Group = D ( "Node" );
+	$list = $Group->getField ( 'id,name' );
+	$name = $list [$id];
+	Session::set ( 'nodeNameList', $list );
+	return $name;
+}
+
+function get_pawn($pawn) {
+	if ($pawn == 0)
+		return "<span style='color:green'>没有</span>";
+	else
+		return "<span style='color:red'>有</span>";
+}
+function get_patent($patent) {
+	if ($patent == 0)
+		return "<span style='color:green'>没有</span>";
+	else
+		return "<span style='color:red'>有</span>";
+}
+
+
 function getNodeGroupName($id) {
 	if (empty ( $id )) {
 		return '未分组';
 	}
-	$array = C('ADMIN_BMENU');
-	return $array[$id];
+	if (isset ( $_SESSION ['nodeGroupList'] )) {
+		return $_SESSION ['nodeGroupList'] [$id];
+	}
+	$Group = D ( "Group" );
+	$list = $Group->getField ( 'id,title' );
+	$_SESSION ['nodeGroupList'] = $list;
+	$name = $list [$id];
+	return $name;
 }
 
 function getCardStatus($status) {
@@ -169,27 +219,35 @@ function getCardStatus($status) {
 
 }
 
-function showStatus($status, $id, $module_name='', $callback='') {
-	static $pkname =  '';
-	$moduleName = $module_name ? $module_name : MODULE_NAME;
-	$moduleURL = $module_name ? '__APP__/'.$module_name : '__URL__';
-	if($pkname=='') $pkname = M($moduleName)->getPk();
-	
+function showStatus($status, $id, $callback="") {
 	switch ($status) {
 		case 0 :
-			$info = '<a href="'.$moduleURL.'/resume/'.$pkname.'/' . $id . '/navTabId/__MODULE__" target="ajaxTodo" callback="'.$callback.'">审核</a>';
+			$info = '<a href="__URL__/resume/id/' . $id . '/navTabId/__MODULE__" target="ajaxTodo" callback="'.$callback.'">恢复</a>';
 			break;
 		case 2 :
-			$info = '<a href="'.$moduleURL.'/pass/'.$pkname.'/' . $id . '/navTabId/__MODULE__" target="ajaxTodo" callback="'.$callback.'">批准</a>';
+			$info = '<a href="__URL__/pass/id/' . $id . '/navTabId/__MODULE__" target="ajaxTodo" callback="'.$callback.'">批准</a>';
 			break;
 		case 1 :
-			$info = '<a href="'.$moduleURL.'/forbid/'.$pkname.'/' . $id . '/navTabId/__MODULE__" target="ajaxTodo" callback="'.$callback.'">禁用</a>';
+			$info = '<a href="__URL__/forbid/id/' . $id . '/navTabId/__MODULE__" target="ajaxTodo" callback="'.$callback.'">禁用</a>';
 			break;
 		case - 1 :
-			$info = '<a href="'.$moduleURL.'/recycle/'.$pkname.'/' . $id . '/navTabId/__MODULE__" target="ajaxTodo" callback="'.$callback.'">还原</a>';
+			$info = '<a href="__URL__/recycle/id/' . $id . '/navTabId/__MODULE__" target="ajaxTodo" callback="'.$callback.'">还原</a>';
 			break;
 	}
 	return $info;
+}
+
+/**
+ +----------------------------------------------------------
+ * 获取登录验证码 默认为4位数字
+ +----------------------------------------------------------
+ * @param string $fmode 文件名
+ +----------------------------------------------------------
+ * @return string
+ +----------------------------------------------------------
+ */
+function build_verify($length = 4, $mode = 1) {
+	return rand_string ( $length, $mode );
 }
 
 
@@ -238,6 +296,53 @@ function sort_by($array, $keyname = null, $sortby = 'asc') {
 	return $inarray;
 }
 
+/**
+	 +----------------------------------------------------------
+ * 产生随机字串，可用来自动生成密码
+ * 默认长度6位 字母和数字混合 支持中文
+	 +----------------------------------------------------------
+ * @param string $len 长度
+ * @param string $type 字串类型
+ * 0 字母 1 数字 其它 混合
+ * @param string $addChars 额外字符
+	 +----------------------------------------------------------
+ * @return string
+	 +----------------------------------------------------------
+ */
+function rand_string($len = 6, $type = '', $addChars = '') {
+	$str = '';
+	switch ($type) {
+		case 0 :
+			$chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz' . $addChars;
+			break;
+		case 1 :
+			$chars = str_repeat ( '0123456789', 3 );
+			break;
+		case 2 :
+			$chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' . $addChars;
+			break;
+		case 3 :
+			$chars = 'abcdefghijklmnopqrstuvwxyz' . $addChars;
+			break;
+		default :
+			// 默认去掉了容易混淆的字符oOLl和数字01，要添加请使用addChars参数
+			$chars = 'ABCDEFGHIJKMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789' . $addChars;
+			break;
+	}
+	if ($len > 10) { //位数过长重复字符串一定次数
+		$chars = $type == 1 ? str_repeat ( $chars, $len ) : str_repeat ( $chars, 5 );
+	}
+	if ($type != 4) {
+		$chars = str_shuffle ( $chars );
+		$str = substr ( $chars, 0, $len );
+	} else {
+		// 中文随机字
+		for($i = 0; $i < $len; $i ++) {
+			$str .= msubstr ( $chars, floor ( mt_rand ( 0, mb_strlen ( $chars, 'utf-8' ) - 1 ) ), 1 );
+		}
+	}
+	return $str;
+}
 function pwdHash($password, $type = 'md5') {
 	return hash ( $type, $password );
 }
@@ -258,20 +363,12 @@ function idsfirst($ids){
  * @return string
  */
 function getCategoryName($ids){
-	if (empty ( $ids )) return '顶级分类';
-	$list = M('Category')->field ( 'classtitle' )->where("classid in ($ids)")->select();
-	foreach($list as $rs) $str .= ($str ? ',' : '').$rs['classtitle'];	
-	return $str;
-}
-/**
- * 根据ID获得分类名 id形如1或者2,3,4 后台有所不同
- * @param $id
- * @return string
- */
-function getCategoryModule($ids){
-	if (empty ( $ids )) return '';
-	$list = M('Category')->field ( 'classmodule' )->where("classid in ($ids)")->select();
-	foreach($list as $rs) $str .= ($str ? ',' : '').$rs['classmodule'];	
+	if (empty ( $ids )) return '顶级分类';	
+	$ids = is_array($ids) ? $ids : explode(',', $ids);
+	$list = D ('Category')->field ( 'id,title' )->cache('getCategoryName',3600)->select();
+	foreach($list as $rs){
+		if(in_array($rs['id'], $ids)) $str .= ($str ? ',' : '').$rs['title'];
+	} 
 	return $str;
 }
 //根据ID获得用户名
@@ -293,11 +390,35 @@ function getParentNodeId($pid){
 	$id = D('Node')->where('id='.$pid)->getField('pid');
 	return $id?$id:0;
 }
-//获取所有上级分类
-function getParents($classid,$isall=1){
-	$classpids = M('category')->where('classid='.$classid)->getField($isall ? 'classpids' : 'classpid');	
-	return ($classpids!==false) ? ($isall ? explode(',',$classpids) : $classpids) : null;
-}
+
+
+/**
+* 遍历目录所有文件
+* 
+* @param string $path 遍历的绝对路径
+* @param string $filtext 过滤的文件格式
+* @param boolean $havedir 是否包含扫描到的目录
+* @return array 所有文件
+*/
+function get_allfiles( $path, $filtext=null, $havedir=true ){
+    $list = array();
+    foreach( glob( $path . '/*') as $item ){
+        if( is_dir( $item ) ){
+        	if($havedir) $list[] = $item;
+            $list = array_merge( $list , get_allfiles( $item, $filtext ) );
+        }
+        else{   
+            if(is_string($filtext)){     
+                if(preg_match('/\.('.$filtext.')$/i', $item)) $list[] = $item;
+            }
+            else{
+                $list[] = $item;
+            }
+        }
+    }
+    return $list;
+}    
+
 /**
 * @desc 替换成自己想显示的信息
 * 格式:Replacestr(Rs("Audited"),"1:已通过审核,0:<span class=\"tx\">未通过审核</span>")
@@ -386,11 +507,10 @@ function PrintOption($EquValue, $valuelist){
   @param string 值:名称,值:名称...
   @param string 复选框name属性名
   @param string 第一个选项附加的验证字串
-  @param string 选中的值 逗号分隔
-  @param string name类型,1为name[]  2为name1,nam2  否则为name
+  @param string editVal!='`~NULL'则name名称为同一组 若没有值需要传入''
 */
-function PrintcBox($valuelist, $BName, $chkAttr='', $EquValue='', $nameType=1){
-    $arr=NULL;$i=0;
+function PrintcBox($valuelist, $BName, $chkAttr='', $editVal='`~NULL', $isidrand=false){
+    $arr=NULL;$i=0; $isEqu = ($editVal!=='`~NULL'); 
     if(strpos($BName, ":dis")!==false){
         $f_disabled = " disabled";
         $arr = explode(":dis", $BName);
@@ -413,17 +533,17 @@ function PrintcBox($valuelist, $BName, $chkAttr='', $EquValue='', $nameType=1){
     $f_tmparr = explode(",", $valuelist);
 
     foreach( $f_tmparr as $f_tmpstr ){
-        $str_rand = ''; //uniqid();
-    	if( false!==stripos($chkAttr, 'DataType=') || false!==stripos($chkAttr, 'class=') ){//验证字串则只加首个，否则所有都加
+        $str_rand = $isidrand ? new_rand(10) : '';
+    	if( false!==stripos($chkAttr, 'DataType=') ){//验证字串则只加首个，否则所有都加
     		$chkAttr = ($i==0) ? $chkAttr : '';
     	}
 		$f_tmpstr = trim($f_tmpstr);
         if( false===strpos($f_tmpstr, ":") ) $f_tmpstr = $f_tmpstr.":".$f_tmpstr;
         $f_tmparr1 = explode(":", $f_tmpstr);
         if( count($f_tmparr1) == 2 ){
-			if($EquValue=='') $EquValue = htmlspecialchars($_REQUEST[$BName.$f_tmparr1[0]]); //直接得到这个变量的get,post值
+			$EquValue = $isEqu ? $editVal : $GLOBALS[$BName.$f_tmparr1[0]]; //直接得到这个变量
             if( strpos(",$EquValue,", ",$f_tmparr1[0],")!==false ){
-                $f_oldstr .= "<label><input name=\"".$BName.($nameType==1 ? '[]' : ($nameType==2 ? $f_tmparr1[0] : ''))."\" id=\"".$BName.$f_tmparr1[0].$str_rand."\" type=\"checkbox\" value=\"".$f_tmparr1[0]."\"".$f_disabled." checked{$chkAttr} />".$f_tmparr1[1]."</label>\r\n";
+                $f_oldstr .= "<input name=\"".$BName.($isEqu ? '[]' : $f_tmparr1[0])."\" id=\"".$BName.$f_tmparr1[0].$str_rand."\" type=\"checkbox\" value=\"".$f_tmparr1[0]."\"".$f_disabled." checked{$chkAttr} /><label for=\"".$BName.$f_tmparr1[0]."\">".$f_tmparr1[1]."</label>\r\n";
                 $isselected = true;
             }    
             elseif( trim($f_tmparr1[0]) == "else" ){
@@ -432,18 +552,18 @@ function PrintcBox($valuelist, $BName, $chkAttr='', $EquValue='', $nameType=1){
                     $intTmp = $arr[0];
                     if( !$isselected && is_numeric($intTmp)){
                         if( intval($EquValue) != intval($intTmp) ){
-                            $f_oldstr .= "<label><input name=\"".$BName.($nameType==1 ? '[]' : ($nameType==2 ? $f_tmparr1[0] : ''))."\" id=\"".$BName."_0\" type=\"checkbox\" value=\"0\"".$f_disabled." checked{$chkAttr} />".$f_tmparr1[1]."</label>\r\n";
+                            $f_oldstr .= "<input name=\"".$BName.($isEqu ? '[]' : $f_tmparr1[0])."\" id=\"".$BName."_0\" type=\"checkbox\" value=\"0\"".$f_disabled." checked{$chkAttr} /><label for=\"".$BName."_0\">".$f_tmparr1[1]."</label>\r\n";
                         }else{
-                            $f_oldstr .= "<label><input name=\"".$BName.($nameType==1 ? '[]' : ($nameType==2 ? $f_tmparr1[0] : ''))."\" id=\"".$BName."_0\" type=\"checkbox\" value=\"0\"".$f_disabled."{$chkAttr} />".$f_tmparr1[1]."</label>\r\n";
+                            $f_oldstr .= "<input name=\"".$BName.($isEqu ? '[]' : $f_tmparr1[0])."\" id=\"".$BName."_0\" type=\"checkbox\" value=\"0\"".$f_disabled."{$chkAttr} /><label for=\"".$BName."_0\">".$f_tmparr1[1]."</label>\r\n";
                         }
                     }else{
-                        $f_oldstr .= "<label><input name=\"".$BName.($nameType==1 ? '[]' : ($nameType==2 ? $f_tmparr1[0] : ''))."\" id=\"".$BName."_0\" type=\"checkbox\" value=\"0\"".$f_disabled."{$chkAttr} />".$f_tmparr1[1]."</label>\r\n";
+                        $f_oldstr .= "<input name=\"".$BName.($isEqu ? '[]' : $f_tmparr1[0])."\" id=\"".$BName."_0\" type=\"checkbox\" value=\"0\"".$f_disabled."{$chkAttr} /><label for=\"".$BName."_0\">".$f_tmparr1[1]."</label>\r\n";
                     }
                 }else{
-                    $f_oldstr .= "<label><input name=\"".$BName.($nameType==1 ? '[]' : ($nameType==2 ? $f_tmparr1[0] : ''))."\" id=\"".$BName."_0\" type=\"checkbox\" value=\"0\"".$f_disabled."{$chkAttr} />".$f_tmparr1[1]."</label>\r\n";
+                    $f_oldstr .= "<input name=\"".$BName.($isEqu ? '[]' : $f_tmparr1[0])."\" id=\"".$BName."_0\" type=\"checkbox\" value=\"0\"".$f_disabled."{$chkAttr} /><label for=\"".$BName."_0\">".$f_tmparr1[1]."</label>\r\n";
                 }
             }elseif( trim($f_tmparr1[0]) . trim($f_tmparr1[1]) != "" ){
-                $f_oldstr .= "<label><input name=\"".$BName.($nameType==1 ? '[]' : ($nameType==2 ? $f_tmparr1[0] : ''))."\" id=\"".$BName.$f_tmparr1[0].$str_rand."\" type=\"checkbox\" value=\"".$f_tmparr1[0]."\"".$f_disabled."{$chkAttr} />".$f_tmparr1[1]."</label>\r\n";
+                $f_oldstr .= "<input name=\"".$BName.($isEqu ? '[]' : $f_tmparr1[0])."\" id=\"".$BName.$f_tmparr1[0].$str_rand."\" type=\"checkbox\" value=\"".$f_tmparr1[0]."\"".$f_disabled."{$chkAttr} /><label for=\"".$BName.$f_tmparr1[0]."\">".$f_tmparr1[1]."</label>\r\n";
             }
         }
 		$i++;
@@ -484,8 +604,8 @@ function PrintRadio($valuelist, $BName, $chkAttr='', $EquValue=''){
     $f_tmparr = explode(",", $valuelist);
 
     foreach( $f_tmparr as $f_tmpstr ){
-    	if( false!==stripos($chkAttr, 'DataType=') || false!==stripos($chkAttr, 'class=') ){//验证字串则只加首个，否则所有都加
-    		$chkAttr = ($i==0) ? ' '.trim($chkAttr) : '';
+    	if( false!==stripos($chkAttr, 'DataType=') ){//验证字串则只加首个，否则所有都加
+    		$chkAttr = ($i==0) ? $chkAttr : '';
     	}
     	
 		$f_tmpstr = trim($f_tmpstr);
@@ -494,7 +614,7 @@ function PrintRadio($valuelist, $BName, $chkAttr='', $EquValue=''){
         if( count($f_tmparr1) == 2 ){
             if( strpos(",$EquValue,", ",$f_tmparr1[0],")!==false ){
             	$new_chkAttr = str_replace('{$value}', $f_tmparr1[0], $chkAttr);
-                $f_oldstr .= "<label><input name=\"{$BName}\" id=\"".$BName.$f_tmparr1[0]."\" type=\"radio\" value=\"".$f_tmparr1[0]."\"".$f_disabled." checked{$new_chkAttr} />".$f_tmparr1[1]."</label>\r\n";
+                $f_oldstr .= "<input name=\"{$BName}\" id=\"".$BName.$f_tmparr1[0]."\" type=\"radio\" value=\"".$f_tmparr1[0]."\"".$f_disabled." checked{$new_chkAttr} /><label for=\"".$BName.$f_tmparr1[0]."\">".$f_tmparr1[1]."</label>\r\n";
                 $isselected = true;
             }elseif( trim($f_tmparr1[0]) == "else" ){
             	$new_chkAttr = str_replace('{$value}', '0', $chkAttr);
@@ -503,52 +623,24 @@ function PrintRadio($valuelist, $BName, $chkAttr='', $EquValue=''){
                     $intTmp = $arr[0];
                     if( !$isselected && is_numeric($intTmp)){
                         if( intval($EquValue) != intval($intTmp) ){
-                            $f_oldstr .= "<label><input name=\"{$BName}\" id=\"".$BName."_0\" type=\"radio\" value=\"0\"".$f_disabled." checked{$new_chkAttr} />".$f_tmparr1[1]."</label>\r\n";
+                            $f_oldstr .= "<input name=\"{$BName}\" id=\"".$BName."_0\" type=\"radio\" value=\"0\"".$f_disabled." checked{$new_chkAttr} /><label for=\"".$BName."_0\">".$f_tmparr1[1]."</label>\r\n";
                         }else{
-                            $f_oldstr .= "<label><input name=\"{$BName}\" id=\"".$BName."_0\" type=\"radio\" value=\"0\"".$f_disabled."{$new_chkAttr} />".$f_tmparr1[1]."</label>\r\n";
+                            $f_oldstr .= "<input name=\"{$BName}\" id=\"".$BName."_0\" type=\"radio\" value=\"0\"".$f_disabled."{$new_chkAttr} /><label for=\"".$BName."_0\">".$f_tmparr1[1]."</label>\r\n";
                         }
                     }else{
-                        $f_oldstr .= "<label><input name=\"{$BName}\" id=\"".$BName."_0\" type=\"radio\" value=\"0\"".$f_disabled."{$new_chkAttr} />".$f_tmparr1[1]."</label>\r\n";
+                        $f_oldstr .= "<input name=\"{$BName}\" id=\"".$BName."_0\" type=\"radio\" value=\"0\"".$f_disabled."{$new_chkAttr} /><label for=\"".$BName."_0\">".$f_tmparr1[1]."</label>\r\n";
                     }
                 }else{
-                    $f_oldstr .= "<label><input name=\"{$BName}\" id=\"".$BName."_0\" type=\"radio\" value=\"0\"".$f_disabled."{$new_chkAttr} />".$f_tmparr1[1]."</label>\r\n";
+                    $f_oldstr .= "<input name=\"{$BName}\" id=\"".$BName."_0\" type=\"radio\" value=\"0\"".$f_disabled."{$new_chkAttr} /><label for=\"".$BName."_0\">".$f_tmparr1[1]."</label>\r\n";
                 }
             }elseif( trim($f_tmparr1[0]) . trim($f_tmparr1[1]) != "" ){
             	$new_chkAttr = str_replace('{$value}', $f_tmparr1[0], $chkAttr);
-                $f_oldstr .= "<label><input name=\"{$BName}\" id=\"".$BName.$f_tmparr1[0]."\" type=\"radio\" value=\"".$f_tmparr1[0]."\"".$f_disabled."{$new_chkAttr} />".$f_tmparr1[1]."</label>\r\n";
+                $f_oldstr .= "<input name=\"{$BName}\" id=\"".$BName.$f_tmparr1[0]."\" type=\"radio\" value=\"".$f_tmparr1[0]."\"".$f_disabled."{$new_chkAttr} /><label for=\"".$BName.$f_tmparr1[0]."\">".$f_tmparr1[1]."</label>\r\n";
             }
         }
 		$i++;
     }
     return $f_oldstr;
-}
-
-/**
-* @desc 判断日期时间格式是否正确
-* @param datestring 日期字符串如2009-01-30 或 2009-01-30 10 或 2009-01-30 10:01 或 2009-01-30 10:00:01
-* @param chktime 是否检查时间
-* @return true or false
-*/
-function is_date($str, $chktime=true){    
-    if( preg_match('/^(\d{2,4})-(\d{1,2})-(\d{1,2})$/',$str,$arr) ){ 
-        return checkdate((int)$arr[2], (int)$arr[3], (int)$arr[1]);
-    }
-    
-    if($chktime)
-    if( preg_match('/^(\d{2,4})-(\d{1,2})-(\d{1,2}) (\d{1,2})(:(\d{1,2}))?(:(\d{1,2}))?$/',$str,$arr) ){
-    	$isdate = checkdate((int)$arr[2], (int)$arr[3], (int)$arr[1]);
-        if($isdate && $arr[4]>=0 && $arr[4]<=23) {//日期正确小时正确
-        	if( !isset($arr[5]) && !isset($arr[7]) ){//没有分 秒
-				return true;
-        	}elseif( !isset($arr[7]) ) {//没有秒
-        		if($arr[6]>=0 && $arr[6]<=59) return true;
-        	}else{
-        		if($arr[6]>=0 && $arr[6]<=59 && $arr[8]>=0 && $arr[8]<=59) return true;        		
-        	}
-        }
-    }
- 
-    return false;
 }
 
 /*以下是根据文件大小获得flv格式的文件的总的时间长度的函数，单位s */
@@ -619,36 +711,3 @@ function getsec($filename){
 }
 
 /*  获得flv格式总时间的所有函数结束 */
-
-/**
- * 内容自动提前关键字
- * @param $title 当前文章关键字
- * @param $content 当前文章内容
- * @return string 返回替换后的内容
- */
- function autoget_keywords($title='',$content=''){
-	if($title=='' && $content=='') return '';
-	$file = $_SERVER['DOCUMENT_ROOT'].__ROOT__.'/plugin/pscws23/interface.php';
-	if( is_file($file) ){
-		require_once($file);
-		$title = iconv('utf-8', 'gbk', $title);
-		$content = iconv('utf-8', 'gbk', $content);
-		$pscws_title = strip_tags($title);
-		$pscws_content = strip_tags(preg_replace('/(<STYLE.*?>[\s\S]*?<\/STYLE>)|(&[a-z]+;)|\s/i','',$content));
-		$keywords = get_hot_keywords($pscws_title . $pscws_content, 5);				
-		return iconv('gbk', 'utf-8', $keywords);
-	}
-	return '插件未找到';
- }
- 
- /**
- * 内容自动提取导读摘要
- * @param $content 当前文章内容
- * @return string 返回替换后的内容
- */
- function autoget_description($content=''){
-	if($content=='') return '';
-	 $pscws_content = strip_tags(preg_replace('/(<STYLE.*?>[\s\S]*?<\/STYLE>)|(&[a-z]+;)|\s/i','',$content));
-	 $pscws_content = str_replace(array("\r","\n"), '', $pscws_content);
-	 return msubstr($pscws_content, 0, 200, 'utf-8', '');
- }

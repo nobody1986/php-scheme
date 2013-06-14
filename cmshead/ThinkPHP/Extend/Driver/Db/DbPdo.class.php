@@ -2,30 +2,38 @@
 // +----------------------------------------------------------------------
 // | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
 // +----------------------------------------------------------------------
-// | Copyright (c) 2006-2012 http://thinkphp.cn All rights reserved.
+// | Copyright (c) 2009 http://thinkphp.cn All rights reserved.
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
+// $Id: DbPdo.class.php 2706 2012-02-04 03:39:48Z liu21st $
 
-defined('THINK_PATH') or exit();
 /**
- * PDO数据库驱动 
- * @category   Extend
- * @package  Extend
- * @subpackage  Driver.Db
+ +------------------------------------------------------------------------------
+ * PDO数据库驱动类
+ +------------------------------------------------------------------------------
+ * @category   Think
+ * @package  Think
+ * @subpackage  Db
  * @author    liu21st <liu21st@gmail.com>
+ * @version   $Id: DbPdo.class.php 2706 2012-02-04 03:39:48Z liu21st $
+ +------------------------------------------------------------------------------
  */
 class DbPdo extends Db{
 
     protected $PDOStatement = null;
-    private   $table        = '';
+    private   $table = '';
 
     /**
+     +----------------------------------------------------------
      * 架构函数 读取数据库配置信息
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      * @param array $config 数据库配置数组
+     +----------------------------------------------------------
      */
     public function __construct($config=''){
         if ( !class_exists('PDO') ) {
@@ -41,8 +49,13 @@ class DbPdo extends Db{
     }
 
     /**
+     +----------------------------------------------------------
      * 连接数据库方法
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
+     * @throws ThinkExecption
+     +----------------------------------------------------------
      */
     public function connect($config='',$linkNum=0) {
         if ( !isset($this->linkID[$linkNum]) ) {
@@ -72,18 +85,28 @@ class DbPdo extends Db{
     }
 
     /**
+     +----------------------------------------------------------
      * 释放查询结果
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      */
     public function free() {
         $this->PDOStatement = null;
     }
 
     /**
+     +----------------------------------------------------------
      * 执行查询 返回数据集
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      * @param string $str  sql指令
+     +----------------------------------------------------------
      * @return mixed
+     +----------------------------------------------------------
+     * @throws ThinkExecption
+     +----------------------------------------------------------
      */
     public function query($str) {
         $this->initConnect(false);
@@ -108,10 +131,17 @@ class DbPdo extends Db{
     }
 
     /**
+     +----------------------------------------------------------
      * 执行语句
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      * @param string $str  sql指令
+     +----------------------------------------------------------
      * @return integer
+     +----------------------------------------------------------
+     * @throws ThinkExecption
+     +----------------------------------------------------------
      */
     public function execute($str) {
         $this->initConnect(true);
@@ -140,7 +170,7 @@ class DbPdo extends Db{
             $this->error();
             return false;
         } else {
-            $this->numRows = $this->PDOStatement->rowCount();
+            $this->numRows = $result;
             if($flag || preg_match("/^\s*(INSERT\s+INTO|REPLACE\s+INTO)\s+/i", $str)) {
                 $this->lastInsID = $this->getLastInsertId();
             }
@@ -149,9 +179,13 @@ class DbPdo extends Db{
     }
 
     /**
+     +----------------------------------------------------------
      * 启动事务
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      * @return void
+     +----------------------------------------------------------
      */
     public function startTrans() {
         $this->initConnect(true);
@@ -165,54 +199,73 @@ class DbPdo extends Db{
     }
 
     /**
+     +----------------------------------------------------------
      * 用于非自动提交状态下面的查询提交
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      * @return boolen
+     +----------------------------------------------------------
      */
     public function commit() {
         if ($this->transTimes > 0) {
             $result = $this->_linkID->commit();
             $this->transTimes = 0;
             if(!$result){
-                $this->error();
-                return false;
+                throw_exception($this->error());
             }
         }
         return true;
     }
 
     /**
+     +----------------------------------------------------------
      * 事务回滚
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      * @return boolen
+     +----------------------------------------------------------
+     * @throws ThinkExecption
+     +----------------------------------------------------------
      */
     public function rollback() {
         if ($this->transTimes > 0) {
             $result = $this->_linkID->rollback();
             $this->transTimes = 0;
             if(!$result){
-                $this->error();
-                return false;
+                throw_exception($this->error());
             }
         }
         return true;
     }
 
     /**
+     +----------------------------------------------------------
      * 获得所有的查询数据
+     +----------------------------------------------------------
      * @access private
+     +----------------------------------------------------------
      * @return array
+     +----------------------------------------------------------
+     * @throws ThinkExecption
+     +----------------------------------------------------------
      */
     private function getAll() {
         //返回数据集
-        $result =   $this->PDOStatement->fetchAll(PDO::FETCH_ASSOC);
+        $result =   $this->PDOStatement->fetchAll(constant('PDO::FETCH_ASSOC'));
         $this->numRows = count( $result );
         return $result;
     }
 
     /**
+     +----------------------------------------------------------
      * 取得数据表的字段信息
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
+     * @throws ThinkExecption
+     +----------------------------------------------------------
      */
     public function getFields($tableName) {
         $this->initConnect(true);
@@ -255,17 +308,16 @@ class DbPdo extends Db{
         $info   =   array();
         if($result) {
             foreach ($result as $key => $val) {
-                $val            =   array_change_key_case($val);
-                $val['name']    =   isset($val['name'])?$val['name']:"";
-                $val['type']    =   isset($val['type'])?$val['type']:"";
-                $name           =   isset($val['field'])?$val['field']:$val['name'];
-                $info[$name]    =   array(
+                $val['Name'] = isset($val['name'])?$val['name']:$val['Name'];
+                $val['Type'] = isset($val['type'])?$val['type']: $val['Type'];
+                $name= strtolower(isset($val['Field'])?$val['Field']:$val['Name']);
+                $info[$name] = array(
                     'name'    => $name ,
-                    'type'    => $val['type'],
-                    'notnull' => (bool)(((isset($val['null'])) && ($val['null'] === '')) || ((isset($val['notnull'])) && ($val['notnull'] === ''))), // not null is empty, null is yes
-                    'default' => isset($val['default'])? $val['default'] :(isset($val['dflt_value'])?$val['dflt_value']:""),
-                    'primary' => isset($val['dey'])?strtolower($val['dey']) == 'pri':(isset($val['pk'])?$val['pk']:false),
-                    'autoinc' => isset($val['extra'])?strtolower($val['extra']) == 'auto_increment':(isset($val['key'])?$val['key']:false),
+                    'type'    => $val['Type'],
+                    'notnull' => (bool)(((isset($val['Null'])) && ($val['Null'] === '')) || ((isset($val['notnull'])) && ($val['notnull'] === ''))), // not null is empty, null is yes
+                    'default' => isset($val['Default'])? $val['Default'] :(isset($val['dflt_value'])?$val['dflt_value']:""),
+                    'primary' => isset($val['Key'])?strtolower($val['Key']) == 'pri':(isset($val['pk'])?$val['pk']:false),
+                    'autoinc' => isset($val['Extra'])?strtolower($val['Extra']) == 'auto_increment':(isset($val['Key'])?$val['Key']:false),
                 );
             }
         }
@@ -273,8 +325,13 @@ class DbPdo extends Db{
     }
 
     /**
+     +----------------------------------------------------------
      * 取得数据库的表信息
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
+     * @throws ThinkExecption
+     +----------------------------------------------------------
      */
     public function getTables($dbName='') {
         if(C('DB_FETCH_TABLES_SQL')) {
@@ -320,10 +377,15 @@ class DbPdo extends Db{
     }
 
     /**
+     +----------------------------------------------------------
      * limit分析
+     +----------------------------------------------------------
      * @access protected
+     +----------------------------------------------------------
      * @param mixed $lmit
+     +----------------------------------------------------------
      * @return string
+     +----------------------------------------------------------
      */
     protected function parseLimit($limit) {
         $limitStr    = '';
@@ -356,37 +418,25 @@ class DbPdo extends Db{
     }
 
     /**
-     * 字段和表名处理
-     * @access protected
-     * @param string $key
-     * @return string
-     */
-    protected function parseKey(&$key) {
-        if($this->dbType=='MYSQL'){
-            $key   =  trim($key);
-            if(!preg_match('/[,\'\"\*\(\)`.\s]/',$key)) {
-               $key = '`'.$key.'`';
-            }
-            return $key;            
-        }else{
-            return parent::parseKey($key);
-        }
-
-    }
-
-    /**
+     +----------------------------------------------------------
      * 关闭数据库
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      */
     public function close() {
         $this->_linkID = null;
     }
 
     /**
+     +----------------------------------------------------------
      * 数据库错误信息
      * 并显示当前的SQL语句
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      * @return string
+     +----------------------------------------------------------
      */
     public function error() {
         if($this->PDOStatement) {
@@ -395,27 +445,31 @@ class DbPdo extends Db{
         }else{
             $this->error = '';
         }
-        if('' != $this->queryStr){
+        if($this->debug && '' != $this->queryStr){
             $this->error .= "\n [ SQL语句 ] : ".$this->queryStr;
         }
-        trace($this->error,'','ERR');
         return $this->error;
     }
 
     /**
+     +----------------------------------------------------------
      * SQL指令安全过滤
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      * @param string $str  SQL指令
+     +----------------------------------------------------------
      * @return string
+     +----------------------------------------------------------
      */
     public function escapeString($str) {
          switch($this->dbType) {
             case 'PGSQL':
             case 'MSSQL':
             case 'SQLSRV':
+            case 'IBASE':
             case 'MYSQL':
                 return addslashes($str);
-            case 'IBASE':                
             case 'SQLITE':
             case 'ORACLE':
             case 'OCI':
@@ -424,9 +478,13 @@ class DbPdo extends Db{
     }
 
     /**
+     +----------------------------------------------------------
      * 获取最后插入id
+     +----------------------------------------------------------
      * @access public
+     +----------------------------------------------------------
      * @return integer
+     +----------------------------------------------------------
      */
     public function getLastInsertId() {
          switch($this->dbType) {
@@ -444,4 +502,5 @@ class DbPdo extends Db{
                 return $vo?$vo[0]["currval"]:0;
         }
     }
+
 }

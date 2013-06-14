@@ -126,7 +126,7 @@
 				obj_param[0] = '<param name="movie" value="' + config.swf + '" />';
 				obj_param[1] = '<param name="quality" value="high" />';
 				obj_param[2] = '<param name="FlashVars" value="id=' + escape(config.id) + '&fid=' + escape(config.fid) + '" />';
-				obj_param[3] = '<param name="allowScriptAccess" value="sameDomain" />'; //always
+				obj_param[3] = '<param name="allowScriptAccess" value="always" />';
 				obj_param[4] = '<param name="bgcolor" value="' + config.bgcolor + '" />';
 				
 				var ie_dom = document.createElement(html_obj);
@@ -138,7 +138,7 @@
 				var html_embed = '<embed name="' + config.fid + '" src="' + config.swf + '"';
 				html_embed += ' width="' + config.width + '" height="' + config.height + '" bgcolor="' + config.bgcolor + '"';
 				html_embed += ' quality="high" FlashVars="id=' + escape(config.id) + '&fid=' + escape(config.fid) + '"';
-				html_embed += ' allowScriptAccess="sameDomain"';
+				html_embed += ' allowScriptAccess="always"';
 				html_embed += ' type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />';
 				$(this).html(html_embed);
 			}
