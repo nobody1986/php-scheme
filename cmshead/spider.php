@@ -12,8 +12,8 @@ class Spider {
 
     function __construct($config = 'spider.txt') {
         $this->_config = $config;
-        $this->_db_connection = new PDO('sqlite:data.db');
-        #$this->_db_connection = new PDO('mysql:host=127.0.0.1;dbname=12pir2', 'root', 'iamsnow',array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES "UTF8"'));
+        #$this->_db_connection = new PDO('sqlite:data.db');
+        $this->_db_connection = new PDO('mysql:host=127.0.0.1;dbname=12pir2', 'root', 'iamsnow',array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES "UTF8"'));
     }
 
     function parseConfigFile() {
@@ -73,9 +73,7 @@ class Spider {
         $sql = 'SELECT * FROM ch_category where title=?';
         $stmt = $this->_db_connection->prepare($sql);
         $stmt->execute(array($name));
-//var_dump($stmt->errorInfo());
         $row = $stmt->fetch();
-var_dump($row);
         return $row;
     }
     
@@ -87,16 +85,11 @@ var_dump($row);
             $fields []= $k;
             $values []= $v;
         }
-//        $this->_db_connection->beginTransaction();
+
         $sql = "{$sql} (".  implode(',', $fields).") values (".trim(str_repeat('?,', sizeof($fields)),',').")";
-        //echo $sql;
+
         $stmt = $this->_db_connection->prepare($sql);
         $ret = $stmt->execute($values);
-//var_dump($ret);
- //       $this->_db_connection->commit();
-   //     var_dump($this->_db_connection->errorInfo()); 
-//var_dump($stmt->errorCode());
-//var_dump($stmt->errorInfo());
         return $this->_db_connection->lastInsertId();
     }
 
@@ -163,10 +156,8 @@ var_dump($row);
                     }
 
                     $clearCode = $this->restoreImg($clearCode, $url_parsed);
-//var_dump($cat);
                     $cata = $this->getCataByName($cat);
                     $data['content'] = preg_replace('#<a[^>]+?href=[\'"]/.+?[\'"](>.+?)</a>#i', '$1', $clearCode);
-//var_dump($cata);
                     $data['add_time'] = time();
                     $data['update_time'] = time();
                     $data['description'] = strip_tags($data['content']);
