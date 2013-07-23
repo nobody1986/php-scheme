@@ -12,8 +12,8 @@ class Spider {
 
     function __construct($config = 'spider.txt') {
         $this->_config = $config;
-        #$this->_db_connection = new PDO('sqlite:data.db');
-        $this->_db_connection = new PDO('mysql:host=127.0.0.1;dbname=12pir2', 'root', 'iamsnow',array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES "UTF8"'));
+        $this->_db_connection = new PDO('sqlite:data.db');
+        #$this->_db_connection = new PDO('mysql:host=127.0.0.1;dbname=12pir2', 'root', 'iamsnow',array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES "UTF8"'));
     }
 
     function parseConfigFile() {
@@ -26,7 +26,7 @@ class Spider {
     }
 
     function walk() {
-        $urls_visit = array();
+        $this->_urls_visit = array();
         foreach ($this->_config_parsed as $item) {
             $urls = array($item[0]);
             $level = 0;
@@ -35,10 +35,10 @@ class Spider {
                 $urls_tmp = array();
                 foreach ($urls as $u) {
                     $urls_tmp +=$this->visit($u, $item);
-                    $urls_visit[$u] = 1;
+                    $this->_urls_visit[$u] = 1;
                 }
                 foreach ($urls_tmp as $k => $l) {
-                    if (isset($urls_visit[$l])) {
+                    if (isset($this->_urls_visit[$l])) {
                         unset($urls_tmp[$k]);
                     }
                 }
@@ -53,6 +53,7 @@ class Spider {
         curl_setopt($ch, CURLOPT_URL, $src);
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.72 Safari/537.36");
         $content = curl_exec($ch);
         curl_close($ch);
         if ($content) {
@@ -93,19 +94,24 @@ class Spider {
         return $this->_db_connection->lastInsertId();
     }
 
-        function restoreImg($content, $url) {
+        function restoreImg($content, $url,&$img) {
             if (preg_match_all('#<img.*?src=[\'""](.+?)[\'""].*?>#i', $content, $matches, PREG_SET_ORDER)) {
                 foreach ($matches as $match) {
-                    $tmp_url = $match[1];
+                    $tmp_url = trim($match[1]);
                     $tmp = parse_url($tmp_url);
 
                     if (empty($tmp['host'])) {
                         $tmp_url = "{$url['scheme']}://{$url['host']}/" . $tmp_url;
                     }
+                    echo $tmp_url;
+                    var_dump($tmp);
                     $filename = md5($tmp_url) . substr($tmp['path'], strrpos($tmp['path'], '.'));
                     $img_content = $this->fetchurl($tmp_url);
                     file_put_contents('./pictures/' . $filename, $img_content);
                     $content = str_replace($match[1], '/pictures/' . $filename, $content);
+                    if(empty($img)){
+                        $img = '/pictures/' . $filename;
+                    }
                 }
             }
             return $content;
@@ -123,15 +129,21 @@ class Spider {
                     if (!preg_match('#'.$config[2].'#i', $url)) {
                         continue;
                     }
-                    echo $url . "\n";
+                    
                     if (empty($url_parsed['host'])) {
-                        $url = "{$baseurl_parsed['scheme']}://{$baseurl_parsed['host']}" . $url;
+                        if($url[0] == '/'){
+                            $url = "{$baseurl_parsed['scheme']}://{$baseurl_parsed['host']}" . $url;
+                        }else{
+                            $url = "{$baseurl_parsed['scheme']}://{$baseurl_parsed['host']}/" . $url;
+                        }
                         $url_parsed['scheme'] = $baseurl_parsed['scheme'];
                         $url_parsed['host'] = $baseurl_parsed['host'];
                     }
+                    echo $url . "\n";
                     $ret_urls [] = $url;
                     //
                     $getcontent = $this->fetchurl($url);
+                    //file_put_contents('test.txt', $getcontent);
                     $article = str_replace("\n", " ", $getcontent);
                     preg_match('#'.$config[3].'#i', $article, $titlearray);
                     $cat = $config[5];
@@ -142,6 +154,7 @@ class Spider {
                     if ($data['title'] == '' || !$code) {
                         continue;
                     }
+                    echo $titlearray[1]."\n";
                     //
                     $article = $this->getArticleByTitle($data['title']);
                     if (!empty($article)) {
@@ -149,13 +162,34 @@ class Spider {
                     }
                     $clearCode = $code[1];
                     $clearCode = trim($clearCode);
+                    if($config[5] == '美女'){
+                        for($i=2;$i<100;++$i ){
+                            $url_tmp = str_replace('.htm', "_{$i}.htm", $url);
+                            $content_tmp = $this->fetchurl($url_tmp);
+                            $this->_urls_visit[$url_tmp] = 1;
+                            if(empty($content_tmp)){
+                                break;
+                            }
+                            $article_tmp = str_replace("\n", " ", $content_tmp);
+                            //
+                            preg_match('#'.$config[4].'#i', $article_tmp, $code_tmp);
+                            if (!$code_tmp) {
+                                break;
+                            }
+                            //
+                            $clearCode .= $code[1];
+                        }   
+                    }
+                    
+
                     //
                     $clearCode = str_replace("&nbsp;", " ", $clearCode);
                     if (empty($clearCode)) {
                         continue;
                     }
-
-                    $clearCode = $this->restoreImg($clearCode, $url_parsed);
+                    $img = '';
+                    echo $clearCode;
+                    $clearCode = $this->restoreImg($clearCode, $url_parsed,$img);
                     $cata = $this->getCataByName($cat);
                     $data['content'] = preg_replace('#<a[^>]+?href=[\'"]/.+?[\'"](>.+?)</a>#i', '$1', $clearCode);
                     $data['add_time'] = time();
@@ -168,12 +202,11 @@ class Spider {
                     $data['tid'] = $cata['id'];
                     $data['status'] = 1;
                     $data['keywords'] = '';
-                    $data['img'] = '';
+                    $data['img'] = $img;
                     $data['rewrite'] = '';
                     $data['template'] = '';
 
                     $ret = $this->createArticle($data);
-                    var_dump($ret);
                 }
             }
             return $ret_urls;
