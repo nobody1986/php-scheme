@@ -9,7 +9,7 @@ return array(
 	'DB_PREFIX'		=>	'ch_',// 数据表前缀
 	'DB_CHARSET'	=>	'utf8',// 网站编码
 	'DB_PORT'		=>	'3306',// 数据库端口
-	'CMSHEAD_URL'     =>  'http://www.12pir2.com:8080',// 网站地址
+	'CMSHEAD_URL'     =>  'http://www.12pir2.com',// 网站地址
 	
 	//网站系统设置
 	'SITE_NAME'			=>  '12PIR2',

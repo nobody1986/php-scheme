@@ -12,8 +12,8 @@ class Spider {
 
     function __construct($config = 'spider.txt') {
         $this->_config = $config;
-        $this->_db_connection = new PDO('sqlite:data.db');
-        #$this->_db_connection = new PDO('mysql:host=127.0.0.1;dbname=12pir2', 'root', 'iamsnow',array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES "UTF8"'));
+        #$this->_db_connection = new PDO('sqlite:data.db');
+        $this->_db_connection = new PDO('mysql:host=127.0.0.1;dbname=12pir2', 'root', 'iamsnow',array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES "UTF8"'));
     }
 
     function parseConfigFile() {
@@ -47,7 +47,7 @@ class Spider {
         }
     }
 
-    function fetchurl($src) {
+    function fetchurl($src,$img = false) {
         $content = '';
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $src);
@@ -57,6 +57,14 @@ class Spider {
         $content = curl_exec($ch);
         curl_close($ch);
         if ($content) {
+            if(!$img){
+                $encoding = mb_detect_encoding($content,'utf8,gbk,gb2312');
+                //echo $encoding;
+                if(strtolower($encoding) != 'utf8'){
+                    $content = mb_convert_encoding($content, 'utf8',$encoding);
+                }
+            }
+            
             return $content;
         }
         return null;
@@ -103,10 +111,10 @@ class Spider {
                     if (empty($tmp['host'])) {
                         $tmp_url = "{$url['scheme']}://{$url['host']}/" . $tmp_url;
                     }
-                    echo $tmp_url;
-                    var_dump($tmp);
+                    #echo $tmp_url;
+                    #var_dump($tmp);
                     $filename = md5($tmp_url) . substr($tmp['path'], strrpos($tmp['path'], '.'));
-                    $img_content = $this->fetchurl($tmp_url);
+                    $img_content = $this->fetchurl($tmp_url,true);
                     file_put_contents('./pictures/' . $filename, $img_content);
                     $content = str_replace($match[1], '/pictures/' . $filename, $content);
                     if(empty($img)){
@@ -138,6 +146,10 @@ class Spider {
                         }
                         $url_parsed['scheme'] = $baseurl_parsed['scheme'];
                         $url_parsed['host'] = $baseurl_parsed['host'];
+                    }else{
+                        if($url_parsed['host'] != $baseurl_parsed['host']){
+                            continue;
+                        }
                     }
                     echo $url . "\n";
                     $ret_urls [] = $url;
@@ -154,12 +166,13 @@ class Spider {
                     if ($data['title'] == '' || !$code) {
                         continue;
                     }
-                    echo $titlearray[1]."\n";
+                    
                     //
                     $article = $this->getArticleByTitle($data['title']);
                     if (!empty($article)) {
                         continue;
                     }
+                    echo $titlearray[1]."\n";
                     $clearCode = $code[1];
                     $clearCode = trim($clearCode);
                     if($config[5] == '美女'){
@@ -188,7 +201,7 @@ class Spider {
                         continue;
                     }
                     $img = '';
-                    echo $clearCode;
+                    #echo $clearCode;
                     $clearCode = $this->restoreImg($clearCode, $url_parsed,$img);
                     $cata = $this->getCataByName($cat);
                     $data['content'] = preg_replace('#<a[^>]+?href=[\'"]/.+?[\'"](>.+?)</a>#i', '$1', $clearCode);

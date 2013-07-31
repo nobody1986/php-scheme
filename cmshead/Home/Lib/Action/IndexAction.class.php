@@ -11,7 +11,7 @@ class IndexAction extends CommonAction{
     //首页    
 	public function index(){
 		$this->assign('diary',D('Diary')->where('status=1')->order('add_time DESC')->limit(5)->select());
-		$top_art = D('Article')->where('status=1')->order('sort DESC')->limit(8)->select();
+		$top_art = D('Article')->where('status=1')->order('(sort*50 + add_time) DESC')->limit(8)->select();
 		foreach ($top_art as $key=>$val){
 			$val['method']='Article/view';
 			$top_art[$key] = $this->changurl($val);
