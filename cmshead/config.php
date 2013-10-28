@@ -12,10 +12,10 @@ return array(
 	'CMSHEAD_URL'     =>  'http://www.12pir2.com',// 网站地址
 	
 	//网站系统设置
-	'SITE_NAME'			=>  '12PIR2',
-	'SITE_KEYWORDS'		=>  'python,php,c,c#,ruby,图片,教程,学习,资料,编程',
+	'SITE_NAME'			=>  '1/2 * PI * R^2 - 圆周率 - 资料集中分享',
+	'SITE_KEYWORDS'		=>  '图片,教程,食谱,资料,开源',
 	'SITE_DESCRIPTION'	=>  '努力为广大用户提供学习，娱乐的场所。提供大量资料和教程，以及美图，食谱等。。。',
-	'EMAIL'				=>	'',
+	'EMAIL'				=>	'2378921965@qq.com',
 	'OFFLINEMESSAGE'	=>	'本站正在维护中，暂不能访问。<br /> 请稍后再访问本站。',
 	'ICP_NUM'			=>	'',
 	'CMSHEAD_VERSION'		=>	'1.0'
