@@ -1,105 +1,97 @@
 <?php
-include 'phpcc/phpcc.php';
 
-class Scheme {
-    protected $parser;
-    protected $stack = [];
-    
-    function __construct() {
-        $tokens = [
-            '(', ')','-',
-            'd'=>'[1-9][0-9]*',
-            'f'=>'[0-9]+\.[0-9]+',
-            'sp'=>'\s+',
-            'atom'=>'[A-Za-z#_\-\?!+\*/%]+',
-            'string' => '[\'"].+?[^\\][\'"]',
-        ];
-        $rules = [
-            'Exp' => [
-                [['(','Form',')'], true, 'Eval'],
-            ],
-            'Form' =>[
-                [['Form','Form'], false],
-                [['Atom'],false]
-            ],
-            'Atom' => [
-                [[['|','atom']],false],
-                [[['|','Number']],false],
-                [[['|','string']],false],
-            ],
-            'Number' => [
-                //[[['|','Scala','Const']], false],
-                [[['|','Scala']], false],
-                [['-', 'Number'], true, 'Reverse'],
-            ],
-            'Scala' => [
-                [[['|','d','f']], true],
-            ],
-            /*'Const' => [
-                [[['|','pi','e']], true],
-            ]*/
-        ];
-        $lexer = new phpcc\Lexer($tokens);
-        $parser = new phpcc\Parser();
-        $parser->setLexer($lexer);
-        $parser->init($rules);
-        $parser->setSkipTokens(['sp']);
-        $this->parser = $parser;
+class Parser {
+
+    protected $regex = "~\\(|\\)|#t|#f|[\\+\\-]?\\d+|\\d+\\.\\d+|'|\"([^\"]|\\\\|\\\")*\"|[^\\s\\(\\)\"']+~m";
+    protected $regexInt = "~^\\d+\$~m";
+    protected $regexFloat = "~^\\d+\\.\\d+\$~m";
+
+//    this.regex.compile();
+    function tokenize(string $s) {
+        preg_match_all($this->regex, $s, $matches);
+        return $matches[0];
     }
-    
-    function _calc($rule, $items) {
-        if ($rule == 'Scala') {
-            switch ($items[0][0]) {
-            case 'd':
-                $this->stack[]= intval($items[0][1]);
-                break;
-            case 'f':
-                $this->stack[]= floatval($items[0][1]);
-                break;
-            }
-        } else {
-            $need_push = true;
-            switch ($rule) {
-            case 'Reverse':
-                $d1 = array_pop($this->stack);
-                $r = -$d1;
-                break;
-            case 'Eval':
-                $need_push = false;
-                var_dump($this->stack);
-                break;
-            default:
-                $need_push = true;
-                $d1 = array_pop($this->stack);
-                var_dump($d1);
-                $r = $d1;
-                break;
-            }
-            if ($need_push) {
-                array_push($this->stack, $r);
+
+    function parse(string $s) {
+        $tokens = $this->tokenize($s);
+        $stack = [];
+        $ast = [];
+        foreach ($tokens as $i => $v) {
+            if ($tokens[$i] == '(') {
+                array_push($stack, ['t' => 'lp']);
+            } else if ($tokens[$i] == '#t') {
+                array_push($stack, ['t' => 'bool', 'val' => true]);
+            } else if ($tokens[$i] == '#f') {
+                array_push($stack, ['t' => 'bool', 'val' => false]);
+            } else if ($tokens[$i] == '\'') {
+                array_push($stack, ['t' => 'quote']);
+            } else if ($tokens[$i][0] == '"') {
+                array_push($stack, ['t' => 'string', 'val' => $tokens[$i] . substr(1, $tokens[$i] . length - 2)]);
+            } else if (preg_match($this->regexInt, $tokens[$i])) {
+                array_push($stack, ['t' => 'int', 'val' => intval($tokens[$i])]);
+            } else if (preg_match($this->regexFloat, $tokens[$i])) {
+                array_push($stack, ['t' => 'float', 'val' => floatval($tokens[$i])]);
+            } else if ($tokens[$i] == ')') {
+                $cons = [];
+                while (($t = array_pop($stack))) {
+                    if ($t['t'] == 'lp') {
+                        break;
+                    }
+                    $cons = [
+                        't' => "cons",
+                        'car' => $t,
+                        'cdr' => $cons,
+                    ];
+                }
+//                var_dump($cons);
+                array_push($stack, $cons);
+            } else {
+                array_push($stack, ['t' => 'symbol', 'val' => $tokens[$i]]);
             }
         }
+        if (sizeof($stack) == 1) {
+            $ast = array_pop($stack);
+        } else {
+            while (($t = array_pop($stack))) {
+                if ($t['t'] == 'lp') {
+                    break;
+                }
+                $cons = [
+                    't' => "cons",
+                    'car' => t,
+                    'cdr' => cons,
+                ];
+            }
+            array_push($stack, $cons);
+        }
+        return $ast;
+    }
+
+}
+
+class Vm {
+    function __construct() {
+        $this->a=null;
+        $this->x=null;
+        $this->f=null;
+        $this->c=null;
+        $this->s=null;
+        $this->stack=[];
+        $this->callStack=[];
+        $this->lastRefer=[];
+        $this->tcoCounter =[];
     }
     
-    function calc($expression) {
-        $this->stack = [];
-        $this->parser->parse($expression, [$this, '_calc']);
-        return $this->stack[0];
-    }
+    function lookUp(){}
+    function saveStack(){}
+    function restoreStack(){}
     
-    function tree($expression) {
-        $this->parser->printTree($expression);
+    function run(){
+        
     }
 }
 
-/////////////////////////////////////////////////////////////
-
-    $calc = new Scheme();
-    while ($exp = fgets(STDIN)) {
-        try {
-            $result = $calc->calc($exp);
-            echo "$result\n";
-        } catch (Exception $e) {
-            echo $e->getMessage(), "\n";
-        }
-    }
+$s = "((lambda (x) (* x 5)))";
+$p = new Parser($s);
+$ast = $p->parse($s);
+print_r($ast);

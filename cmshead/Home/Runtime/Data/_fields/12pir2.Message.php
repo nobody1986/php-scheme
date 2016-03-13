@@ -1,2 +1,0 @@
-<?php
-return array ( 0 => 'id', 1 => 'pid', 2 => 'aid', 3 => 'adder_name', 4 => 'adder_email', 5 => 'type', 6 => 'adder_id', 7 => 'content', 8 => 'add_time', 9 => 'ip', 10 => 'status', '_autoinc' => true, '_pk' => 'id', ); ?>

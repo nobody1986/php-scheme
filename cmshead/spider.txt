@@ -1,5 +1,0 @@
-http://www.oschina.net/ utf-8 .*?news.+? <h1\s+class='OSCTitle'>(.+?)<.h1> class='Body\s+NewsContent\s+TextContent'>(.+?)</div>\s*<div\s+class='NewsLinks'> 资讯
-http://www.qianyunlai.com/blog/ utf-8 .*?html <h4\s+class="post-title">\s*[^>]+>(.+?)</a> <div\s+class="post-content">\s+(.+?)<div\s+class="post-related"> 教程
-http://www.nginxs.com/ utf-8 .*?html <div\s+class="post"\s+id="post-\d+">\s*<h2>(.+?)</h2> </div>\s*<div\s+class="content">\s+(.+?)</div>\s*<div\s+class="reship"> 教程
-http://www.html5cn.org/ utf-8 article* <div\s+class="h\s+hm">\s*<h1\s+class="ph">(.+?)</h1> <td\s+id="article_content">(.+?)</td></tr></table> 资讯
-http://www.ppmsg.com/ utf-8 * <span\s+class="left"><h2>(.+?)</h2></span> <ul\s+class="file">(.+?)</ul> 美女
