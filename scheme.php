@@ -69,26 +69,88 @@ class Parser {
 
 }
 
-class Vm {
-    function __construct() {
-        $this->a=null;
-        $this->x=null;
-        $this->f=null;
-        $this->c=null;
-        $this->s=null;
-        $this->stack=[];
-        $this->callStack=[];
-        $this->lastRefer=[];
-        $this->tcoCounter =[];
+class Ast {
+
+    protected $_ast;
+    protected $_macros = [];
+
+    function __construct($ast) {
+        $this->_ast = $ast;
     }
-    
-    function lookUp(){}
-    function saveStack(){}
-    function restoreStack(){}
-    
-    function run(){
+
+    function expand() {
         
     }
+
+    function expandAll() {
+        
+    }
+
+}
+
+class Vm {
+
+    function __construct() {
+        $this->a = null;
+        $this->x = null;
+        $this->f = null;
+        $this->c = null;
+        $this->s = 0;
+        $this->stack = [];
+        $this->callStack = [];
+        $this->lastRefer = null;
+        $this->tcoCounter = [];
+        $this->topEnv = [];
+    }
+
+    function lookUp($sym) {
+        
+    }
+
+    function saveStack() {
+        
+    }
+
+    function restoreStack() {
+        
+    }
+
+    function run() {
+        while ($this->x) {
+            switch ($this->x[0]) {
+                case 'halt':
+                    return $this->a;
+                    break;
+                case 'constant':
+                    $this->a = $this->x[1];
+                    $this->x = $this->x[2];
+                    $this->lastRefer = "(anon)";
+                    break;
+                case 'argument':
+                    $this->x = $this->x[1];
+                    array_push($this->stack, $this->a);
+                    $this->s++;
+                    break;
+                case 'assign-local':
+                    $this->x = $this->x[1];
+                    array_push($this->stack, $this->a);
+                    break;
+                case 'assign-global':
+                    $this->x = $this->x[1];
+                    array_push($this->stack, $this->a);
+                    break;
+                case 'assign-free':
+                    $this->x = $this->x[1];
+                    array_push($this->stack, $this->a);
+                    break;
+                case 'test':
+                    $this->x = $this->x[1];
+                    array_push($this->stack, $this->a);
+                    break;
+            }
+        }
+    }
+
 }
 
 $s = "((lambda (x) (* x 5)))";
