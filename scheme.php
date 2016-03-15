@@ -103,17 +103,22 @@ class Ast {
         $this->onePass($ast['cdr']);
     }
 
-    function twoPass($ast) {
+    function twoPass(&$ast) {
         if (empty($ast)) {
             return;
         }
         if (!empty($ast['car']) && $ast['car']['t'] == 'symbol' && isset($this->_macros[$ast['car']['val']])) {
             $args = $this->_macros[$ast['car']['val']]['ayms'];
             $body = $this->_macros[$ast['car']['val']]['body'];
-            $tmp = $args;
+            $realArgs = [];
+            $tmp = $ast['cdr'];
             while (!empty($tmp)) {
-                array_push($ayms, ',', $tmp['car']['val']);
+                array_push($realArgs,   $tmp['car']);
                 $tmp = $tmp['cdr'];
+            }
+            //可以判断参数是否对齐
+            if(sizeof($args) != sizeof($realArgs)){
+                
             }
             $this->_macros[$name] = [
                 'syms' => $syms,
