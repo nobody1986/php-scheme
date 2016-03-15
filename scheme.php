@@ -78,6 +78,53 @@ class Ast {
         $this->_ast = $ast;
     }
 
+    function onePass($ast) {
+        if (empty($ast)) {
+            return;
+        }
+        if (!empty($ast['car']) && $ast['car']['t'] == 'symbol' && $ast['car']['val'] == 'define-macro') {
+            $macro = [];
+            $syms = [];
+            $name = $ast['cdr']['car']['val'];
+            $args = $ast['cdr']['cdr']['car'];
+            $body = $ast['cdr']['cdr']['cdr']['car'];
+            $tmp = $args;
+            while (!empty($tmp)) {
+                array_push($ayms, ',', $tmp['car']['val']);
+                $tmp = $tmp['cdr'];
+            }
+            $this->_macros[$name] = [
+                'syms' => $syms,
+                'body' => $body,
+            ];
+            return;
+        }
+        $this->onePass($ast['car']);
+        $this->onePass($ast['cdr']);
+    }
+
+    function twoPass($ast) {
+        if (empty($ast)) {
+            return;
+        }
+        if (!empty($ast['car']) && $ast['car']['t'] == 'symbol' && isset($this->_macros[$ast['car']['val']])) {
+            $args = $this->_macros[$ast['car']['val']]['ayms'];
+            $body = $this->_macros[$ast['car']['val']]['body'];
+            $tmp = $args;
+            while (!empty($tmp)) {
+                array_push($ayms, ',', $tmp['car']['val']);
+                $tmp = $tmp['cdr'];
+            }
+            $this->_macros[$name] = [
+                'syms' => $syms,
+                'body' => $body,
+            ];
+            return;
+        }
+        $this->twoPass($ast['car']);
+        $this->twoPass($ast['cdr']);
+    }
+
     function expand() {
         
     }
