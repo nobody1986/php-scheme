@@ -113,7 +113,7 @@ class Ast {
         $this->onePass($ast['cdr']);
     }
 
-    function twoPass(&$ast) {
+    function twoPass(&$ast,&$expanded) {
         if (empty($ast)) {
             return;
         }
@@ -134,11 +134,38 @@ class Ast {
             $reBody = $body;
             $this->expand($reBody, $argsMap);
             $ast = $reBody;
+             $expanded = true;
             return;
         }
-        $this->twoPass($ast['car']);
-        $this->twoPass($ast['cdr']);
+        $this->twoPass($ast['car'],$expanded);
+        $this->twoPass($ast['cdr'],$expanded);
     }
+
+    function threePass(&$ast) {
+            $expanded = true;
+            while($expanded){
+                $expanded = false;
+                $this->twoPass($ast,$expanded);
+            }
+    }
+
+    function fourPass(&$ast) {
+            $expanded = true;
+            while($expanded){
+                $expanded = false;
+                $this->twoPass($ast,$expanded);
+            }
+    }
+
+    function fivePass(&$ast) {
+            $expanded = true;
+            while($expanded){
+                $expanded = false;
+                $this->twoPass($ast,$expanded);
+            }
+    }
+
+
 
     function expand(&$body, &$argsMap) {
         if (empty($body)) {
@@ -236,5 +263,5 @@ $p = new Parser($s);
 $ast = $p->parse($s);
 $a = new Ast($ast);
 //$as = $a->onePass($ast);
-$as = $a->twoPass($a->_ast);
+$as = $a->threePass($a->_ast);
 print_r($a->_ast);
