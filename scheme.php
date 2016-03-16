@@ -2,7 +2,7 @@
 
 class Parser {
 
-    protected $regex = "~\\(|\\)|#t|#f|[\\+\\-]?\\d+|\\d+\\.\\d+|'|\"([^\"]|\\\\|\\\")*\"|[^\\s\\(\\)\"']+~m";
+    protected $regex = "~\\(|\\)|#t|#f|[\\+\\-]?\\d+|\\d+\\.\\d+|'|`|\"([^\"]|\\\\|\\\")*\"|[^\\s\\(\\)\"']+~m";
     protected $regexInt = "~^\\d+\$~m";
     protected $regexFloat = "~^\\d+\\.\\d+\$~m";
 
@@ -25,6 +25,8 @@ class Parser {
                 array_push($stack, ['t' => 'bool', 'val' => false]);
             } else if ($tokens[$i] == '\'') {
                 array_push($stack, ['t' => 'quote']);
+            } else if ($tokens[$i] == '`') {
+                array_push($stack, ['t' => 'backquote']);
             } else if ($tokens[$i][0] == '"') {
                 array_push($stack, ['t' => 'string', 'val' => $tokens[$i] . substr(1, $tokens[$i] . length - 2)]);
             } else if (preg_match($this->regexInt, $tokens[$i])) {
@@ -52,17 +54,23 @@ class Parser {
         if (sizeof($stack) == 1) {
             $ast = array_pop($stack);
         } else {
+            $cons = [];
             while (($t = array_pop($stack))) {
-                if ($t['t'] == 'lp') {
-                    break;
+                if ($t['t'] == 'quote' || $t['t'] == 'backquote') {
+                    $cons['car'] = [
+                        't' => 'cons',
+                        'car' => $t,
+                        'cdr' => $cons['car'],
+                    ];
+                    continue;
                 }
                 $cons = [
-                    't' => "cons",
-                    'car' => t,
-                    'cdr' => cons,
+                    't' => "form",
+                    'car' => $t,
+                    'cdr' => $cons,
                 ];
             }
-            array_push($stack, $cons);
+            $ast = $cons;
         }
         return $ast;
     }
@@ -71,32 +79,34 @@ class Parser {
 
 class Ast {
 
-    protected $_ast;
-    protected $_macros = [];
+    public $_ast;
+    public $_macros = [];
 
     function __construct($ast) {
         $this->_ast = $ast;
+        $this->onePass($this->_ast);
     }
 
-    function onePass($ast) {
+    function onePass(&$ast) {
         if (empty($ast)) {
             return;
         }
         if (!empty($ast['car']) && $ast['car']['t'] == 'symbol' && $ast['car']['val'] == 'define-macro') {
             $macro = [];
             $syms = [];
-            $name = $ast['cdr']['car']['val'];
-            $args = $ast['cdr']['cdr']['car'];
-            $body = $ast['cdr']['cdr']['cdr']['car'];
+            $name = $ast['cdr']['car']['car']['val'];
+            $args = $ast['cdr']['car']['cdr'];
+            $body = $ast['cdr']['cdr']['cdr'];
             $tmp = $args;
             while (!empty($tmp)) {
-                array_push($ayms, ',', $tmp['car']['val']);
+                array_push($syms, ','.$tmp['car']['val']);
                 $tmp = $tmp['cdr'];
             }
             $this->_macros[$name] = [
                 'syms' => $syms,
-                'body' => $body,
+                'body' => $body ,
             ];
+            $ast = [];
             return;
         }
         $this->onePass($ast['car']);
@@ -108,29 +118,41 @@ class Ast {
             return;
         }
         if (!empty($ast['car']) && $ast['car']['t'] == 'symbol' && isset($this->_macros[$ast['car']['val']])) {
-            $args = $this->_macros[$ast['car']['val']]['ayms'];
+            $args = $this->_macros[$ast['car']['val']]['syms'];
             $body = $this->_macros[$ast['car']['val']]['body'];
             $realArgs = [];
             $tmp = $ast['cdr'];
             while (!empty($tmp)) {
-                array_push($realArgs,   $tmp['car']);
+                array_push($realArgs, $tmp['car']);
                 $tmp = $tmp['cdr'];
             }
-            //可以判断参数是否对齐
-            if(sizeof($args) != sizeof($realArgs)){
+//可以判断参数是否对齐
+            if (sizeof($args) != sizeof($realArgs)) {
                 
             }
-            $this->_macros[$name] = [
-                'syms' => $syms,
-                'body' => $body,
-            ];
+            $argsMap = array_combine($args, $realArgs);
+            $reBody = $body;
+            $this->expand($reBody, $argsMap);
+            $ast = $reBody;
             return;
         }
         $this->twoPass($ast['car']);
         $this->twoPass($ast['cdr']);
     }
 
-    function expand() {
+    function expand(&$body, &$argsMap) {
+        if (empty($body)) {
+            return;
+        }
+        if (!empty($body['car']) && $body['car']['t'] == 'symbol' && isset($argsMap[$body['car']['val']])) {
+            $body['car'] = $argsMap[$body['car']['val']];
+        } else {
+            $this->expand($body['car'], $argsMap);
+            $this->expand($body['cdr'], $argsMap);
+        }
+    }
+    
+    function display($ast){
         
     }
 
@@ -205,7 +227,14 @@ class Vm {
 
 }
 
-$s = "((lambda (x) (* x 5)))";
+$s = "(define-macro (test expr)
+  `(if ,expr
+    #t
+    #f))
+(test (= 1 2)) ";
 $p = new Parser($s);
 $ast = $p->parse($s);
-print_r($ast);
+$a = new Ast($ast);
+//$as = $a->onePass($ast);
+$as = $a->twoPass($a->_ast);
+print_r($a->_ast);
