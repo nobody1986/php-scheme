@@ -87,6 +87,15 @@ class Ast {
         $this->onePass($this->_ast);
     }
 
+    function macroSyms(&$ast) {
+        if (empty($ast)) {
+            return;
+        }
+
+        $this->macroSyms($ast['car']);
+        $this->macroSyms($ast['cdr']);
+    }
+
     function onePass(&$ast) {
         if (empty($ast)) {
             return;
@@ -99,12 +108,12 @@ class Ast {
             $body = $ast['cdr']['cdr']['cdr'];
             $tmp = $args;
             while (!empty($tmp)) {
-                array_push($syms, ','.$tmp['car']['val']);
+                array_push($syms, ',' . $tmp['car']['val']);
                 $tmp = $tmp['cdr'];
             }
             $this->_macros[$name] = [
                 'syms' => $syms,
-                'body' => $body ,
+                'body' => $body,
             ];
             $ast = [];
             return;
@@ -113,7 +122,7 @@ class Ast {
         $this->onePass($ast['cdr']);
     }
 
-    function twoPass(&$ast,&$expanded) {
+    function twoPass(&$ast, &$expanded) {
         if (empty($ast)) {
             return;
         }
@@ -134,38 +143,88 @@ class Ast {
             $reBody = $body;
             $this->expand($reBody, $argsMap);
             $ast = $reBody;
-             $expanded = true;
+            $expanded = true;
             return;
         }
-        $this->twoPass($ast['car'],$expanded);
-        $this->twoPass($ast['cdr'],$expanded);
+        $this->twoPass($ast['car'], $expanded);
+        $this->twoPass($ast['cdr'], $expanded);
     }
 
     function threePass(&$ast) {
-            $expanded = true;
-            while($expanded){
-                $expanded = false;
-                $this->twoPass($ast,$expanded);
+        //展开let 
+        /**
+         * (let ((x 1) (y 2)) (...) )
+         * ((lambda (x y) (...)) 1 2)
+         */
+        if (empty($ast)) {
+            return;
+        }
+        if (!empty($ast['car']) && $ast['car']['t'] == 'symbol' && $ast['car']['val'] == 'let') {
+            $args = $ast['cdr']['car'];
+            $body = $ast['cdr']['cdr'];
+            $arglist = [];
+            $arglistAst = &$arglist;
+            $real = [];
+            $realAst = &$real;
+            $tmp = $args;
+            while (!empty($tmp)) {
+                $arglistAst = [
+                    'car' => $tmp['car']['car'],
+                    't' => 'cons',
+                    'cdr' => [],
+                ];
+                $arglistAst = &$arglistAst['cdr'];
+                $this->threePass($tmp['car']['cdr']);
+                $realAst = [
+                    'car' => $tmp['car']['cdr']['car'],
+                    't' => 'cons',
+                    'cdr' => [],
+                ];
+                $realAst = &$realAst['cdr'];
+                $tmp = $tmp['cdr'];
             }
+            $lambdaAst = [
+                'car' => [
+                    't' => 'symbol',
+                    'val' => 'lambda',
+                ],
+                'cdr' => [
+                    'car' => $arglist,
+                    't' => 'cons',
+                    'cdr' => [
+                        'car' => $body,
+                        't' => 'cons',
+                        'cdr' => [],
+                    ],
+                ],
+                't' => 'cons',
+            ];
+            $ast = [
+                't' => 'cons',
+                'car' => $lambdaAst,
+                'cdr' => $real,
+            ];
+            return;
+        }
+        $this->threePass($ast['car']);
+        $this->threePass($ast['cdr']);
     }
 
     function fourPass(&$ast) {
-            $expanded = true;
-            while($expanded){
-                $expanded = false;
-                $this->twoPass($ast,$expanded);
-            }
+        $expanded = true;
+        while ($expanded) {
+            $expanded = false;
+            $this->twoPass($ast, $expanded);
+        }
     }
 
     function fivePass(&$ast) {
-            $expanded = true;
-            while($expanded){
-                $expanded = false;
-                $this->twoPass($ast,$expanded);
-            }
+        $expanded = true;
+        while ($expanded) {
+            $expanded = false;
+            $this->twoPass($ast, $expanded);
+        }
     }
-
-
 
     function expand(&$body, &$argsMap) {
         if (empty($body)) {
@@ -178,8 +237,8 @@ class Ast {
             $this->expand($body['cdr'], $argsMap);
         }
     }
-    
-    function display($ast){
+
+    function display($ast) {
         
     }
 
@@ -254,11 +313,12 @@ class Vm {
 
 }
 
-$s = "(define-macro (test expr)
-  `(if ,expr
-    #t
-    #f))
-(test (= 1 2)) ";
+$s = "(let ((x 1)) (+ x 2)) ";
+//$s = "(define-macro (test expr)
+//  `(if ,expr
+//    #t
+//    #f))
+//(test (= 1 2)) ";
 $p = new Parser($s);
 $ast = $p->parse($s);
 $a = new Ast($ast);
