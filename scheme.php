@@ -261,6 +261,7 @@ class Vm {
         $this->lastRefer = null;
         $this->tcoCounter = [];
         $this->topEnv = [];
+        $this->callFrames = [];
     }
 
     function lookUp($sym) {
