@@ -151,7 +151,7 @@ class Ast {
     }
 
     function threePass(&$ast) {
-        //展开let 
+//展开let 
         /**
          * (let ((x 1) (y 2)) (...) )
          * ((lambda (x y) (...)) 1 2)
@@ -250,66 +250,103 @@ class Ast {
 
 class Vm {
 
-    function __construct() {
-        $this->a = null;
-        $this->x = null;
-        $this->f = null;
-        $this->c = null;
-        $this->s = 0;
-        $this->stack = [];
-        $this->callStack = [];
-        $this->lastRefer = null;
-        $this->tcoCounter = [];
-        $this->topEnv = [];
-    }
+    const ADD = 1; # integer addition
+    const MUL = 2; # integer multiplication
+    const SUB = 3; # integer subtraction
+    const DIV = 4; # integer division
+    const NIL = 5; # push nil pointer onto the stack
+    const CONS = 6; # cons the top of the stack onto the next list
+    const LDC = 7; # push a constant argument
+    const LDF = 8; # load function
+    const AP = 9; # function application
+    const LD = 10; # load a variable
+    const CAR = 11; # value of car cell
+    const CDR = 12; # value of cdr cell
+    const DUM = 13; # setup recursive closure list
+    const RAP = 14; # recursive apply
+    const JOIN = 15; # C = pop dump
+    const RTN = 16; # return from function
+    const SEL = 17; # logical selection (if/ then / else )
+    const NULL = 18; # test if list is empty
+    const WRITEI =
+    19; # write an integer to the terminal
+    const WRITEC =
+    20; # write a character to the terminal
+    const READC =
+    21; # read a single character from the terminal
+    const READI =
+    22; # read an integer from the terminal
+    const ZEROP =
+    23; # test if top of stack = 0; [ nonstandard opcode ]
+    const GT0P =
+    24; # test if top of stack > 0 [ nonstandard opcode ]
+    const LT0P =
+    25; # test if top of stack < 0 [ nonstandard opcode ]
+    const STOP =
+    26; # halt the machine
 
-    function lookUp($sym) {
-        
-    }
+    function __construct(
 
-    function saveStack() {
-        
-    }
+) {
+    $this->a = null;
+    $this->x = null;
+    $this->f = null;
+    $this->c = null;
+    $this->s = 0;
+    $this->stack = [];
+    $this->callStack = [];
+    $this->lastRefer = null;
+    $this->tcoCounter = [];
+    $this->topEnv = [];
+}
 
-    function restoreStack() {
-        
-    }
+function lookUp($sym) {
+    
+}
 
-    function run() {
-        while ($this->x) {
-            switch ($this->x[0]) {
-                case 'halt':
-                    return $this->a;
-                    break;
-                case 'constant':
-                    $this->a = $this->x[1];
-                    $this->x = $this->x[2];
-                    $this->lastRefer = "(anon)";
-                    break;
-                case 'argument':
-                    $this->x = $this->x[1];
-                    array_push($this->stack, $this->a);
-                    $this->s++;
-                    break;
-                case 'assign-local':
-                    $this->x = $this->x[1];
-                    array_push($this->stack, $this->a);
-                    break;
-                case 'assign-global':
-                    $this->x = $this->x[1];
-                    array_push($this->stack, $this->a);
-                    break;
-                case 'assign-free':
-                    $this->x = $this->x[1];
-                    array_push($this->stack, $this->a);
-                    break;
-                case 'test':
-                    $this->x = $this->x[1];
-                    array_push($this->stack, $this->a);
-                    break;
-            }
+function saveStack() {
+    
+}
+
+function restoreStack() {
+    
+}
+
+function run() {
+    while ($this->x) {
+        switch ($this->x[0]) {
+            case 'halt':
+                return $this->a;
+                break;
+            case 'constant':
+                $this->a = $this->x[1];
+                $this->x = $this->x[2];
+                $this->lastRefer = "(anon)";
+                break;
+            case 'argument':
+                $this->x = $this->x[1];
+                array_push($this->stack, $this->a);
+                $this->s++;
+                break;
+            case 'assign-local':
+                $this->x = $this->x[1];
+                array_push($this->stack, $this->a);
+                break;
+            case 'assign-global':
+                $this->x = $this->x[1];
+                array_push($this->stack, $this->a);
+                break;
+            case 'assign-free':
+                $this->x = $this->x[1];
+                array_push($this->stack, $this->a);
+                break;
+            case 'test':
+                $this->x = $this->x[1];
+                array_push($this->stack, $this->a);
+                break;
         }
     }
+}
 
 }
 
