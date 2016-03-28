@@ -288,61 +288,177 @@ class Vm {
     function __construct(
 
 ) {
-    $this->a = null;
-    $this->x = null;
-    $this->f = null;
-    $this->c = null;
-    $this->s = 0;
-    $this->stack = [];
-    $this->callStack = [];
-    $this->lastRefer = null;
-    $this->tcoCounter = [];
-    $this->topEnv = [];
+    /**
+     * class Vm:
+      def __init__(self):
+      #Registers: S (stack), E (environment), C (code), D (dump).
+      self.S=[]
+      self.E=[]
+      self.C=None
+      self.D=[]
+      def op_LDC(self,s,c):
+      self.C.pop(0)
+      self.S.insert(0,self.C.pop(0))
+      def op_LDF(self,s,c):
+      self.C.pop(0)
+      self.S.insert(0,self.C.pop(0))
+      def op_LD(self,s,c):
+      self.C.pop(0)
+      self.S.insert(0,self.C.pop(0))
+      pass
+      def op_ADD(self,s,c):
+      self.C.pop(0)
+      right = self.S.pop(0)
+      left = self.S.pop(0)
+      self.S.insert(0,left + right)
+      def op_MUL(self,s,c):
+      self.C.pop(0)
+      right = self.S.pop(0)
+      left = self.S.pop(0)
+      self.S.insert(0,left * right)
+      def op_SUB(self,s,c):
+      self.C.pop(0)
+      right = self.S.pop(0)
+      left = self.S.pop(0)
+      self.S.insert(0,left - right)
+      def op_DIV(self,s,c):
+      self.C.pop(0)
+      right = self.S.pop(0)
+      left = self.S.pop(0)
+      self.S.insert(0,left / right)
+      pass
+      def run(self,code):
+      self.C=code
+      while True:
+      if self.C[0]==STOP:break
+      elif self.C[0] == ADD:
+      self.op_ADD(self.S,self.C)
+      elif self.C[0] == LDC:
+      self.op_LDC(self.S,self.C)
+     */
+    $this->S = [];
+    $this->E = [];
+    $this->C = null;
+    $this->D = [];
 }
 
-function lookUp($sym) {
-    
+function op_LDC(&$s, &$c) {
+    array_shift($c);
+    array_push($s, array_shift($c));
 }
 
-function saveStack() {
-    
+function op_LD(&$s, &$c) {
+    array_shift($c);
+    $index = array_shift($c);
+    array_push($s, $this->E[0][$index]);
 }
 
-function restoreStack() {
-    
+function op_LDF(&$s, &$c) {
+    array_shift($c);
+    $body = array_shift($c);
+    array_push($s, [
+        'C' => $body,
+        'E' => &$this->E,
+    ]);
 }
 
-function run() {
-    while ($this->x) {
-        switch ($this->x[0]) {
-            case 'halt':
-                return $this->a;
+function op_RTN(&$s, &$c) {
+    array_shift($c);
+    $env = array_shift($this->D);
+    $this->E=$env['E'];
+    $this->C=$env['C'];
+}
+
+function op_ADD(&$s, &$c) {
+    array_shift($c);
+    $num = array_pop($s);
+    $i = 0;
+    $ret = 0;
+    while ($i < $num) {
+        $ret += array_pop($s);
+        ++$i;
+    }
+    array_push($s, $ret);
+}
+
+function op_SUB(&$s, &$c) {
+    array_shift($c);
+    $num = array_pop($s);
+    $i = 0;
+    $ret = 0;
+    while ($i < $num) {
+        $ret -= array_pop($s);
+        ++$i;
+    }
+    array_push($s, $ret);
+}
+
+function op_DIV(&$s, &$c) {
+    array_shift($c);
+    $num = array_pop($s);
+    $i = 0;
+    $ret = 0;
+    while ($i < $num) {
+        $ret /= array_pop($s);
+        ++$i;
+    }
+    array_push($s, $ret);
+}
+
+function op_MUL(&$s, &$c) {
+    array_shift($c);
+    $num = array_pop($s);
+    $i = 0;
+    $ret = 0;
+    while ($i < $num) {
+        $ret *= array_pop($s);
+        ++$i;
+    }
+    array_push($s, $ret);
+}
+
+function op_AP(&$s, &$c) {
+    array_shift($c);
+    $args  = array_pop($s);
+    $closure = array_pop($s);
+    array_push($this->D,[
+        'S'=>$this->S,
+        'E'=>$this->E,
+        'C'=>$this->C,
+    ]);
+    $this->C=$closure['C'];
+    array_push($this->E,$args);
+}
+
+function run($code) {
+    $this->C = $code;
+    while (true) {
+        switch ($this->C[0]) {
+            case self::STOP:
+                break 2;
+            case self::ADD:
+                $this->op_ADD($this->S, $this->C);
                 break;
-            case 'constant':
-                $this->a = $this->x[1];
-                $this->x = $this->x[2];
-                $this->lastRefer = "(anon)";
+            case self::SUB:
+                $this->op_SUB($this->S, $this->C);
                 break;
-            case 'argument':
-                $this->x = $this->x[1];
-                array_push($this->stack, $this->a);
-                $this->s++;
+            case self::MUL:
+                $this->op_MUL($this->S, $this->C);
                 break;
-            case 'assign-local':
-                $this->x = $this->x[1];
-                array_push($this->stack, $this->a);
+            case self::DIV:
+                $this->op_DIV($this->S, $this->C);
                 break;
-            case 'assign-global':
-                $this->x = $this->x[1];
-                array_push($this->stack, $this->a);
+            case self::LDC:
+                $this->op_LDC($this->S, $this->C);
                 break;
-            case 'assign-free':
-                $this->x = $this->x[1];
-                array_push($this->stack, $this->a);
+            case self::LD:
+                $this->op_LD($this->S, $this->C);
                 break;
-            case 'test':
-                $this->x = $this->x[1];
-                array_push($this->stack, $this->a);
+            case self::LDF:
+                $this->op_LDF($this->S, $this->C);
+                break;
+            case self::AP:
+                $this->op_AP($this->S, $this->C);
                 break;
         }
     }
@@ -350,15 +466,21 @@ function run() {
 
 }
 
-$s = "(let ((x 1)) (+ x 2)) ";
-//$s = "(define-macro (test expr)
-//  `(if ,expr
-//    #t
-//    #f))
-//(test (= 1 2)) ";
-$p = new Parser($s);
-$ast = $p->parse($s);
-$a = new Ast($ast);
-//$as = $a->onePass($ast);
-$as = $a->threePass($a->_ast);
-print_r($a->_ast);
+//$s = "(let ((x 1)) (+ x 2)) ";
+////$s = "(define-macro (test expr)
+////  `(if ,expr
+////    #t
+////    #f))
+////(test (= 1 2)) ";
+//$p = new Parser($s);
+//$ast = $p->parse($s);
+//$a = new Ast($ast);
+////$as = $a->onePass($ast);
+//$as = $a->threePass($a->_ast);
+//print_r($a->_ast);
+$vm = new Vm();
+$code = [
+    Vm::LDC,[3,4],  Vm::LDF,[Vm::LD, 2, Vm::LD, 1, Vm::ADD, Vm::RTN] , Vm::AP , Vm::STOP 
+];
+$vm->run($code);
+var_dump($vm->S);
