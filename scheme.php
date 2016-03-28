@@ -419,8 +419,8 @@ function op_MUL(&$s, &$c) {
 
 function op_AP(&$s, &$c) {
     array_shift($c);
-    $args  = array_pop($s);
     $closure = array_pop($s);
+    $args  = array_pop($s);
     array_push($this->D,[
         'S'=>$this->S,
         'E'=>$this->E,
@@ -460,6 +460,9 @@ function run($code) {
             case self::AP:
                 $this->op_AP($this->S, $this->C);
                 break;
+            case self::RTN:
+                $this->op_RTN($this->S, $this->C);
+                break;
         }
     }
 }
@@ -480,7 +483,7 @@ function run($code) {
 //print_r($a->_ast);
 $vm = new Vm();
 $code = [
-    Vm::LDC,[3,4],  Vm::LDF,[Vm::LD, 2, Vm::LD, 1, Vm::ADD, Vm::RTN] , Vm::AP , Vm::STOP 
+    Vm::LDC,[3,4],  Vm::LDF,[Vm::LD, 1, Vm::LD, 0,Vm::LDC, 2, Vm::ADD, Vm::RTN] , Vm::AP , Vm::STOP 
 ];
 $vm->run($code);
 var_dump($vm->S);
