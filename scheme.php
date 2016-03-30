@@ -284,6 +284,11 @@ class Vm {
     25; # test if top of stack < 0 [ nonstandard opcode ]
     const STOP =
     26; # halt the machine
+    const ASSIGN = 27;
+    const LOAD =
+    28; # halt the machine
+    const TAILCALL =
+    29; # halt the machine
 
     function __construct(
 
@@ -358,7 +363,7 @@ function op_LDF(&$s, &$c) {
     $body = array_shift($c);
     array_push($s, [
         'C' => $body,
-        'E' => &$this->E,
+        'E' => $this->E,
     ]);
 }
 
