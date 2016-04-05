@@ -347,6 +347,24 @@ class Vm {
     $this->GLOBALS = [];
 }
 
+function op_SEL(&$s, &$c) {
+    array_shift($c);
+    $d = array_pop($this->D);
+    $cond = array_pop($s);
+    $right = array_shift($c);
+    $wrong = array_shift($c);
+    array_push($this->D,$this->C);
+    if($cond){
+        $this->C=  $right;
+    }else{
+        $this->C=  $wrong;
+    }
+}
+function op_JOIN(&$s, &$c) {
+    array_shift($c);
+    $d = array_pop($this->D);
+    $this->C = $d;
+}
 function op_LDC(&$s, &$c) {
     array_shift($c);
     array_push($s, array_shift($c));
@@ -355,7 +373,7 @@ function op_LDC(&$s, &$c) {
 function op_LD(&$s, &$c) {
     array_shift($c);
     $index = array_shift($c);
-    array_push($s, $this->E[0][$index]);
+    array_push($s, $this->E[sizeof($this->E)-$index[0] - 1][$index[1]]);
 }
 
 function op_LDF(&$s, &$c) {
@@ -369,7 +387,7 @@ function op_LDF(&$s, &$c) {
 
 function op_RTN(&$s, &$c) {
     array_shift($c);
-    $env = array_shift($this->D);
+    $env = array_pop($this->D);
     $this->E = $env['E'];
     $this->C = $env['C'];
 }
@@ -512,7 +530,7 @@ function run($code) {
 //print_r($a->_ast);
 $vm = new Vm();
 $code = [
-Vm::LDC, [3, 4], Vm::LDF, [Vm::LD, 1, Vm::LD, 0, Vm::LDC, 2, Vm::ADD, Vm::RTN], Vm::AP, Vm::STOP
+Vm::LDC, [3, 4], Vm::LDF, [Vm::LD, [0,1], Vm::LD, [0,0], Vm::LDC, 2, Vm::ADD, Vm::RTN], Vm::AP, Vm::STOP
 ];
 $vm->run($code);
 var_dump($vm->S);
