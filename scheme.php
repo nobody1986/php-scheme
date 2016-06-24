@@ -251,13 +251,15 @@ class Ast {
 class CodeGenerater {
 
     protected $_ast;
+    protected $_IR;
 
     function __construct($ast) {
         $this->_ast = $ast;
+        $this->_IR=[];
     }
 
     function generate() {
-        $IR = [];
+        
         
     }
 
@@ -304,9 +306,7 @@ class Vm {
     const LOAD =
     28; # halt the machine
 
-    function __construct(
-
-) {
+    function __construct() {
     /**
      * class Vm:
       def __init__(self):
@@ -533,21 +533,22 @@ function run($code) {
 
 }
 
-//$s = "(let ((x 1)) (+ x 2)) ";
+$s = "(let ((x 1)) (+ x 2)) ";
 ////$s = "(define-macro (test expr)
 ////  `(if ,expr
 ////    #t
 ////    #f))
 ////(test (= 1 2)) ";
-//$p = new Parser($s);
-//$ast = $p->parse($s);
-//$a = new Ast($ast);
+$p = new Parser($s);
+$ast = $p->parse($s);
+$a = new Ast($ast);
 ////$as = $a->onePass($ast);
 //$as = $a->threePass($a->_ast);
-//print_r($a->_ast);
-$vm = new Vm();
+print_r($a->_ast);
+/*$vm = new Vm();
 $code = [
 Vm::LDC, [3, 4], Vm::LDF, [Vm::LD, [0, 1], Vm::LD, [0, 0], Vm::LDC, 2, Vm::ADD, Vm::RTN], Vm::AP, Vm::STOP
 ];
 $vm->run($code);
 var_dump($vm->S);
+*/
