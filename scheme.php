@@ -260,10 +260,12 @@ class CodeGenerater {
 
     function lookup($var,$env){
         $tmp = $env;
+        $i = 0;
         while(!empty($tmp)){
-            if(!empty($tmp[$var])){
-                return $tmp[$var];
+            if(isset($tmp[$var])){
+                return [Vm::LD,[$i,$tmp[$var]]];
             }
+            ++$i;
             $tmp = $tmp['parent'];
         }
         return null;
@@ -279,7 +281,7 @@ class CodeGenerater {
                 return [Vm::LDC,$ast['val']];
             case 'cons':
             if(empty($ast['car']['val'])){
-                return array_merge($this->generate($ast['car']),$this->generate($ast['cdr'],$env));
+                return array_merge($this->generate($ast['car'],$env),$this->generate($ast['cdr'],$env));
             }
                 switch ($ast['car']['val']) {
                     case '+':
@@ -305,7 +307,7 @@ class CodeGenerater {
                         'parent' => &$env
                         ];
                         while(!empty($args)){
-                            $cenv[$args['car']['val']] = [Vm::LD ,[0,$index]];
+                            $cenv[$args['car']['val']] = $index;
                             ++$index;
                             $args = $args['cdr'];
                         }
@@ -313,7 +315,7 @@ class CodeGenerater {
                     return array_merge([Vm::LDF],[$tmp]);
                         break;
                     default:
-                        return $this->generate($ast['cdr'],$env);
+                        return array_merge($this->generate($ast['car'],$env),$this->generate($ast['cdr'],$env));
                         break;
                 }
                 break;
@@ -321,7 +323,11 @@ class CodeGenerater {
                 return array_merge($this->generate($ast['car'],$env),$this->generate($ast['cdr'],$env));
                 break;
             case 'symbol':
-                return [Vm::LD,$this->lookup($ast['val'])];
+                $ret =  $this->lookup($ast['val'],$env);
+                if(empty($ret)){
+                    exit("val {$ast['val']} not defined.");
+                }
+                return $ret;
                 break;
         }
         
