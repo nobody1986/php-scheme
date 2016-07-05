@@ -36,7 +36,7 @@ class Parser {
             } else if ($tokens[$i] == ')') {
                 $cons = [];
                 while (($t = array_pop($stack))) {
-                    if ($t['t'] == 'lp') {
+                    if (!empty($t['t']) && $t['t'] == 'lp') {
                         break;
                     }
                     array_unshift($cons, $t);
@@ -89,7 +89,7 @@ class Ast {
             return;
         }
         //[define-macro [name expr] `[,expr]]
-        if (!empty($ast) && $ast[0]['t'] == 'symbol' && $ast[0]['val'] == 'define-macro') {
+        if (!empty($ast[0]) && !empty($ast[0]['t']) && $ast[0]['t'] == 'symbol' && $ast[0]['val'] == 'define-macro') {
             $macro = [];
             $syms = [];
             $name = $ast[1][0]['val'];
@@ -102,11 +102,15 @@ class Ast {
                 'syms' => $syms,
                 'body' => $body,
             ];
-            $ast = [];
+            $ast = null;
             return;
+        } else {
+            foreach ($ast as &$child) {
+                if (is_array($child) && !isset($child['t'])) {
+                    $this->onePass($child);
+                }
+            }
         }
-        $this->onePass($ast[0]);
-        $this->onePass(array_slice($ast, 1));
     }
 
     function twoPass(&$ast, &$expanded) {
@@ -114,7 +118,7 @@ class Ast {
             return;
         }
 //        print_r($ast);
-        if (!empty($ast[0]) && $ast[0]['t'] == 'symbol' && isset($this->_macros[$ast[0]['val']])) {
+        if (!empty($ast[0]) && !empty($ast[0]['t']) && $ast[0]['t'] == 'symbol' && isset($this->_macros[$ast[0]['val']])) {
             $args = $this->_macros[$ast[0]['val']]['syms'];
             $body = $this->_macros[$ast[0]['val']]['body'];
             $realArgs = [];
@@ -152,55 +156,34 @@ class Ast {
         if (empty($ast)) {
             return;
         }
-        if (!empty($ast['car']) && $ast['car']['t'] == 'symbol' && $ast['car']['val'] == 'let') {
-            $args = $ast['cdr']['car'];
-            $body = $ast['cdr']['cdr'];
+
+        if (!empty($ast[0]) && !empty($ast[0]['t']) && $ast[0]['t'] == 'symbol' && $ast[0]['val'] == 'let') {
+            $args = $ast[1];
+            $body = $ast[2];
             $arglist = [];
-            $arglistAst = &$arglist;
             $real = [];
-            $realAst = &$real;
-            $tmp = $args;
-            while (!empty($tmp)) {
-                $arglistAst = [
-                    'car' => $tmp['car']['car'],
-                    't' => 'cons',
-                    'cdr' => [],
-                ];
-                $arglistAst = &$arglistAst['cdr'];
-                $this->threePass($tmp['car']['cdr']);
-                $realAst = [
-                    'car' => $tmp['car']['cdr']['car'],
-                    't' => 'cons',
-                    'cdr' => [],
-                ];
-                $realAst = &$realAst['cdr'];
-                $tmp = $tmp['cdr'];
+            foreach ($args as $arg) {
+                array_push($arglist, $arg[0]);
+                array_push($real, $arg[1]);
             }
             $lambdaAst = [
-                'car' => [
+                [
                     't' => 'symbol',
                     'val' => 'lambda',
                 ],
-                'cdr' => [
-                    'car' => $arglist,
-                    't' => 'cons',
-                    'cdr' => [
-                        'car' => $body,
-                        't' => 'cons',
-                        'cdr' => [],
-                    ],
-                ],
-                't' => 'cons',
+                $arglist, $body
             ];
-            $ast = [
-                't' => 'cons',
-                'car' => $lambdaAst,
-                'cdr' => $real,
-            ];
+            $lambdaAst = array_merge([$lambdaAst], $real);
+            $ast = $lambdaAst;
+            $this->threePass($ast[0][2]);
             return;
+        } else {
+            foreach ($ast as &$child) {
+                if (is_array($child) && !isset($child['t'])) {
+                    $this->threePass($child);
+                }
+            }
         }
-        $this->threePass($ast['car']);
-        $this->threePass($ast['cdr']);
     }
 
     function fourPass(&$ast) {
@@ -273,63 +256,71 @@ class CodeGenerater {
         if (empty($ast)) {
             return [];
         }
-        switch ($ast['t']) {
-            case 'bool':
-            case 'string':
-            case 'int':
-            case 'float':
-                return [Vm::LDC, $ast['val']];
-            case 'cons':
-                if (empty($ast['car']['val'])) {
-                    return array_merge($this->generate($ast['car'], $env), $this->generate($ast['cdr'], $env));
-                }
-                switch ($ast['car']['val']) {
-                    case '+':
-                        return array_merge($this->generate($ast['cdr'], $env), [Vm::ADD]);
-                        break;
-                    case '-':
-                        return array_merge($this->generate($ast['cdr'], $env), [Vm::SUB]);
-                        break;
-                    case '*':
-                        return array_merge($this->generate($ast['cdr'], $env), [Vm::MUL]);
-                        break;
-                    case '/':
-                        return array_merge($this->generate($ast['cdr'], $env), [Vm::DIV]);
-                        break;
-                    case '%':
-                        return array_merge($this->generate($ast['cdr'], $env), [Vm::MOD]);
-                        break;
-                    case 'lambda':
-                        $tmp = [];
-                        $args = $ast['cdr']['car'];
-                        $index = 0;
-                        $cenv = [
-                            'parent' => &$env
-                        ];
-                        while (!empty($args)) {
-                            $cenv[$args['car']['val']] = $index;
-                            ++$index;
-                            $args = $args['cdr'];
-                        }
-                        $tmp = array_merge($tmp, $this->generate($ast['cdr']['cdr'], $cenv));
-                        return array_merge([Vm::LDF], [$tmp]);
-                        break;
-                    default:
-                        return array_merge($this->generate($ast['car'], $env), $this->generate($ast['cdr'], $env));
-                        break;
-                }
-                break;
-            case 'form':
-                return array_merge($this->generate($ast['car'], $env), $this->generate($ast['cdr'], $env));
-                break;
-            case 'symbol':
-                $ret = $this->lookup($ast['val'], $env);
-                if (empty($ret)) {
-                    exit("val {$ast['val']} not defined.");
-                }
-                return $ret;
-                break;
+        $ret = [];
+        if (isset($ast['t'])) {
+            switch ($ast['t']) {
+                case 'bool':
+                case 'string':
+                case 'int':
+                case 'float':
+                    $ret [] = Vm::LDC;
+                    $ret [] = $ast['val'];
+                    break;
+                case 'symbol':
+                    $ret = $this->lookup($ast['val'], $env);
+                    if (empty($ret)) {
+                        exit("val {$ast['val']} not defined.");
+                    }
+                    return $ret;
+            }
+            return $ret;
         }
+        if (is_array($ast) && isset($ast[0]) && isset($ast[0]['t'])) {
+            switch ($ast[0]['t']) {
+                case 'symbol':
+                    switch ($ast[0]['val']) {
+                        case '+':
+                            return array_merge($this->generate($ast['cdr'], $env), [Vm::ADD]);
+                            break;
+                        case '-':
+                            return array_merge($this->generate($ast['cdr'], $env), [Vm::SUB]);
+                            break;
+                        case '*':
+                            return array_merge($this->generate($ast['cdr'], $env), [Vm::MUL]);
+                            break;
+                        case '/':
+                            return array_merge($this->generate($ast['cdr'], $env), [Vm::DIV]);
+                            break;
+                        case '%':
+                            return array_merge($this->generate($ast['cdr'], $env), [Vm::MOD]);
+                            break;
+                        case 'lambda':
+                            $tmp = [];
+                            $args = $ast['cdr']['car'];
+                            $index = 0;
+                            $cenv = [
+                                'parent' => &$env
+                            ];
+                            while (!empty($args)) {
+                                $cenv[$args['car']['val']] = $index;
+                                ++$index;
+                                $args = $args['cdr'];
+                            }
+                            $tmp = array_merge($tmp, $this->generate($ast['cdr']['cdr'], $cenv));
+                            return array_merge([Vm::LDF], [$tmp]);
+                            break;
+                        default:
+                            return array_merge($this->generate($ast['car'], $env), $this->generate($ast['cdr'], $env));
+                            break;
+                    }
+                    break;
+                
+                    break;
+            }
+        } else {
+            return $this->generate($child);
+        }
+        return $ret;
     }
 
 }
@@ -623,16 +614,18 @@ function run($code) {
 }
 
 //$s = "(lambda (x y) (+ x y 1)) ";
-$s = "(define-macro (test expr)
-  `(if ,expr
-    #t
-    #f))
-(test (= 1 2)) ";
+//$s = "(define-macro (test expr)
+//  `(if ,expr
+//    #t
+//    #f))
+//(test (= 1 2)) ";
+$s = "(let ((x 0) (y 1))  (+ x y))";
 $p = new Parser($s);
 $ast = $p->parse($s);
 $a = new Ast($ast);
 //$as = $a->onePass($ast);
-$as = $a->twoPass($a->_ast, $expanded);
+//$as = $a->twoPass($a->_ast, $expanded);
+$as = $a->threePass($a->_ast);
 print_r($a->_ast);
 //$gener = new CodeGenerater($a->_ast);
 //print_r($gener->generate($a->_ast));
