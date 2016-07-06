@@ -280,45 +280,84 @@ class CodeGenerater {
                 case 'symbol':
                     switch ($ast[0]['val']) {
                         case '+':
-                            return array_merge($this->generate($ast['cdr'], $env), [Vm::ADD]);
+                            $args = array_slice($ast, 1);
+                            $num = 0;
+                            foreach ($args as $arg) {
+                                $ret = array_merge($ret, $this->generate($arg, $env));
+                                ++$num;
+                            }
+                            array_push($ret, Vm::LDC);
+                            array_push($ret, $num);
+                            array_push($ret, Vm::ADD);
+//                            return array_merge($this->generate($ast['cdr'], $env), [Vm::ADD]);
                             break;
                         case '-':
-                            return array_merge($this->generate($ast['cdr'], $env), [Vm::SUB]);
+                            $args = array_slice($ast, 1);
+                            $num = 0;
+                            foreach ($args as $arg) {
+                                $ret = array_merge($ret, $this->generate($arg, $env));
+                                ++$num;
+                            }
+                            array_push($ret, Vm::LDC);
+                            array_push($ret, $num);
+                            array_push($ret, Vm::SUB);
                             break;
                         case '*':
-                            return array_merge($this->generate($ast['cdr'], $env), [Vm::MUL]);
+                            $args = array_slice($ast, 1);
+                            $num = 0;
+                            foreach ($args as $arg) {
+                                $ret = array_merge($ret, $this->generate($arg, $env));
+                                ++$num;
+                            }
+                            array_push($ret, Vm::LDC);
+                            array_push($ret, $num);
+                            array_push($ret, Vm::MUL);
                             break;
                         case '/':
-                            return array_merge($this->generate($ast['cdr'], $env), [Vm::DIV]);
+                            $args = array_slice($ast, 1);
+                            $num = 0;
+                            foreach ($args as $arg) {
+                                $ret = array_merge($ret, $this->generate($arg, $env));
+                                ++$num;
+                            }
+                            array_push($ret, Vm::LDC);
+                            array_push($ret, $num);
+                            array_push($ret, Vm::DIV);
                             break;
                         case '%':
-                            return array_merge($this->generate($ast['cdr'], $env), [Vm::MOD]);
+                            $args = array_slice($ast, 1);
+                            $num = 0;
+                            foreach ($args as $arg) {
+                                $ret = array_merge($ret, $this->generate($arg, $env));
+                                ++$num;
+                            }
+                            array_push($ret, Vm::LDC);
+                            array_push($ret, $num);
+                            array_push($ret, Vm::MOD);
                             break;
                         case 'lambda':
                             $tmp = [];
-                            $args = $ast['cdr']['car'];
+                            $args = $ast[1];
                             $index = 0;
                             $cenv = [
                                 'parent' => &$env
                             ];
-                            while (!empty($args)) {
-                                $cenv[$args['car']['val']] = $index;
+                            foreach($args as $arg){
+                                $cenv[$arg['val']] = $index;
                                 ++$index;
-                                $args = $args['cdr'];
                             }
-                            $tmp = array_merge($tmp, $this->generate($ast['cdr']['cdr'], $cenv));
-                            return array_merge([Vm::LDF], [$tmp]);
+                            $tmp = array_merge($tmp, $this->generate($ast[2], $cenv));
+                            $ret =  array_merge($ret, array_merge([Vm::LDF], [$tmp]));
                             break;
                         default:
-                            return array_merge($this->generate($ast['car'], $env), $this->generate($ast['cdr'], $env));
+                            return array_merge($this->generate($ast[0], $env), $this->generate($ast[0], $env));
                             break;
                     }
                     break;
-                
-                    break;
+
             }
         } else {
-            return $this->generate($child);
+            $ret = array_merge($ret,$this->generate($child));
         }
         return $ret;
     }
@@ -439,6 +478,17 @@ function op_SEL(&$s, &$c) {
     }
 }
 
+
+function op_CONS(&$s, &$c) {
+    array_shift($c);
+    $arg = array_pop($c);
+    if (sizeof($s) == 0) {
+        array_push($s, [$arg]);
+    } else {
+        array_push($s[sizeof($s) - 1], $arg);
+    }
+}
+
 function op_JOIN(&$s, &$c) {
     array_shift($c);
     $d = array_pop($this->D);
@@ -448,6 +498,10 @@ function op_JOIN(&$s, &$c) {
 function op_LDC(&$s, &$c) {
     array_shift($c);
     array_push($s, array_shift($c));
+}
+function op_NIL(&$s, &$c) {
+    array_shift($c);
+    array_push($s, []);
 }
 
 function op_LD(&$s, &$c) {
@@ -607,6 +661,9 @@ function run($code) {
             case self::ASSIGN:
                 $this->op_ASSIGN($this->S, $this->C);
                 break;
+            case self::CONS:
+                $this->op_CONS($this->S, $this->C);
+                break;
         }
     }
 }
@@ -626,9 +683,9 @@ $a = new Ast($ast);
 //$as = $a->onePass($ast);
 //$as = $a->twoPass($a->_ast, $expanded);
 $as = $a->threePass($a->_ast);
-print_r($a->_ast);
-//$gener = new CodeGenerater($a->_ast);
-//print_r($gener->generate($a->_ast));
+//print_r($a->_ast);
+$gener = new CodeGenerater($a->_ast);
+print_r($gener->generate($a->_ast));
 /*$vm = new Vm();
 $code = [
 Vm::LDC, [3, 4], Vm::LDF, [Vm::LD, [0, 1], Vm::LD, [0, 0], Vm::LDC, 2, Vm::ADD, Vm::RTN], Vm::AP, Vm::STOP
