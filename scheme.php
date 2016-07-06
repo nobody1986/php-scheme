@@ -252,7 +252,14 @@ class CodeGenerater {
         return null;
     }
 
-    function generate($ast, $env = []) {
+    function generate($ast) {
+        $topenv = [];
+        $ir = $this->_generate($ast,$topenv);
+        $ir []= Vm::STOP;
+        return $ir;
+    }
+
+    function _generate($ast, $env = [],$inLambda = false) {
         if (empty($ast)) {
             return [];
         }
@@ -283,19 +290,19 @@ class CodeGenerater {
                             $args = array_slice($ast, 1);
                             $num = 0;
                             foreach ($args as $arg) {
-                                $ret = array_merge($ret, $this->generate($arg, $env));
+                                $ret = array_merge($ret, $this->_generate($arg, $env,$inLambda));
                                 ++$num;
                             }
                             array_push($ret, Vm::LDC);
                             array_push($ret, $num);
                             array_push($ret, Vm::ADD);
-//                            return array_merge($this->generate($ast['cdr'], $env), [Vm::ADD]);
+//                            return array_merge($this->_generate($ast['cdr'], $env), [Vm::ADD]);
                             break;
                         case '-':
                             $args = array_slice($ast, 1);
                             $num = 0;
                             foreach ($args as $arg) {
-                                $ret = array_merge($ret, $this->generate($arg, $env));
+                                $ret = array_merge($ret, $this->_generate($arg, $env,$inLambda));
                                 ++$num;
                             }
                             array_push($ret, Vm::LDC);
@@ -306,7 +313,7 @@ class CodeGenerater {
                             $args = array_slice($ast, 1);
                             $num = 0;
                             foreach ($args as $arg) {
-                                $ret = array_merge($ret, $this->generate($arg, $env));
+                                $ret = array_merge($ret, $this->_generate($arg, $env,$inLambda));
                                 ++$num;
                             }
                             array_push($ret, Vm::LDC);
@@ -317,7 +324,7 @@ class CodeGenerater {
                             $args = array_slice($ast, 1);
                             $num = 0;
                             foreach ($args as $arg) {
-                                $ret = array_merge($ret, $this->generate($arg, $env));
+                                $ret = array_merge($ret, $this->_generate($arg, $env,$inLambda));
                                 ++$num;
                             }
                             array_push($ret, Vm::LDC);
@@ -328,7 +335,7 @@ class CodeGenerater {
                             $args = array_slice($ast, 1);
                             $num = 0;
                             foreach ($args as $arg) {
-                                $ret = array_merge($ret, $this->generate($arg, $env));
+                                $ret = array_merge($ret, $this->_generate($arg, $env,$inLambda));
                                 ++$num;
                             }
                             array_push($ret, Vm::LDC);
@@ -342,22 +349,43 @@ class CodeGenerater {
                             $cenv = [
                                 'parent' => &$env
                             ];
-                            foreach($args as $arg){
+                            foreach ($args as $arg) {
                                 $cenv[$arg['val']] = $index;
                                 ++$index;
                             }
-                            $tmp = array_merge($tmp, $this->generate($ast[2], $cenv));
-                            $ret =  array_merge($ret, array_merge([Vm::LDF], [$tmp]));
+                            $tmp = array_merge($tmp, $this->_generate($ast[2], $cenv,true));
+                            $ret = array_merge($ret, array_merge([Vm::LDF], [$tmp]));
                             break;
                         default:
-                            return array_merge($this->generate($ast[0], $env), $this->generate($ast[0], $env));
+                            $lambda = $this->lookup($ast[0]['val'], $env);
+                            $args = [];
+                            $ret [] = Vm::NIL;
+                            foreach ($ast as $k => $arg) {
+                                if ($k == 0) {
+                                    continue;
+                                }
+                                $ret = array_merge($ret, $this->_generate($arg, $env,$inLambda));
+                                $ret [] = Vm::CONS;
+                            }
+                            $ret = array_merge($ret, $lambda);
+                            $ret [] = Vm::AP;
                             break;
                     }
                     break;
-
             }
         } else {
-            $ret = array_merge($ret,$this->generate($child));
+            $args = [];
+            $ret [] = Vm::NIL;
+            foreach ($ast as $k => $arg) {
+                if ($k == 0) {
+                    continue;
+                }
+                $ret = array_merge($ret, $this->_generate($arg, $env,$inLambda));
+                $ret [] = Vm::CONS;
+            }
+            $lambda = $this->_generate($ast[0], $env,$inLambda);
+            $ret = array_merge($ret, $lambda);
+            $ret [] = Vm::AP;
         }
         return $ret;
     }
@@ -366,46 +394,46 @@ class CodeGenerater {
 
 class Vm {
 
-    const ADD = 1; # integer addition
-    const MUL = 2; # integer multiplication
-    const SUB = 3; # integer subtraction
-    const DIV = 4; # integer division
-    const NIL = 5; # push nil pointer onto the stack
-    const CONS = 6; # cons the top of the stack onto the next list
-    const LDC = 7; # push a constant argument
-    const LDF = 8; # load function
-    const AP = 9; # function application
-    const LD = 10; # load a variable
-    const CAR = 11; # value of car cell
-    const CDR = 12; # value of cdr cell
-    const DUM = 13; # setup recursive closure list
-    const RAP = 14; # recursive apply
-    const JOIN = 15; # C = pop dump
-    const RTN = 16; # return from function
-    const SEL = 17; # logical selection (if/ then / else )
-    const NULL = 18; # test if list is empty
+    const ADD = 'ADD'; //1 ; # integer addition
+    const MUL = 'MUL'; //2 ; # integer multiplication
+    const SUB = 'SUB'; //3 ; # integer subtraction
+    const DIV = 'DIV'; //4 ; # integer division
+    const NIL = 'NIL'; //5 ; # push nil pointer onto the stack
+    const CONS = 'CONS'; //6 ; # cons the top of the stack onto the next list
+    const LDC = 'LDC'; //7 ; # push a constant argument
+    const LDF = 'LDF'; //8 ; # load function
+    const AP = 'AP'; //9 ; # function application
+    const LD = 'LD'; //10 ; # load a variable
+    const CAR = 'CAR'; //11 ; # value of car cell
+    const CDR = 'CDR'; //12 ; # value of cdr cell
+    const DUM = 'DUM'; //13 ; # setup recursive closure list
+    const RAP = 'RAP'; //14 ; # recursive apply
+    const JOIN = 'JOIN'; //15 ; # C = pop dump
+    const RTN = 'RTN'; //16 ; # return from function
+    const SEL = 'SEL'; //17 ; # logical selection (if/ then / else )
+    const NULL = 'NULL'; //18 ; # test if list is empty
     const WRITEI =
-    19; # write an integer to the terminal
+    'WRITEI'; //19 ; # write an integer to the terminal
     const WRITEC =
-    20; # write a character to the terminal
+    'WRITEC'; //20 ; # write a character to the terminal
     const READC =
-    21; # read a single character from the terminal
+    'READC'; //21 ; # read a single character from the terminal
     const READI =
-    22; # read an integer from the terminal
+    'READI'; //22 ; # read an integer from the terminal
     const ZEROP =
-    23; # test if top of stack = 0; [ nonstandard opcode ]
+    'ZEROP'; //23 ; # test if top of stack = 0; [ nonstandard opcode ]
     const GT0P =
-    24; # test if top of stack > 0 [ nonstandard opcode ]
+    'GT0P'; //24 ; # test if top of stack > 0 [ nonstandard opcode ]
     const LT0P =
-    25; # test if top of stack < 0 [ nonstandard opcode ]
+    'LT0P'; //25 ; # test if top of stack < 0 [ nonstandard opcode ]
     const STOP =
-    26; # halt the machine
-    const ASSIGNE =
-    27; # halt the machine
+    'STOP'; //26 ; # halt the machine
+    const ASSIGN =
+    'ASSIGN'; //27 ; # halt the machine
     const LOAD =
-    28; # halt the machine
+    'LOAD'; //28 ; # halt the machine
     const MOD =
-    29;
+    'MOD'; //29 ;
     function __construct(
 
 ) {
@@ -478,10 +506,9 @@ function op_SEL(&$s, &$c) {
     }
 }
 
-
 function op_CONS(&$s, &$c) {
     array_shift($c);
-    $arg = array_pop($c);
+    $arg = array_pop($s);
     if (sizeof($s) == 0) {
         array_push($s, [$arg]);
     } else {
@@ -499,6 +526,7 @@ function op_LDC(&$s, &$c) {
     array_shift($c);
     array_push($s, array_shift($c));
 }
+
 function op_NIL(&$s, &$c) {
     array_shift($c);
     array_push($s, []);
@@ -575,6 +603,18 @@ function op_DIV(&$s, &$c) {
     array_push($s, $ret);
 }
 
+function op_WRITEI(&$s, &$c) {
+    array_shift($c);
+    $num = array_pop($s);
+    echo $num;
+}
+
+function op_WRITEC(&$s, &$c) {
+    array_shift($c);
+    $char = array_pop($s);
+    echo $char;
+}
+
 function op_MUL(&$s, &$c) {
     array_shift($c);
     $num = array_pop($s);
@@ -619,12 +659,17 @@ function op_AP(&$s, &$c) {
         'C' => $this->C,
     ]);
     $this->C = $closure['C'];
+    $this->E = $closure['E'];
     array_push($this->E, $args);
 }
 
 function run($code) {
     $this->C = $code;
     while (true) {
+        if(empty($this->C)){
+            break;
+        }
+//        var_dump($this->C[0]);
         switch ($this->C[0]) {
             case self::STOP:
                 break 2;
@@ -664,6 +709,9 @@ function run($code) {
             case self::CONS:
                 $this->op_CONS($this->S, $this->C);
                 break;
+            case self::NIL:
+                $this->op_NIL($this->S, $this->C);
+                break;
         }
     }
 }
@@ -685,11 +733,13 @@ $a = new Ast($ast);
 $as = $a->threePass($a->_ast);
 //print_r($a->_ast);
 $gener = new CodeGenerater($a->_ast);
-print_r($gener->generate($a->_ast));
-/*$vm = new Vm();
-$code = [
-Vm::LDC, [3, 4], Vm::LDF, [Vm::LD, [0, 1], Vm::LD, [0, 0], Vm::LDC, 2, Vm::ADD, Vm::RTN], Vm::AP, Vm::STOP
-];
-$vm->run($code);
+$ir = $gener->generate($a->_ast);
+print_r($ir);
+//print_r($gener->generate($a->_ast));
+$vm = new Vm();
+//$code = [
+//Vm::LDC, [3, 4], Vm::LDF, [Vm::LD, [0, 1], Vm::LD, [0, 0], Vm::LDC, 2, Vm::ADD, Vm::RTN], Vm::AP, Vm::STOP
+//];
+$ir[8][7] = Vm::RTN;
+$vm->run($ir);
 var_dump($vm->S);
-*/
