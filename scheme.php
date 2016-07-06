@@ -354,6 +354,7 @@ class CodeGenerater {
                                 ++$index;
                             }
                             $tmp = array_merge($tmp, $this->_generate($ast[2], $cenv,true));
+                            $tmp [] = Vm::RTN;
                             $ret = array_merge($ret, array_merge([Vm::LDF], [$tmp]));
                             break;
                         default:
@@ -724,7 +725,7 @@ function run($code) {
 //    #t
 //    #f))
 //(test (= 1 2)) ";
-$s = "(let ((x 0) (y 1))  (+ x y))";
+$s = "(let ((x 0) (y 1)) (lambda (z)  (+ x y)))";
 $p = new Parser($s);
 $ast = $p->parse($s);
 $a = new Ast($ast);
@@ -740,6 +741,6 @@ $vm = new Vm();
 //$code = [
 //Vm::LDC, [3, 4], Vm::LDF, [Vm::LD, [0, 1], Vm::LD, [0, 0], Vm::LDC, 2, Vm::ADD, Vm::RTN], Vm::AP, Vm::STOP
 //];
-$ir[8][7] = Vm::RTN;
+//$ir[8][7] = Vm::RTN;
 $vm->run($ir);
 var_dump($vm->S);
