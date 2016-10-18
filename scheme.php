@@ -458,15 +458,15 @@ class CodeGenerater {
                             default:
                                 array_push($ret,Vm::NIL);
                                 for($index = 1;$index<sizeof($ast);++$index){
-                                    $ret = array_merge($ret,$this->_generate($_ast[$index],$env,$inLambda,$isQuote));
+                                    $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
                                     array_push($ret,Vm::CONS);
                                 }
-                                $tmp = $this->lookup($ast['val'],$env);
+                                $tmp = $this->lookup($ast[0]['val'],$env);
                                 if(!empty($tmp)){
                                     $ret  = array_merge($ret,$tmp);
                                 }else{
                                     array_push($ret,Vm::LDN);
-                                    array_push($ret,$ast['val']);
+                                    array_push($ret,$ast[0]['val']);
                                 }
                                 array_push($ret,Vm::AP);
                                 return $ret;
@@ -510,6 +510,7 @@ class CodeGenerater {
 class Gc{
     function __construct(){
         $this->mempool = [];
+        $this->NIL = ['type'=>'nil'];
     }
     function &makeInteger(int $i):array{
         $ret =  ['type'=>'int','value' => $i];
@@ -541,13 +542,25 @@ class Gc{
         $this->mempool []= ['cell'=>&$ret];
         return $ret;
     }
-    function &makeClosure(array $i,array $env):array{
-        $ret =  ['type'=>'int','value' => $i,'env' => &$env];
+    function &makeClosure(array &$i,array &$env):array{
+        $ret =  ['type'=>'closure','value' => &$i,'env' => &$env];
         $this->mempool []= ['cell'=>&$ret];
         return $ret;
     }
     function &makeList(array $i):array{
         $ret =  ['type'=>'list','value' => $i];
+        $this->mempool []= ['cell'=>&$ret];
+        return $ret;
+    }
+    function &cons(array $head,array $tail):array{
+        $r = [];
+        if($tail == $this->NIL){
+            $ret =  ['type'=>'list','value' => [$head]];
+        }else{
+            $r = array_merge([$head],$tail['value']);
+            $ret =  ['type'=>'list','value' => &$r];
+        }
+        
         $this->mempool []= ['cell'=>&$ret];
         return $ret;
     }
@@ -685,11 +698,8 @@ function op_SEL(&$s, &$c) {
 function op_CONS(&$s, &$c) {
     array_shift($c);
     $arg = array_pop($s);
-    if (sizeof($s) == 0) {
-        array_push($s, [$arg]);
-    } else {
-        array_push($s[sizeof($s) - 1], $arg);
-    }
+    $tail = array_pop($s);
+    array_push($s, $this->_gc->cons($arg,$tail));
 }
 
 function op_JOIN(&$s, &$c) {
@@ -700,12 +710,32 @@ function op_JOIN(&$s, &$c) {
 
 function op_LDC(&$s, &$c) {
     array_shift($c);
-    array_push($s, array_shift($c));
+    array_push($s, $this->_gc->makeChar(array_shift($c)));
+}
+function op_LDS(&$s, &$c) {
+    array_shift($c);
+    array_push($s, $this->_gc->makeString(array_shift($c)));
+}
+function op_LDB(&$s, &$c) {
+    array_shift($c);
+    array_push($s, $this->_gc->makeBool(array_shift($c)));
+}
+function op_LDSY(&$s, &$c) {
+    array_shift($c);
+    array_push($s, $this->_gc->makeSymbol(array_shift($c)));
+}
+function op_LDI(&$s, &$c) {
+    array_shift($c);
+    array_push($s, $this->_gc->makeInteger(array_shift($c)));
+}
+function op_LDD(&$s, &$c) {
+    array_shift($c);
+    array_push($s, $this->_gc->makeFloat(array_shift($c)));
 }
 
 function op_NIL(&$s, &$c) {
     array_shift($c);
-    array_push($s, []);
+    array_push($s, $this->_gc->NIL);
 }
 
 function op_LD(&$s, &$c) {
@@ -717,64 +747,124 @@ function op_LD(&$s, &$c) {
 function op_LDF(&$s, &$c) {
     array_shift($c);
     $body = array_shift($c);
-    array_push($s, [
-        'C' => $body,
-        'E' => &$this->E,
-    ]);
+    array_push($s, 
+    $this->_gc->makeClosure($body,$this->E));
+}
+
+function op_EQ(&$s, &$c) {
+    array_shift($c);
+    $args = array_pop($s);
+    $left = &$args[1];
+    $right = &$args[0];
+    array_push($s, 
+    $this->_gc->makeBool($left['value']==$right['value']));
+}
+
+function op_GT(&$s, &$c) {
+    array_shift($c);
+    $args = array_pop($s);
+    $left = &$args[1];
+    $right = &$args[0];
+    array_push($s, 
+    $this->_gc->makeBool($left['value']>$right['value']));
+}
+
+function op_LT(&$s, &$c) {
+    array_shift($c);
+    $args = array_pop($s);
+    $left = &$args[1];
+    $right = &$args[0];
+    array_push($s, 
+    $this->_gc->makeBool($left['value']<$right['value']));
+}
+
+function op_GE(&$s, &$c) {
+    array_shift($c);
+    $args = array_pop($s);
+    $left = &$args[1];
+    $right = &$args[0];
+    array_push($s, 
+    $this->_gc->makeBool($left['value']>=$right['value']));
+}
+
+function op_LE(&$s, &$c) {
+    array_shift($c);
+    $args = array_pop($s);
+    $left = &$args[1];
+    $right = &$args[0];
+    array_push($s, 
+    $this->_gc->makeBool($left['value']<=$right['value']));
 }
 
 function op_RTN(&$s, &$c) {
     array_shift($c);
+    $ret = array_pop($s);
     $env = array_pop($this->D);
-    $this->E = $env['E'];
-    $this->C = $env['C'];
+    $this->E = &$env['E'];
+    $this->C = &$env['C'];
+    $this->S = &$env['S'];
+    array_push($this->S,$ret);
 }
 
 function op_ADD(&$s, &$c) {
     array_shift($c);
-    $num = array_pop($s);
+    $args = array_pop($s);
     $i = 0;
     $ret = null;
-    while ($i < $num) {
+    foreach($args['value'] as $item){
         if ($ret === null) {
-            $ret = array_pop($s);
+            $ret = $item['value'];
         } else {
-            $ret += array_pop($s);
+            $ret += $item['value'];
         }
         ++$i;
+    }
+    if(is_float($ret)){
+        $ret = $this->_gc->makeFloat($ret);
+    }else{
+        $ret = $this->_gc->makeInteger($ret);
     }
     array_push($s, $ret);
 }
 
 function op_SUB(&$s, &$c) {
     array_shift($c);
-    $num = array_pop($s);
+    $args = array_pop($s);
     $i = 0;
     $ret = null;
-    while ($i < $num) {
+    foreach($args['value'] as $item){
         if ($ret === null) {
-            $ret = array_pop($s);
+            $ret = $item['value'];
         } else {
-            $ret -= array_pop($s);
+            $ret -= $item['value'];
         }
         ++$i;
+    }
+    if(is_float($ret)){
+        $ret = $this->_gc->makeFloat($ret);
+    }else{
+        $ret = $this->_gc->makeInteger($ret);
     }
     array_push($s, $ret);
 }
 
 function op_DIV(&$s, &$c) {
     array_shift($c);
-    $num = array_pop($s);
+    $args = array_pop($s);
     $i = 0;
     $ret = null;
-    while ($i < $num) {
+    foreach($args['value'] as $item){
         if ($ret === null) {
-            $ret = array_pop($s);
+            $ret = $item['value'];
         } else {
-            $ret /= array_pop($s);
+            $ret /= $item['value'];
         }
-
         ++$i;
+    }
+    if(is_float($ret)){
+        $ret = $this->_gc->makeFloat($ret);
+    }else{
+        $ret = $this->_gc->makeInteger($ret);
     }
     array_push($s, $ret);
 }
@@ -782,27 +872,32 @@ function op_DIV(&$s, &$c) {
 function op_WRITEI(&$s, &$c) {
     array_shift($c);
     $num = array_pop($s);
-    echo $num;
+    echo $num['value'];
 }
 
 function op_WRITEC(&$s, &$c) {
     array_shift($c);
     $char = array_pop($s);
-    echo $char;
+    echo $char['value'];
 }
 
 function op_MUL(&$s, &$c) {
     array_shift($c);
-    $num = array_pop($s);
+    $args = array_pop($s);
     $i = 0;
     $ret = null;
-    while ($i < $num) {
+    foreach($args['value'] as $item){
         if ($ret === null) {
-            $ret = array_pop($s);
+            $ret = $item['value'];
         } else {
-            $ret *= array_pop($s);
+            $ret *= $item['value'];
         }
         ++$i;
+    }
+    if(is_float($ret)){
+        $ret = $this->_gc->makeFloat($ret);
+    }else{
+        $ret = $this->_gc->makeInteger($ret);
     }
     array_push($s, $ret);
 }
@@ -819,9 +914,9 @@ function op_LOAD(&$s, &$c) {
 
 function op_ASSIGN(&$s, &$c) {
     array_shift($c);
-    $key = array_pop($s);
     $val = array_pop($s);
-    $this->GLOBALS[$key] = $val;
+    $key = array_pop($s);
+    $this->GLOBALS[$key['value']] = $val;
     array_push($s, $val);
 }
 
@@ -830,13 +925,30 @@ function op_AP(&$s, &$c) {
     $closure = array_pop($s);
     $args = array_pop($s);
     array_push($this->D, [
-        'S' => $this->S,
-        'E' => $this->E,
-        'C' => $this->C,
+        'S' => &$this->S,
+        'E' => &$this->E,
+        'C' => &$this->C,
     ]);
-    $this->C = $closure['C'];
-    $this->E = $closure['E'];
-    array_push($this->E, $args);
+    $this->C = &$closure['value'];
+    $this->E = &$closure['env'];
+    $this->S = [];
+    //var_dump($args['value']);
+    array_push($this->E, $args['value']);
+}
+
+function op_TAP(&$s, &$c) {
+    array_shift($c);
+    $closure = array_pop($s);
+    $args = array_pop($s);
+    /*array_push($this->D, [
+        'S' => &$this->S,
+        'E' => &$this->E,
+        'C' => &$this->C,
+    ]);*/
+    $this->C = &$closure['value'];
+    $this->E = &$closure['env'];
+    $this->S = [];
+    array_push($this->E, $args['value']);
 }
 
 function run($code) {
@@ -845,7 +957,7 @@ function run($code) {
         if(empty($this->C)){
             break;
         }
-//        var_dump($this->C[0]);
+        var_dump($this->C[0]);
         switch ($this->C[0]) {
             case self::STOP:
                 break 2;
@@ -863,6 +975,21 @@ function run($code) {
                 break;
             case self::LDC:
                 $this->op_LDC($this->S, $this->C);
+                break;
+            case self::LDI:
+                $this->op_LDI($this->S, $this->C);
+                break;
+            case self::LDS:
+                $this->op_LDS($this->S, $this->C);
+                break;
+            case self::LDB:
+                $this->op_LDB($this->S, $this->C);
+                break;
+            case self::LDD:
+                $this->op_LDD($this->S, $this->C);
+                break;
+            case self::LDSY:
+                $this->op_LDSY($this->S, $this->C);
                 break;
             case self::LD:
                 $this->op_LD($this->S, $this->C);
@@ -888,6 +1015,21 @@ function run($code) {
             case self::NIL:
                 $this->op_NIL($this->S, $this->C);
                 break;
+            case self::GT:
+                $this->op_GT($this->S, $this->C);
+                break;
+            case self::EQ:
+                $this->op_EQ($this->S, $this->C);
+                break;
+            case self::LT:
+                $this->op_LT($this->S, $this->C);
+                break;
+            case self::GE:
+                $this->op_GE($this->S, $this->C);
+                break;
+            case self::LE:
+                $this->op_LE($this->S, $this->C);
+                break;
         }
     }
 }
@@ -900,7 +1042,12 @@ function run($code) {
 //    #t
 //    #f))
 //(test (= 1 2)) ";
-$s = "(let ((x 0) (y 1)) ((lambda (z)  (+ x y z)) 5))";
+//$s = "(let ((x 1) (y 2)) ((lambda (z)  (+ x y z)) 5))";
+$s='(let ((fib (lambda (x) (if (= x 1) 1 (fib (- x 1) )
+)
+)
+
+)) (fib 10) )';
 $p = new Parser($s);
 $ast = $p->parse($s);
 $a = new Ast($ast);
@@ -917,5 +1064,5 @@ $vm = new Vm();
 //Vm::LDC, [3, 4], Vm::LDF, [Vm::LD, [0, 1], Vm::LD, [0, 0], Vm::LDC, 2, Vm::ADD, Vm::RTN], Vm::AP, Vm::STOP
 //];
 //$ir[8][7] = Vm::RTN;
-//$vm->run($ir);
-//var_dump($vm->S);
+$vm->run($ir);
+var_dump($vm->S);
