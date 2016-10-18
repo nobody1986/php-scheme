@@ -17,7 +17,7 @@ class Parser {
         $stack = [];
         $ast = [];
         foreach ($tokens as $i => $v) {
-            if ($tokens[$i] == '(') {
+            if ($tokens[$i] == '(' || $tokens[$i] == '[') {
                 array_push($stack, ['t' => 'lp']);
             } else if ($tokens[$i] == '#t') {
                 array_push($stack, ['t' => 'bool', 'val' => true]);
@@ -33,7 +33,7 @@ class Parser {
                 array_push($stack, ['t' => 'int', 'val' => intval($tokens[$i])]);
             } else if (preg_match($this->regexFloat, $tokens[$i])) {
                 array_push($stack, ['t' => 'float', 'val' => floatval($tokens[$i])]);
-            } else if ($tokens[$i] == ')') {
+            } else if ($tokens[$i] == ')' || $tokens[$i] == ']') {
                 $cons = [];
                 while (($t = array_pop($stack))) {
                     if (!empty($t['t']) && $t['t'] == 'lp') {
@@ -73,6 +73,8 @@ class Ast {
     function __construct($ast) {
         $this->_ast = $ast;
         $this->onePass($this->_ast);
+        $this->expandAll();
+        $this->threePass($this->_ast);
     }
 
     function macroSyms(&$ast) {
@@ -128,7 +130,8 @@ class Ast {
             }
 //可以判断参数是否对齐
             if (sizeof($args) != sizeof($realArgs)) {
-                
+                echo "macro {$ast[0]['val']} arguments error.\n";
+                exit();
             }
             $argsMap = array_combine($args, $realArgs);
             $reBody = $body;
@@ -224,7 +227,13 @@ class Ast {
     }
 
     function expandAll() {
-        
+        while(true){
+            $expanded = false;
+            $this->twoPass($this->_ast,$expanded);
+            if(!$expanded){
+                break;
+            }
+        }
     }
 
 }
@@ -259,138 +268,289 @@ class CodeGenerater {
         return $ir;
     }
 
-    function _generate($ast, $env = [],$inLambda = false) {
+    function _generate($ast, &$env = [],$inLambda = false,$isQuote=false) {
         if (empty($ast)) {
             return [];
         }
         $ret = [];
-        if (isset($ast['t'])) {
-            switch ($ast['t']) {
-                case 'bool':
+        if(isset($ast['t'])){
+            switch($ast['t']){
                 case 'string':
+                    return ['LDS',$ast['val']]; 
+                    break;
+                case 'char':
+                    return ['LDC',$ast['val']]; 
+                    break;
+                case 'bool':
+                    return ['LDB',$ast['val']]; 
+                    break;
                 case 'int':
+                    return ['LDI',$ast['val']]; 
+                    break;
                 case 'float':
-                    $ret [] = Vm::LDC;
-                    $ret [] = $ast['val'];
+                    return ['LDF',$ast['val']]; 
                     break;
                 case 'symbol':
-                    $ret = $this->lookup($ast['val'], $env);
-                    if (empty($ret)) {
-                        exit("val {$ast['val']} not defined.");
-                    }
-                    return $ret;
-            }
-            return $ret;
-        }
-        if (is_array($ast) && isset($ast[0]) && isset($ast[0]['t'])) {
-            switch ($ast[0]['t']) {
-                case 'symbol':
-                    switch ($ast[0]['val']) {
-                        case '+':
-                            $args = array_slice($ast, 1);
-                            $num = 0;
-                            foreach ($args as $arg) {
-                                $ret = array_merge($ret, $this->_generate($arg, $env,$inLambda));
-                                ++$num;
-                            }
-                            array_push($ret, Vm::LDC);
-                            array_push($ret, $num);
-                            array_push($ret, Vm::ADD);
-//                            return array_merge($this->_generate($ast['cdr'], $env), [Vm::ADD]);
-                            break;
-                        case '-':
-                            $args = array_slice($ast, 1);
-                            $num = 0;
-                            foreach ($args as $arg) {
-                                $ret = array_merge($ret, $this->_generate($arg, $env,$inLambda));
-                                ++$num;
-                            }
-                            array_push($ret, Vm::LDC);
-                            array_push($ret, $num);
-                            array_push($ret, Vm::SUB);
-                            break;
-                        case '*':
-                            $args = array_slice($ast, 1);
-                            $num = 0;
-                            foreach ($args as $arg) {
-                                $ret = array_merge($ret, $this->_generate($arg, $env,$inLambda));
-                                ++$num;
-                            }
-                            array_push($ret, Vm::LDC);
-                            array_push($ret, $num);
-                            array_push($ret, Vm::MUL);
-                            break;
-                        case '/':
-                            $args = array_slice($ast, 1);
-                            $num = 0;
-                            foreach ($args as $arg) {
-                                $ret = array_merge($ret, $this->_generate($arg, $env,$inLambda));
-                                ++$num;
-                            }
-                            array_push($ret, Vm::LDC);
-                            array_push($ret, $num);
-                            array_push($ret, Vm::DIV);
-                            break;
-                        case '%':
-                            $args = array_slice($ast, 1);
-                            $num = 0;
-                            foreach ($args as $arg) {
-                                $ret = array_merge($ret, $this->_generate($arg, $env,$inLambda));
-                                ++$num;
-                            }
-                            array_push($ret, Vm::LDC);
-                            array_push($ret, $num);
-                            array_push($ret, Vm::MOD);
-                            break;
-                        case 'lambda':
-                            $tmp = [];
-                            $args = $ast[1];
-                            $index = 0;
-                            $cenv = [
-                                'parent' => &$env
-                            ];
-                            foreach ($args as $arg) {
-                                $cenv[$arg['val']] = $index;
-                                ++$index;
-                            }
-                            $tmp = array_merge($tmp, $this->_generate($ast[2], $cenv,true));
-                            $tmp [] = Vm::RTN;
-                            $ret = array_merge($ret, array_merge([Vm::LDF], [$tmp]));
-                            break;
-                        default:
-                            $lambda = $this->lookup($ast[0]['val'], $env);
-                            $args = [];
-                            $ret [] = Vm::NIL;
-                            foreach ($ast as $k => $arg) {
-                                if ($k == 0) {
-                                    continue;
+                    if($isQuote){
+                        return ['LDSY',$ast['val']]; 
+                    }else{
+                        switch($ast['val']){
+                            case '+':
+                                return [Vm::ADD]; 
+                                break;
+                            case '-':
+                                return [Vm::SUB]; 
+                                break;
+                            case '*':
+                                return [Vm::MUL]; 
+                                break;
+                            case '/':
+                                return [Vm::DIV]; 
+                                break;
+                            case '%':
+                                return [Vm::MOD]; 
+                                break;
+                            case '=':
+                                return [Vm::EQ]; 
+                                break;
+                            case '>':
+                                return [Vm::GT]; 
+                                break;
+                            case '<':
+                                return [Vm::LT]; 
+                                break;
+                            case '<=':
+                                return [Vm::LE]; 
+                                break;
+                            case '>=':
+                                return [Vm::GE]; 
+                                break;
+                            default:
+                                $tmp = $this->lookup($ast['val'],$env);
+                                if(!empty($tmp)){
+                                    return $tmp;
+                                }else{
+                                    return [Vm::LDN,$ast['val']];
                                 }
-                                $ret = array_merge($ret, $this->_generate($arg, $env,$inLambda));
-                                $ret [] = Vm::CONS;
-                            }
-                            $ret = array_merge($ret, $lambda);
-                            $ret [] = Vm::AP;
-                            break;
+                        }
                     }
                     break;
             }
-        } else {
-            $args = [];
-            $ret [] = Vm::NIL;
-            foreach ($ast as $k => $arg) {
-                if ($k == 0) {
-                    continue;
+        }else{
+            if(isset($ast[0]['t']) && $ast[0]['t']=='symbol'){
+                switch($ast[0]['val']){
+                    case 'lambda':
+                        $args = $ast[1];
+                        $newEnv = [];
+                        foreach($args as $arg){
+                            $newEnv[$arg['val']] = sizeof($newEnv);
+                        }
+                        $newEnv['parent'] = &$env;
+                        array_push($ret,Vm::LDF);
+                        $body = $this->_generate($ast[2],$newEnv,true,$isQuote);
+                        array_push($body,Vm::RTN);
+                        array_push($ret,$body);
+                        break;
+                    case '+':
+                        array_push($ret,Vm::NIL);
+                        for($index = 1;$index<sizeof($ast);++$index){
+                            $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
+                            array_push($ret,Vm::CONS);
+                        }
+                        array_push($ret,Vm::ADD);
+                                return $ret; 
+                                break;
+                            case '-':
+                                array_push($ret,Vm::NIL);
+                                for($index = 1;$index<sizeof($ast);++$index){
+                                    $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
+                                    array_push($ret,Vm::CONS);
+                                }
+                                array_push($ret,Vm::SUB);
+
+                                return $ret; 
+                                break;
+                            case '*':
+                                array_push($ret,Vm::NIL);
+                                for($index = 1;$index<sizeof($ast);++$index){
+                                    $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
+                                    array_push($ret,Vm::CONS);
+                                }
+                                array_push($ret,Vm::MUL);
+
+                                return $ret; 
+                                break;
+                            case '/':
+                                array_push($ret,Vm::NIL);
+                                for($index = 1;$index<sizeof($ast);++$index){
+                                    $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
+                                    array_push($ret,Vm::CONS);
+                                }
+                                array_push($ret,Vm::DIV);
+
+                                return $ret; 
+                                break;
+                            case '%':
+                                array_push($ret,Vm::NIL);
+                                for($index = 1;$index<sizeof($ast);++$index){
+                                    $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
+                                    array_push($ret,Vm::CONS);
+                                }
+                                array_push($ret,Vm::MOD);
+                                return $ret; 
+                                break;
+                            case '=':
+                                array_push($ret,Vm::NIL);
+                                for($index = 1;$index<sizeof($ast);++$index){
+                                    $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
+                                    array_push($ret,Vm::CONS);
+                                }
+                                array_push($ret,Vm::EQ);
+                                return $ret; 
+                                break;
+                            case '>':
+                                array_push($ret,Vm::NIL);
+                                for($index = 1;$index<sizeof($ast);++$index){
+                                    $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
+                                    array_push($ret,Vm::CONS);
+                                }
+                                array_push($ret,Vm::GT);
+                                return $ret;
+                                break;
+                            case '<':
+                                array_push($ret,Vm::NIL);
+                                for($index = 1;$index<sizeof($ast);++$index){
+                                    $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
+                                    array_push($ret,Vm::CONS);
+                                }
+                                array_push($ret,Vm::LT);
+                                return $ret;
+                                break;
+                            case '<=':
+                                array_push($ret,Vm::NIL);
+                                for($index = 1;$index<sizeof($ast);++$index){
+                                    $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
+                                    array_push($ret,Vm::CONS);
+                                }
+                                array_push($ret,Vm::LE);
+                                return $ret;
+                                break;
+                            case '>=':
+                                array_push($ret,Vm::NIL);
+                                for($index = 1;$index<sizeof($ast);++$index){
+                                    $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
+                                    array_push($ret,Vm::CONS);
+                                }
+                                array_push($ret,Vm::GE);
+                                return $ret;
+                                break;
+                            case 'if':
+                                $ret = array_merge($ret,$this->_generate($ast[1],$env,$inLambda,$isQuote));
+                                array_push($ret,Vm::SEL);
+                                $left = array_merge($ret,$this->_generate($ast[2],$env,$inLambda,$isQuote));
+                                array_push($left,Vm::JOIN);
+                                array_push($ret,$left);
+                                $right = array_merge($ret,$this->_generate($ast[2],$env,$inLambda,$isQuote));
+                                array_push($right,Vm::JOIN);
+                                array_push($ret,$right);
+                                return $ret;
+                                break;
+                            default:
+                                array_push($ret,Vm::NIL);
+                                for($index = 1;$index<sizeof($ast);++$index){
+                                    $ret = array_merge($ret,$this->_generate($_ast[$index],$env,$inLambda,$isQuote));
+                                    array_push($ret,Vm::CONS);
+                                }
+                                $tmp = $this->lookup($ast['val'],$env);
+                                if(!empty($tmp)){
+                                    $ret  = array_merge($ret,$tmp);
+                                }else{
+                                    array_push($ret,Vm::LDN);
+                                    array_push($ret,$ast['val']);
+                                }
+                                array_push($ret,Vm::AP);
+                                return $ret;
+
+
+                    }
+                
+            }else{
+                if(!$isQuote){
+                    array_push($ret,Vm::NIL);
+                    for($index = 1;$index<sizeof($ast);++$index){
+                         $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
+                         array_push($ret,Vm::CONS);
+                    }
+                    $ret = array_merge($ret,$this->_generate($ast[0],$env,$inLambda,$isQuote));
+                    array_push($ret,Vm::AP);
+                }else{
+                    for($index=0;$index<sizeof($ast);++$index){
+                        $subast = $ast[$index];
+                        if(isset($subast['t']) && $subast['t'] == 'quote'){
+                            ++$index;
+                            if(!isset($ast[$index]['t'])){
+                                array_push($ret,Vm::LDL);
+                            }
+                            $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,true));
+                        }else{
+                            $ret = array_merge($ret,$this->_generate($subast,$env,$inLambda,$isQuote));
+                        }
+                    }
                 }
-                $ret = array_merge($ret, $this->_generate($arg, $env,$inLambda));
-                $ret [] = Vm::CONS;
+                
             }
-            $lambda = $this->_generate($ast[0], $env,$inLambda);
-            $ret = array_merge($ret, $lambda);
-            $ret [] = Vm::AP;
+            
+            return $ret;
         }
         return $ret;
     }
 
+}
+
+class Gc{
+    function __construct(){
+        $this->mempool = [];
+    }
+    function &makeInteger(int $i):array{
+        $ret =  ['type'=>'int','value' => $i];
+        $this->mempool []= ['cell'=>&$ret];
+        return $ret;
+    }
+    function &makeFloat(float $i):array{
+        $ret =  ['type'=>'float','value' => $i];
+        $this->mempool []= ['cell'=>&$ret];
+        return $ret;
+    }
+    function &makeBool(bool $i):array{
+        $ret =  ['type'=>'bool','value' => $i];
+        $this->mempool []= ['cell'=>&$ret];
+        return $ret;
+    }
+    function &makeString(string $i):array{
+        $ret =  ['type'=>'string','value' => &$i];
+        $this->mempool []= ['cell'=>&$ret];
+        return $ret;
+    }
+    function &makeSymbol(string $i):array{
+        $ret =  ['type'=>'symbol','value' => &$i];
+        $this->mempool []= ['cell'=>&$ret];
+        return $ret;
+    }
+    function &makeChar(char $i):array{
+        $ret =  ['type'=>'char','value' => $i];
+        $this->mempool []= ['cell'=>&$ret];
+        return $ret;
+    }
+    function &makeClosure(array $i,array $env):array{
+        $ret =  ['type'=>'int','value' => $i,'env' => &$env];
+        $this->mempool []= ['cell'=>&$ret];
+        return $ret;
+    }
+    function &makeList(array $i):array{
+        $ret =  ['type'=>'list','value' => $i];
+        $this->mempool []= ['cell'=>&$ret];
+        return $ret;
+    }
 }
 
 class Vm {
@@ -402,9 +562,15 @@ class Vm {
     const NIL = 'NIL'; //5 ; # push nil pointer onto the stack
     const CONS = 'CONS'; //6 ; # cons the top of the stack onto the next list
     const LDC = 'LDC'; //7 ; # push a constant argument
+    const LDS = 'LDS'; //7 ; # push a constant argument
+    const LDD = 'LDD'; //7 ; # push a constant argument
+    const LDI = 'LDI'; //7 ; # push a constant argument
     const LDF = 'LDF'; //8 ; # load function
+    const LDB = 'LDB'; //7 ; # push a constant argument
+    const LDSY = 'LDSY'; //7 ; # push a constant argument
     const AP = 'AP'; //9 ; # function application
     const LD = 'LD'; //10 ; # load a variable
+    const LDL = 'LDL'; //10 ; # load a variable
     const CAR = 'CAR'; //11 ; # value of car cell
     const CDR = 'CDR'; //12 ; # value of cdr cell
     const DUM = 'DUM'; //13 ; # setup recursive closure list
@@ -412,7 +578,8 @@ class Vm {
     const JOIN = 'JOIN'; //15 ; # C = pop dump
     const RTN = 'RTN'; //16 ; # return from function
     const SEL = 'SEL'; //17 ; # logical selection (if/ then / else )
-    const NULL = 'NULL'; //18 ; # test if list is empty
+    const TAP = 'TAP';
+    const LDN = 'LDN';
     const WRITEI =
     'WRITEI'; //19 ; # write an integer to the terminal
     const WRITEC =
@@ -435,8 +602,14 @@ class Vm {
     'LOAD'; //28 ; # halt the machine
     const MOD =
     'MOD'; //29 ;
-    function __construct(
+    const EQ = 'QE';
+    const GT = 'GT';
+    const LT = 'LT';
+    const LE = 'LE';
+    const GE = 'GE';
 
+    function __construct(
+        
 ) {
     /**
      * class Vm:
@@ -491,7 +664,9 @@ class Vm {
     $this->C = null;
     $this->D = [];
     $this->GLOBALS = [];
+    $this->_gc = new Gc();
 }
+
 
 function op_SEL(&$s, &$c) {
     array_shift($c);
@@ -499,11 +674,11 @@ function op_SEL(&$s, &$c) {
     $cond = array_pop($s);
     $right = array_shift($c);
     $wrong = array_shift($c);
-    array_push($this->D, $this->C);
+    array_push($this->D, ['c'=> &$this->C]);
     if ($cond) {
-        $this->C = $right;
+        $this->C = &$right;
     } else {
-        $this->C = $wrong;
+        $this->C = &$wrong;
     }
 }
 
@@ -725,7 +900,7 @@ function run($code) {
 //    #t
 //    #f))
 //(test (= 1 2)) ";
-$s = "(let ((x 0) (y 1)) (lambda (z)  (+ x y)))";
+$s = "(let ((x 0) (y 1)) ((lambda (z)  (+ x y z)) 5))";
 $p = new Parser($s);
 $ast = $p->parse($s);
 $a = new Ast($ast);
@@ -742,5 +917,5 @@ $vm = new Vm();
 //Vm::LDC, [3, 4], Vm::LDF, [Vm::LD, [0, 1], Vm::LD, [0, 0], Vm::LDC, 2, Vm::ADD, Vm::RTN], Vm::AP, Vm::STOP
 //];
 //$ir[8][7] = Vm::RTN;
-$vm->run($ir);
-var_dump($vm->S);
+//$vm->run($ir);
+//var_dump($vm->S);
