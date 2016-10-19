@@ -353,7 +353,7 @@ class CodeGenerater {
                         break;
                     case '+':
                         array_push($ret,Vm::NIL);
-                        for($index = 1;$index<sizeof($ast);++$index){
+                        for($index = sizeof($ast)-1;$index>0;--$index){
                             $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
                             array_push($ret,Vm::CONS);
                         }
@@ -362,7 +362,7 @@ class CodeGenerater {
                                 break;
                             case '-':
                                 array_push($ret,Vm::NIL);
-                                for($index = 1;$index<sizeof($ast);++$index){
+                                for($index = sizeof($ast)-1;$index>0;--$index){
                                     $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
                                     array_push($ret,Vm::CONS);
                                 }
@@ -372,7 +372,7 @@ class CodeGenerater {
                                 break;
                             case '*':
                                 array_push($ret,Vm::NIL);
-                                for($index = 1;$index<sizeof($ast);++$index){
+                                for($index = sizeof($ast)-1;$index>0;--$index){
                                     $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
                                     array_push($ret,Vm::CONS);
                                 }
@@ -382,7 +382,7 @@ class CodeGenerater {
                                 break;
                             case '/':
                                 array_push($ret,Vm::NIL);
-                                for($index = 1;$index<sizeof($ast);++$index){
+                                for($index = sizeof($ast)-1;$index>0;--$index){
                                     $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
                                     array_push($ret,Vm::CONS);
                                 }
@@ -392,7 +392,7 @@ class CodeGenerater {
                                 break;
                             case '%':
                                 array_push($ret,Vm::NIL);
-                                for($index = 1;$index<sizeof($ast);++$index){
+                                for($index = sizeof($ast)-1;$index>0;--$index){
                                     $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
                                     array_push($ret,Vm::CONS);
                                 }
@@ -401,7 +401,7 @@ class CodeGenerater {
                                 break;
                             case '=':
                                 array_push($ret,Vm::NIL);
-                                for($index = 1;$index<sizeof($ast);++$index){
+                                for($index = sizeof($ast)-1;$index>0;--$index){
                                     $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
                                     array_push($ret,Vm::CONS);
                                 }
@@ -410,7 +410,7 @@ class CodeGenerater {
                                 break;
                             case '>':
                                 array_push($ret,Vm::NIL);
-                                for($index = 1;$index<sizeof($ast);++$index){
+                                for($index = sizeof($ast)-1;$index>0;--$index){
                                     $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
                                     array_push($ret,Vm::CONS);
                                 }
@@ -419,7 +419,7 @@ class CodeGenerater {
                                 break;
                             case '<':
                                 array_push($ret,Vm::NIL);
-                                for($index = 1;$index<sizeof($ast);++$index){
+                                for($index = sizeof($ast)-1;$index>0;--$index){
                                     $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
                                     array_push($ret,Vm::CONS);
                                 }
@@ -428,7 +428,7 @@ class CodeGenerater {
                                 break;
                             case '<=':
                                 array_push($ret,Vm::NIL);
-                                for($index = 1;$index<sizeof($ast);++$index){
+                                for($index = sizeof($ast)-1;$index>0;--$index){
                                     $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
                                     array_push($ret,Vm::CONS);
                                 }
@@ -437,7 +437,7 @@ class CodeGenerater {
                                 break;
                             case '>=':
                                 array_push($ret,Vm::NIL);
-                                for($index = 1;$index<sizeof($ast);++$index){
+                                for($index = sizeof($ast)-1;$index>0;--$index){
                                     $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
                                     array_push($ret,Vm::CONS);
                                 }
@@ -447,17 +447,17 @@ class CodeGenerater {
                             case 'if':
                                 $ret = array_merge($ret,$this->_generate($ast[1],$env,$inLambda,$isQuote));
                                 array_push($ret,Vm::SEL);
-                                $left = array_merge($ret,$this->_generate($ast[2],$env,$inLambda,$isQuote));
+                                $left =  $this->_generate($ast[2],$env,$inLambda,$isQuote);
                                 array_push($left,Vm::JOIN);
                                 array_push($ret,$left);
-                                $right = array_merge($ret,$this->_generate($ast[2],$env,$inLambda,$isQuote));
+                                $right = $this->_generate($ast[3],$env,$inLambda,$isQuote);
                                 array_push($right,Vm::JOIN);
                                 array_push($ret,$right);
                                 return $ret;
                                 break;
                             default:
                                 array_push($ret,Vm::NIL);
-                                for($index = 1;$index<sizeof($ast);++$index){
+                                for($index = sizeof($ast)-1;$index>0;--$index){
                                     $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
                                     array_push($ret,Vm::CONS);
                                 }
@@ -477,7 +477,7 @@ class CodeGenerater {
             }else{
                 if(!$isQuote){
                     array_push($ret,Vm::NIL);
-                    for($index = 1;$index<sizeof($ast);++$index){
+                    for($index = sizeof($ast)-1;$index>0;--$index){
                          $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
                          array_push($ret,Vm::CONS);
                     }
@@ -683,11 +683,11 @@ class Vm {
 
 function op_SEL(&$s, &$c) {
     array_shift($c);
-    $d = array_pop($this->D);
+    //$d = array_pop($this->D);
     $cond = array_pop($s);
     $right = array_shift($c);
     $wrong = array_shift($c);
-    array_push($this->D, ['c'=> &$this->C]);
+    array_push($this->D, ['C'=> &$this->C]);
     if ($cond) {
         $this->C = &$right;
     } else {
@@ -705,7 +705,7 @@ function op_CONS(&$s, &$c) {
 function op_JOIN(&$s, &$c) {
     array_shift($c);
     $d = array_pop($this->D);
-    $this->C = $d;
+    $this->C = $d['C'];
 }
 
 function op_LDC(&$s, &$c) {
@@ -738,10 +738,44 @@ function op_NIL(&$s, &$c) {
     array_push($s, $this->_gc->NIL);
 }
 
+function op_DUM(&$s, &$c){
+    array_shift($c);
+    array_push($this->E, $this->_gc->NIL);
+}
+
+/**
+([f (nil.e)] v.s) (nil.e) (RAP.c) d
+=>
+nil (rplaca((nil.e), v).e) f (s e c.d)
+*/
+function op_RAP(&$s, &$c) {
+    array_shift($c);
+    $closure = array_pop($s);
+    $args = array_pop($s);
+    $dump =  [
+        'S' => &$this->S,
+        'E' => [],
+        'C' => &$this->C,
+    ];
+    foreach($this->E as $k => &$item){
+        $dump['E'][$k] = &$item;
+    }
+    array_push($this->D,$dump);
+
+    $this->C = $closure['value'];
+    $this->E = &$closure['env'];
+    $this->S = [];
+    //var_dump($args['value']);
+    array_pop($this->E);
+    //array_push($this->E, $args['value']);
+    $this->E[sizeof($this->E)] = &$args;
+}
+
+
 function op_LD(&$s, &$c) {
     array_shift($c);
     $index = array_shift($c);
-    array_push($s, $this->E[sizeof($this->E) - $index[0] - 1][$index[1]]);
+    array_push($s, $this->E[sizeof($this->E) - $index[0] - 1]['value'][$index[1]]);
 }
 
 function op_LDF(&$s, &$c) {
@@ -754,8 +788,8 @@ function op_LDF(&$s, &$c) {
 function op_EQ(&$s, &$c) {
     array_shift($c);
     $args = array_pop($s);
-    $left = &$args[1];
-    $right = &$args[0];
+    $left = &$args[0];
+    $right = &$args[1];
     array_push($s, 
     $this->_gc->makeBool($left['value']==$right['value']));
 }
@@ -763,8 +797,8 @@ function op_EQ(&$s, &$c) {
 function op_GT(&$s, &$c) {
     array_shift($c);
     $args = array_pop($s);
-    $left = &$args[1];
-    $right = &$args[0];
+    $left = &$args[0];
+    $right = &$args[1];
     array_push($s, 
     $this->_gc->makeBool($left['value']>$right['value']));
 }
@@ -772,8 +806,8 @@ function op_GT(&$s, &$c) {
 function op_LT(&$s, &$c) {
     array_shift($c);
     $args = array_pop($s);
-    $left = &$args[1];
-    $right = &$args[0];
+    $left = &$args[0];
+    $right = &$args[1];
     array_push($s, 
     $this->_gc->makeBool($left['value']<$right['value']));
 }
@@ -781,8 +815,8 @@ function op_LT(&$s, &$c) {
 function op_GE(&$s, &$c) {
     array_shift($c);
     $args = array_pop($s);
-    $left = &$args[1];
-    $right = &$args[0];
+    $left = &$args[0];
+    $right = &$args[1];
     array_push($s, 
     $this->_gc->makeBool($left['value']>=$right['value']));
 }
@@ -790,8 +824,8 @@ function op_GE(&$s, &$c) {
 function op_LE(&$s, &$c) {
     array_shift($c);
     $args = array_pop($s);
-    $left = &$args[1];
-    $right = &$args[0];
+    $left = &$args[0];
+    $right = &$args[1];
     array_push($s, 
     $this->_gc->makeBool($left['value']<=$right['value']));
 }
@@ -924,16 +958,21 @@ function op_AP(&$s, &$c) {
     array_shift($c);
     $closure = array_pop($s);
     $args = array_pop($s);
-    array_push($this->D, [
+    $dump =  [
         'S' => &$this->S,
-        'E' => &$this->E,
+        'E' => [],
         'C' => &$this->C,
-    ]);
-    $this->C = &$closure['value'];
+    ];
+    foreach($this->E as $k => &$item){
+        $dump['E'][$k] = &$item;
+    }
+    array_push($this->D,$dump);
+    $this->C = $closure['value'];
     $this->E = &$closure['env'];
     $this->S = [];
     //var_dump($args['value']);
-    array_push($this->E, $args['value']);
+    $this->E[sizeof($this->E)] = &$args;
+    //array_push($this->E, $args['value']);
 }
 
 function op_TAP(&$s, &$c) {
@@ -948,7 +987,8 @@ function op_TAP(&$s, &$c) {
     $this->C = &$closure['value'];
     $this->E = &$closure['env'];
     $this->S = [];
-    array_push($this->E, $args['value']);
+    //array_push($this->E, $args['value']);
+    $this->E[sizeof($this->E)] = &$args;
 }
 
 function run($code) {
@@ -1030,6 +1070,21 @@ function run($code) {
             case self::LE:
                 $this->op_LE($this->S, $this->C);
                 break;
+            case self::SEL:
+                $this->op_SEL($this->S, $this->C);
+                break;
+            case self::JOIN:
+                $this->op_JOIN($this->S, $this->C);
+                break;
+            case self::DUM:
+                $this->op_DUM($this->S, $this->C);
+                break;
+            case self::RAP:
+                $this->op_RAP($this->S, $this->C);
+                break;
+            default:
+                echo "unknown instruction.\n";
+                exit(1);
         }
     }
 }
@@ -1043,7 +1098,7 @@ function run($code) {
 //    #f))
 //(test (= 1 2)) ";
 //$s = "(let ((x 1) (y 2)) ((lambda (z)  (+ x y z)) 5))";
-$s='(let ((fib (lambda (x) (if (= x 1) 1 (fib (- x 1) )
+$s='(letrec ((fib (lambda (x) (if (= x 1) 1 (fib (+ (- x 1) x) )
 )
 )
 
