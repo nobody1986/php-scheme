@@ -75,6 +75,7 @@ class Ast {
         $this->onePass($this->_ast);
         $this->expandAll();
         $this->threePass($this->_ast);
+        $this->sixPass($this->_ast);
     }
 
     function macroSyms(&$ast) {
@@ -184,6 +185,57 @@ class Ast {
             foreach ($ast as &$child) {
                 if (is_array($child) && !isset($child['t'])) {
                     $this->threePass($child);
+                }
+            }
+        }
+    }
+
+    function isRecurLambda(&$ast){
+        if(isset($ast['t'])){
+            return false;
+        }
+        $isRecur = false;
+        foreach($ast as &$item){
+            if(!isset($item['t']) 
+            && !empty($item[0])
+            && !empty($item[0]['t']
+            && $item[0]['t'] =='symbol'
+            && $item[0]['val'] == 'recur')
+            ){
+                $isRecur = true;
+            }else{
+                $r = $this->isRecurLambda($item);
+                if($r){
+                    $isRecur = true;
+                }
+            }
+        }
+        return $isRecur;
+    }
+
+    function sixPass(&$ast) {
+//recur变换
+        /**
+         *  
+         * (lambda (x y) ((recur (- x 1))))
+         * ((lambda (x) x) (lambda (x y) ((recur (- x 1)))))
+         * 
+         */
+        if (empty($ast)) {
+            return;
+        }
+
+        if (!empty($ast[0]) && !empty($ast[0]['t']) && $ast[0]['t'] == 'symbol' && $ast[0]['val'] == 'lambda') {
+            if($this->isRecurLambda($ast)){
+                $newAst =[[['t'=>'symbol','val'=>'lambda'] ,[['t'=>'symbol','val'=>'x']],['t'=>'symbol','val'=>'x']],$ast];
+                $ast = $newAst;
+            }
+            
+            return;
+        } else {
+            foreach ($ast as &$child) {
+                if (is_array($child) && !isset($child['t'])) {
+                    $this->sixPass($child);
                 }
             }
         }
@@ -1098,7 +1150,7 @@ function run($code) {
 //    #f))
 //(test (= 1 2)) ";
 //$s = "(let ((x 1) (y 2)) ((lambda (z)  (+ x y z)) 5))";
-$s='(letrec ((fib (lambda (x) (if (= x 1) 1 (fib (+ (- x 1) x) )
+$s='(let ((fib (lambda (x) (if (= x 1) 1 (recur (+ (- x 1) x) )
 )
 )
 
@@ -1108,16 +1160,16 @@ $ast = $p->parse($s);
 $a = new Ast($ast);
 //$as = $a->onePass($ast);
 //$as = $a->twoPass($a->_ast, $expanded);
-$as = $a->threePass($a->_ast);
-//print_r($a->_ast);
-$gener = new CodeGenerater($a->_ast);
-$ir = $gener->generate($a->_ast);
-print_r($ir);
+//$as = $a->threePass($a->_ast);
+print_r($a->_ast);
+//$gener = new CodeGenerater($a->_ast);
+//$ir = $gener->generate($a->_ast);
+//print_r($ir);
 //print_r($gener->generate($a->_ast));
 $vm = new Vm();
 //$code = [
 //Vm::LDC, [3, 4], Vm::LDF, [Vm::LD, [0, 1], Vm::LD, [0, 0], Vm::LDC, 2, Vm::ADD, Vm::RTN], Vm::AP, Vm::STOP
 //];
 //$ir[8][7] = Vm::RTN;
-$vm->run($ir);
-var_dump($vm->S);
+//$vm->run($ir);
+//var_dump($vm->S);
