@@ -75,7 +75,7 @@ class Ast {
         $this->onePass($this->_ast);
         $this->expandAll();
         $this->threePass($this->_ast);
-        $this->sixPass($this->_ast);
+        //$this->sixPass($this->_ast);
     }
 
     function macroSyms(&$ast) {
@@ -300,6 +300,36 @@ class CodeGenerater {
         $this->_IR = [];
     }
 
+    function isRecurLambda(&$ast){
+        if(isset($ast['t'])){
+            return false;
+        }
+        $isRecur = false;
+        foreach($ast as &$item){
+            if(!isset($item['t']) 
+            && !empty($item[0])
+            && !empty($item[0]['t'])
+            && $item[0]['t'] =='symbol'){
+                if($item[0]['val'] == 'recur'){
+                    $isRecur = true;
+                }elseif($item[0]['val'] == 'lambda'){
+                    continue;
+                }else{
+                    $r = $this->isRecurLambda($item);
+                    if($r){
+                        $isRecur = true;
+                    }
+                }
+            }else{
+                $r = $this->isRecurLambda($item);
+                if($r){
+                    $isRecur = true;
+                }
+            }
+        }
+        return $isRecur;
+    }
+
     function lookup($var, $env) {
         $tmp = $env;
         $i = 0;
@@ -402,6 +432,14 @@ class CodeGenerater {
                         $body = $this->_generate($ast[2],$newEnv,true,$isQuote);
                         array_push($body,Vm::RTN);
                         array_push($ret,$body);
+                        if($this->isRecurLambda($ast)){
+                            array_unshift($ret,Vm::NIL);
+                            array_unshift($ret,Vm::DUM);
+                            array_push($ret,Vm::CONS);
+                            array_push($ret,Vm::LDF);
+                            array_push($ret,[Vm::LD ,[0,0],Vm::RTN]);
+                            array_push($ret,Vm::RAP);
+                        }
                         break;
                     case '+':
                         array_push($ret,Vm::NIL);
@@ -507,6 +545,17 @@ class CodeGenerater {
                                 array_push($ret,$right);
                                 return $ret;
                                 break;
+                            case "recur":
+                                array_push($ret,Vm::NIL);
+                                for($index = sizeof($ast)-1;$index>0;--$index){
+                                    $ret = array_merge($ret,$this->_generate($ast[$index],$env,$inLambda,$isQuote));
+                                    array_push($ret,Vm::CONS);
+                                }
+
+                                array_push($ret,Vm::LD);
+                                array_push($ret,[1,0]);
+                                array_push($ret,Vm::AP);
+                                return $ret;
                             default:
                                 array_push($ret,Vm::NIL);
                                 for($index = sizeof($ast)-1;$index>0;--$index){
@@ -739,8 +788,8 @@ function op_SEL(&$s, &$c) {
     $cond = array_pop($s);
     $right = array_shift($c);
     $wrong = array_shift($c);
-    array_push($this->D, ['C'=> &$this->C]);
-    if ($cond) {
+    array_push($this->D, ['C'=> $this->C]);
+    if ($cond['value']) {
         $this->C = &$right;
     } else {
         $this->C = &$wrong;
@@ -805,9 +854,9 @@ function op_RAP(&$s, &$c) {
     $closure = array_pop($s);
     $args = array_pop($s);
     $dump =  [
-        'S' => &$this->S,
+        'S' => $this->S,
         'E' => [],
-        'C' => &$this->C,
+        'C' => $this->C,
     ];
     foreach($this->E as $k => &$item){
         $dump['E'][$k] = &$item;
@@ -818,9 +867,9 @@ function op_RAP(&$s, &$c) {
     $this->E = &$closure['env'];
     $this->S = [];
     //var_dump($args['value']);
-    array_pop($this->E);
+    //array_pop($this->E);
     //array_push($this->E, $args['value']);
-    $this->E[sizeof($this->E)] = &$args;
+    $this->E[sizeof($this->E)-1] = &$args;
 }
 
 
@@ -840,8 +889,8 @@ function op_LDF(&$s, &$c) {
 function op_EQ(&$s, &$c) {
     array_shift($c);
     $args = array_pop($s);
-    $left = &$args[0];
-    $right = &$args[1];
+    $left = &$args['value'][0];
+    $right = &$args['value'][1];
     array_push($s, 
     $this->_gc->makeBool($left['value']==$right['value']));
 }
@@ -889,6 +938,7 @@ function op_RTN(&$s, &$c) {
     $this->E = &$env['E'];
     $this->C = &$env['C'];
     $this->S = &$env['S'];
+    
     array_push($this->S,$ret);
 }
 
@@ -1009,11 +1059,12 @@ function op_ASSIGN(&$s, &$c) {
 function op_AP(&$s, &$c) {
     array_shift($c);
     $closure = array_pop($s);
+    
     $args = array_pop($s);
     $dump =  [
-        'S' => &$this->S,
+        'S' => $this->S,
         'E' => [],
-        'C' => &$this->C,
+        'C' => $this->C,
     ];
     foreach($this->E as $k => &$item){
         $dump['E'][$k] = &$item;
@@ -1143,6 +1194,28 @@ function run($code) {
 
 }
 
+function showIL($il,$space = 0){
+    if($space > 0 ){
+        echo "\n";
+        for($i=0;$i<$space;++$i){
+            echo " ";
+        }
+    }
+    echo " [ ";
+    $step = 2;
+    $index = $space;
+    foreach($il as $i){
+        if(is_array($i)){
+            showIL($i,$step*$index);
+            ++$index;
+        }else{
+            echo $i.", ";
+        }
+        
+    }
+    echo " ] ";
+}
+
 //$s = "(lambda (x y) (+ x y 1)) ";
 //$s = "(define-macro (test expr)
 //  `(if ,expr
@@ -1150,26 +1223,22 @@ function run($code) {
 //    #f))
 //(test (= 1 2)) ";
 //$s = "(let ((x 1) (y 2)) ((lambda (z)  (+ x y z)) 5))";
-$s='(let ((fib (lambda (x) (if (= x 1) 1 (recur (+ (- x 1) x) )
-)
-)
-
-)) (fib 10) )';
+$s='((lambda (x) (if (= x 1) 1 (+ (recur (- x 1) ) x ) ) ) 10)';
 $p = new Parser($s);
 $ast = $p->parse($s);
 $a = new Ast($ast);
 //$as = $a->onePass($ast);
 //$as = $a->twoPass($a->_ast, $expanded);
 //$as = $a->threePass($a->_ast);
-print_r($a->_ast);
-//$gener = new CodeGenerater($a->_ast);
-//$ir = $gener->generate($a->_ast);
-//print_r($ir);
+//print_r($a->_ast);
+$gener = new CodeGenerater($a->_ast);
+$ir = $gener->generate($a->_ast);
+showIL($ir);
 //print_r($gener->generate($a->_ast));
 $vm = new Vm();
 //$code = [
 //Vm::LDC, [3, 4], Vm::LDF, [Vm::LD, [0, 1], Vm::LD, [0, 0], Vm::LDC, 2, Vm::ADD, Vm::RTN], Vm::AP, Vm::STOP
 //];
 //$ir[8][7] = Vm::RTN;
-//$vm->run($ir);
-//var_dump($vm->S);
+$vm->run($ir);
+var_dump($vm->S);
