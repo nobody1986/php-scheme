@@ -1573,8 +1573,8 @@ function resetVmStatus(){
             }
         }
         $end = microtime(true);
-        //echo "total cost: ".($end - $start)." s.\n";
-        //echo "instructions per second: ".$instructs/($end - $start)." instructions/s.\n";
+        echo "total cost: ".($end - $start)." s.\n";
+        echo "instructions per second: ".$instructs/($end - $start)." instructions/s.\n";
     }
 }
 function showIL($il, $space = 0)
@@ -1661,7 +1661,7 @@ class Scheme{
         }
     }
 }
-//$s = "(lambda (x y) (+ x y 1)) ";
+//$s = "(let ((yin ((lambda (cc) (display #\@) cc) (call-with-current-continuation (lambda (c) c))))  (yang ((lambda (cc) (display #\*) cc) (call-with-current-continuation (lambda (c) c)))))   (yin yang))  ";
 //$s = "(define-macro (test expr)
 //  `(if ,expr
 //    #t
