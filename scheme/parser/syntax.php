@@ -7,7 +7,7 @@ class SyntaxException extends \Exception{
 
 }
 
-
+/*
 abstract class Syntax{
     abstract function __toString();
 }
@@ -160,9 +160,8 @@ function analyzeExpr($tokens,&$index = 0){
                 $item = QuoteExpr();
                 ++$index;
                 break;
-            
         }
-    for($i = $index;$i<$size;++$i){
+    for(;$index<$size;++$index){
         switch($tokens[$index]->type()){
             case Token::Tok_SYMBOL:
                 $item = new Symbol($tokens[$index]->content());
@@ -180,11 +179,14 @@ function analyzeExpr($tokens,&$index = 0){
                 $item = new Char($tokens[$index]->content());
                 break;
             case Token::Tok_LP:
-                $item = analyzeExpr($tokens ,$index);
                 if($tokens[$index+1]->type() == Token::Tok_BEGIN){
                     $index +=2;
                     $item = analyzeForm($tokens ,$index);
+                }else{
+                    ++$index;
+                    $item = analyzeExpr($tokens ,$index);
                 }
+                --$index;
                 break;
             case Token::Tok_RP:
                 ++$index;
@@ -243,11 +245,14 @@ function analyzeForm($tokens,&$index = 0){
                 $item = new Char($tokens[$index]->content());
                 break;
             case Token::Tok_LP:
-                $item = analyzeExpr($tokens ,$index);
                 if($tokens[$index+1]->type() == Token::Tok_BEGIN){
                     $index += 2;
                     $item = analyzeForm($tokens ,$index);
+                }else{
+                    ++$index;
+                    $item = analyzeExpr($tokens ,$index);
                 }
+                --$index;
                 break;
             case Token::Tok_RP:
                 ++$index ;
@@ -274,11 +279,222 @@ function analyzeForm($tokens,&$index = 0){
             case Token::Tok_BOOL:
                 $item = analyzeExpr($tokens ,$index);
                 break;
-
-            
         }
         $ret->add($item);
     }
     return $ret;
         
+}
+
+*/
+
+abstract class Object{
+    protected $_value;
+    abstract function __toString();
+    function val(){
+        return $this->_value;
+    }
+}
+class Atomic extends Object{
+    protected $_value;
+    function __construct($value){
+        $this->_value = $value;
+    }
+    function __toString(){
+        return ''.$this->_value;
+    }
+}
+class Nil extends Atomic{
+    private static $_instance;
+    function __construct(){
+        $this->_value = '()';
+    }
+    static function instance(){
+        if(empty(self::$_instance)){
+            self::$_instance = new Nil();
+        }
+        return self::$_instance;
+    }
+}
+class Symbol extends Atomic{}
+class Integer extends Atomic{}
+class Double extends Atomic{}
+class Char extends Atomic{}
+class Str extends Atomic{}
+class Boolean extends Atomic{
+    function __toString(){
+        return $this->_value?"#t":"#f";
+    }
+}
+
+class Pair extends Object{
+    protected $_car;
+    protected $_cdr;
+    function __construct($car,$cdr){
+        $this->_car = $car;
+        $this->_cdr = $cdr;
+    }
+    function __toString(){
+        return $this->_car.'.'.$this->_cdr;
+    }
+    function car(){
+        return $this->_car;
+    }
+    function cdr(){
+        return $this->_cdr;
+    }
+}
+class Lists extends Pair{
+    function __toString(){
+        return $this->_car.' '.$this->_cdr;
+    }
+}
+class Lambda extends Object{
+    protected $_code;
+    protected $_env;
+    protected $_args;
+    function __construct($code,$env){
+        $this->_code = $code->cdr()->cdr()->car();
+        $this->_env = new Env($env);
+        $this->_args = [];
+        $args = $code->cdr()->car();
+        while(!($args instanceof Nil)){
+            $this->_args []= $args->car()->val();
+            $args = $args->cdr();
+        }
+    }
+    function call($args){
+        foreach($this->_args as $k => $v){
+            $this->_env->set($v,$args[$k]);
+        }
+        return $this->_env;
+    }
+    function code(){
+        return $this->_code;
+    }
+
+    function __toString(){
+        return "<lambda>";
+    }
+}
+
+class Env extends Object{
+    protected $_env;
+    protected $_uplevel;
+    function __construct($uplevel){
+        $this->_uplevel = $uplevel;
+        $this->_env = [];
+    }
+    function set($name,$value){
+        $this->_env[$name] = $value;
+    }
+    function lookup($name){
+        if(!empty($this->_env[$name])){
+            return $this->_env[$name];
+        }else{
+            if(empty($this->_uplevel)){
+                return null;
+            }else{
+                return $this->_uplevel->lookup($name);
+            }
+        }
+    }
+    function __toString(){
+        return "<Env>";
+    }
+}
+
+class Procedure extends Object{
+    protected $_name;
+    function __construct($name,$value){
+        $this->_name = $name;
+        $this->_value = $value;
+    }
+    function __toString(){
+        return sprintf("<Procedure %s>",$this->_name);
+    }
+}
+
+class Func extends Object{
+    function __construct($value){
+        $this->_value = $value;
+    }
+    function __toString(){
+        return sprintf("<Func>");
+    }
+}
+class Callcc extends Object{
+    function __toString(){
+        return "<call-with-current-continuation>";
+    }
+}
+
+
+function analyzeAst($tokens){
+    $stack = [];
+    foreach($tokens as $token){
+        switch($token->type()){
+            case Token::Tok_SYMBOL:
+                $item = new Symbol($token->content());
+                break;
+            case Token::Tok_STRING:
+                $item = new Str($token->content());
+                break;
+            case Token::Tok_INTEGER:
+                $item = new Integer($token->content());
+                break;
+            case Token::Tok_FLOAT:
+                $item = new Double($token->content());
+                break;
+            case Token::Tok_CHAR:
+                $item = new Char($token->content());
+                break;
+            case Token::Tok_LP:
+                $item = null;
+                break;
+            case Token::Tok_RP:
+                $ret = Nil::instance();
+                while(($t = array_pop($stack))!=null){
+                    $ret = new Lists($t,$ret);
+                }
+                if(sizeof($stack) >0 
+                && $stack[sizeof($stack)-1] instanceof Symbol
+                && $stack[sizeof($stack)-1]->val()=='quote'
+                  ){
+                    $t = array_pop($stack);
+                    $ret = new Lists($t,$ret);
+                }
+                
+                array_push($stack,$ret);
+                goto nopush;
+                break;
+            case Token::Tok_ADD:
+                $item = new Symbol('+');
+                break;
+            case Token::Tok_SUB:
+                $item = new Symbol('-');
+                break;
+            case Token::Tok_DIV:
+                $item = new Symbol('/');
+                break;
+            case Token::Tok_MUL:
+                $item = new Symbol('*');
+                break;
+            case Token::Tok_MOD:
+                $item = new Symbol('%');
+                break;
+            case Token::Tok_QUOTE:
+                $item = new Symbol('quote');
+                break;
+            case Token::Tok_BEGIN:
+                $item = new Symbol('begin');
+                break;
+            case Token::Tok_BOOL:
+                $item = new Boolean($token->content());
+                break;
+        }
+        array_push($stack,$item);
+        nopush:
+    }
+    return $stack;
 }

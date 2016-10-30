@@ -105,8 +105,10 @@ class Lexer{
                 if( $this->_str[$this->_index] == '\''){
                     $tokens []= substr($this->_str, $this->_index,1);
                 }elseif(strpos(self::SPLIT,$this->_str[$this->_index])!==false){
-                    if($this->_str[$this->_index] == '('||$this->_str[$this->_index]==')'){
+                    if($this->_str[$this->_index] == '('||
+                    $this->_str[$this->_index]==')'){
                         $tokens []= substr($this->_str, $this->_index,1);
+                        
                     }
                 }else{
                     if($this->_str[$this->_index]=='"'){
@@ -127,7 +129,13 @@ class Lexer{
                                 $tokens []= substr($this->_str,$this->_index,$n - $this->_index);
                                 $this->_index  = $n-1;
                                 break;
+                            }else{
+                                if($n == $this->_strlen - 1){
+                                    $tokens []= substr($this->_str,$this->_index,$n - $this->_index + 1);
+                                    return $tokens;
+                                }
                             }
+                            
                         }
                     }
                     
@@ -136,101 +144,5 @@ class Lexer{
             return $tokens;
     }
 
-    function next(){
-        for(;$this->_index < $this->_strlen;++$this->_index ){
-            if(strpos(self::SPLIT,$this->_str[$this->_index])!==false){
-                continue;
-            }
-            switch($this->_str[$this->_index]){
-                case "\"":
-                    return $this->parseString();
-                    break;
-                case "#":
-                    if($this->_str[$this->_index+1] =='\\'){
-                        $this->_index+=2;
-                        return new Token(Token::Tok_CHAR,$this->_str[$this->_index]);
-                    }elseif($this->_str[$this->_index+1] =='t' || 
-                    $this->_str[$this->_index+1] =='f'){
-                        $this->_index+=1;
-                        return new Token(Token::Tok_BOOL,$this->_str[$this->_index]=='t');
-                    }else{
-                        throw new LexerException();
-                    }
-                    break;
-                case "(":
-                    return new Token(Token::Tok_LP);
-                    break;
-                case ")":
-                    return new Token(Token::Tok_RP);
-                    break;
-                case "+":
-                    if(strpos(self::SPLIT,$this->_str[$this->_index+1])!==false){
-                        $this->_index += 1;
-                        return new Token(Token::Tok_ADD);
-                    }else{
-                        for($n=$this->_index;$n<$this->_strlen;++$n){
-                            if(strpos(self::SPLIT,$this->_str[$n])!==false){
-                                break;
-                            }
-                        }
-                        $s = substr($this->_str,$this->_index,$n-$this->_index);
-                        $this->_index = $n;
-                        if(is_float($s)){
-                            return new Token(Token::Tok_FLOAT,floatval($s));
-                        }elseif(is_numeric($s)){
-                            return new Token(Token::Tok_Integer,intval($s));
-                        }else{
-                            return new Token(Token::Tok_SYMBOL,$s);
-                        }
-                    }
-                    
-                    break;
-                case "-":
-                if(strpos(self::SPLIT,$this->_str[$this->_index+1])!==false){
-                        $this->_index += 1;
-                        return new Token(Token::Tok_SUB);
-                    }else{
-                        for($n=$this->_index;$n<$this->_strlen;++$n){
-                            if(strpos(self::SPLIT,$this->_str[$n])!==false){
-                                break;
-                            }
-                        }
-                        $s = substr($this->_str,$this->_index,$n-$this->_index);
-                        $this->_index = $n;
-                        if(is_float($s)){
-                            return new Token(Token::Tok_FLOAT,floatval($s));
-                        }elseif(is_numeric($s)){
-                            return new Token(Token::Tok_Integer,intval($s));
-                        }else{
-                            return new Token(Token::Tok_SYMBOL,$s);
-                        }
-                    }
-                    break;
-                case "*":
-                    return new Token(Token::Tok_MUL);
-                    break;
-                case "/":
-                    return new Token(Token::Tok_DIV);
-                    break;
-                case "%":
-                    return new Token(Token::Tok_MOD);
-                    break;
-                case "'":
-                    return new Token(Token::Tok_QUOTE);
-                    break;
-                default:
-                    if($this->_str[$this->_index]){}
-            }
-        }
-    }
-
-
 }
 
-$le = new Lexer();
-$le->set('(define name (lambda (x) (string-length "xj\n\"a23j"))');
-$tokens = $le->tokenize();
-include('syntax.php');
-var_dump($tokens);
-$ret = analyzeForm($tokens);
-// /var_dump($ret);
