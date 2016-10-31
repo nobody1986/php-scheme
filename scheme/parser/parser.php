@@ -51,7 +51,6 @@ class Lexer{
 
     }
 
-
     function set($str){
         $this->_str = $str;
         $this->_strlen = strlen($str);
@@ -69,7 +68,7 @@ class Lexer{
             }elseif($token[0] == '"'){
                 $ret []= new Token(Token::Tok_STRING,stripslashes(substr($token,1,strlen($token)-2)));
             }elseif($token[0] == '#'&& $token[1] == '\\'){
-                $ret []= new Token(Token::Tok_CHAR,$token);
+                $ret []= new Token(Token::Tok_CHAR,$token[2]);
             }elseif($token[0] == '#'&& ($token[1] == 't' || $token[1] == 'f')){
                 $ret []= new Token(Token::Tok_BOOL,$token[1] == 't');
             }elseif($token == '\''){

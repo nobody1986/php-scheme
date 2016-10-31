@@ -335,7 +335,7 @@ class Pair extends Object{
         $this->_cdr = $cdr;
     }
     function __toString(){
-        return $this->_car.'.'.$this->_cdr;
+        return $this->_car.' . '.$this->_cdr;
     }
     function car(){
         return $this->_car;
@@ -343,10 +343,22 @@ class Pair extends Object{
     function cdr(){
         return $this->_cdr;
     }
+
+    function setCar($car){
+          $this->_car = $car;
+    }
+    function setCdr($cdr){
+          $this->_cdr = $cdr;
+    }
 }
 class Lists extends Pair{
     function __toString(){
-        return $this->_car.' '.$this->_cdr;
+        if($this->_cdr instanceof Nil){
+            return $this->_car . '';
+        }else{
+            return $this->_car.' '.$this->_cdr;
+        }
+        
     }
 }
 class Lambda extends Object{
@@ -355,7 +367,7 @@ class Lambda extends Object{
     protected $_args;
     function __construct($code,$env){
         $this->_code = $code->cdr()->cdr()->car();
-        $this->_env = new Env($env);
+        $this->_env = $env;
         $this->_args = [];
         $args = $code->cdr()->car();
         while(!($args instanceof Nil)){
@@ -364,10 +376,11 @@ class Lambda extends Object{
         }
     }
     function call($args){
+        $env = new Env($this->_env);
         foreach($this->_args as $k => $v){
-            $this->_env->set($v,$args[$k]);
+            $env->set($v,$args[$k]);
         }
-        return $this->_env;
+        return $env;
     }
     function code(){
         return $this->_code;
@@ -457,14 +470,6 @@ function analyzeAst($tokens){
                 while(($t = array_pop($stack))!=null){
                     $ret = new Lists($t,$ret);
                 }
-                if(sizeof($stack) >0 
-                && $stack[sizeof($stack)-1] instanceof Symbol
-                && $stack[sizeof($stack)-1]->val()=='quote'
-                  ){
-                    $t = array_pop($stack);
-                    $ret = new Lists($t,$ret);
-                }
-                
                 array_push($stack,$ret);
                 goto nopush;
                 break;
@@ -493,8 +498,18 @@ function analyzeAst($tokens){
                 $item = new Boolean($token->content());
                 break;
         }
+        
         array_push($stack,$item);
         nopush:
+        if(sizeof($stack) >1 
+                && $stack[sizeof($stack)-2] instanceof Symbol
+                && $stack[sizeof($stack)-2]->val()=='quote'
+                &&  $stack[sizeof($stack)-1] !== null 
+                  ){
+                    $val = new Lists(array_pop($stack),Nil::instance());
+                    $ret = new Lists(array_pop($stack),$val);
+                    array_push($stack,$ret);
+                }
     }
     return $stack;
 }

@@ -81,6 +81,47 @@ class Intepreter{
             echo $args[0];
             return parser\Nil::instance();
         }));
+        $this->registGlobal('println',
+        new parser\Procedure('println',function($interp,$args,$env){
+            echo $args[0]."\n";
+            return parser\Nil::instance();
+        }));
+        $this->registGlobal('cons',
+        new parser\Procedure('cons',function($interp,$args,$env){
+            return $interp->cons($args[0],$args[1]);
+        }));
+        $this->registGlobal('car',
+        new parser\Procedure('car',function($interp,$args,$env){
+            return $args[0]->car();
+        }));
+        $this->registGlobal('cdr',
+        new parser\Procedure('cdr',function($interp,$args,$env){
+            return $args[0]->cdr();
+        }));
+        $this->registGlobal('set-car!',
+        new parser\Procedure('set-car!',function($interp,$args,$env){
+             $args[0]->setCar($args[1]);
+             return parser\Nil::instance();
+        }));
+        $this->registGlobal('set-cdr!',
+        new parser\Procedure('set-cdr!',function($interp,$args,$env){
+             $args[0]->setCdr($args[1]);
+             return parser\Nil::instance();
+        }));
+        $this->registGlobal('string->list',
+        new parser\Procedure('string->list',function($interp,$args,$env){
+             $str = $args[0]->val();
+             $len = strlen($str);
+             $ret = parser\Nil::instance();
+             for($i = $len-1;$i>=0;--$i){
+                 $ret = new parser\Lists(new parser\Char($str[$i]),$ret);
+             }
+             return $ret;
+        }));
+        $this->registGlobal('<=',
+        new parser\Procedure('<=',function($interp,$args,$env){
+             return new parser\Boolean($args[0]->val() <= $args[1]->val());
+        }));
     }
 
     function registGlobal($name,$value){
@@ -122,6 +163,14 @@ class Intepreter{
                         break;
                     case 'apply':
                         return $this->apply($ast->cdr()->car(),$ast->cdr()->cdr());
+                        break;
+                    case 'if':
+                        $cond =  $this->eval($ast->cdr()->car(),$env);
+                        if($cond->val()){
+                            return $this->eval($ast->cdr()->cdr()->car(),$env);
+                        }else{
+                            return $this->eval($ast->cdr()->cdr()->cdr()->car(),$env);
+                        }
                         break;
                     case 'quote':
                         return $ast->cdr();
@@ -210,12 +259,15 @@ class Intepreter{
 }
 
 $le = new parser\Lexer();
-//$le->set('(define repl (lambda () (begin (display ">>> ") (display (eval (string-parse (read-line) ) ))  (repl )  )  ) (repl )');
-$le->set('(begin (display 1) (display "sss") )');
+$le->set('(define repl (lambda () (
+    begin (display ">>> ") 
+    (println 
+    (eval (string-parse (read-line) ) ))  (repl )  )  )) (repl )');
+//$le->set('(begin (display 1) (display "sss") )');
 $tokens = $le->tokenize();
 //var_dump($tokens);
 $ret =  parser\analyzeAst($tokens);
-//var_dump($ret);
+var_dump($ret);
 $interp = new Intepreter();
 $ret = $interp->run($ret);
 var_dump($ret);
